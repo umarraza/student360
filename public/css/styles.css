@@ -1,0 +1,28 @@
+body {
+	margin-left: 10%;
+	margin-right: 10%;	
+}
+
+.background {
+	position: absolute;
+	z-index: -1;  
+	width: 40%;
+	height: 65%;
+	background-image: url('http://localhost/PROJ_APRIL/AssureTots/storage/app/public/AsureTotslogo.png');
+	background-size: cover;
+	background-position: center;
+	opacity: 0.1;
+	top: 15% ;
+	left: 30% ;
+}
+h3 {
+	text-align: center;
+	color: #56D171;  
+}
+a {
+	color: #FE8A25;
+}
+.applinks {
+	margin-left: 35%;
+}
+	
