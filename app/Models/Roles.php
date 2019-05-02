@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Roles extends Model
 {
-    const CREATED_AT = 'createdAt';
-    const UPDATED_AT = 'updatedAt';
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
     /**
      * The database table used by the model.
      *
@@ -23,13 +23,11 @@ class Roles extends Model
      *
      * @var array
      */
-    protected $fillable = ['description'];
+    protected $fillable = ['label'];
 
     public static function findByAttr($attr,$label){
         $model = self::where($attr,'=',$label)->first();
         if(!empty($model))
             return $model;
-
-        return '';
     }
 }

@@ -2,30 +2,136 @@
 
 namespace App\Http\Controllers\Api;
 
+
+
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
-use App\Models\Roles;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rule; 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-//// JWT ////
+
+use App\Http\Requests;
+use App\Http\Controllers\Controller;
+
+/* ---------- JWT ---------- */
+
 use JWTAuthException;
 use JWTAuth;
 
-//// Models ////
+/* ---------- MODELS ---------- */
+use App\Models\Roles;
 use App\Models\Api\ApiUser as User;
-use App\Models\Api\ApiInstitute as Institute;
-use App\Models\Api\ApiDeviceToken as DeviceToken;
-use App\Models\MyCradential;
-
+use App\Models\Api\ApiUserDetail as UserDetail;
 
 class AuthController extends Controller
 {
+
+    public function signUp(Request $request)
+    {
+        $response = [
+            'data' => [
+                'code' => 400,
+                'message' => 'Something went wrong. Please try again later!',
+            ],
+           'status' => false
+        ];
+        $rules = [
+            'username'    =>   'required',
+            'password'    =>   'required',
+            'roleId'      =>   'required',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            $response['data']['message'] = 'Invalid input values.';
+            $response['data']['errors'] = $validator->messages();
+        }else
+        {
+            $username = $request->get('username');
+            $password = $request->get('password');
+            $roleId   = $request->get('roleId');
+
+            $modelUser =  User::create([
+                'username'  => $username,
+                'password'  => bcrypt($password),
+                'roleId'    => $roleId,
+                'verified'  => User::STATUS_ACTIVE,
+                'language'  => "English",
+            ]);
+
+            if($modelUser)
+            {
+                if(isset($request['username'],$request['password']))
+                {
+
+                    $credentials = $request->only('username', 'password');
+
+                    $token = null;
+                    try {
+                       if (!$token = JWTAuth::attempt($credentials)) {
+                            return [
+                                'data' => [
+                                    'code' => 400,
+                                    'message' => 'Email or password wrong.',
+                                ],
+                                'status' => false
+                            ];
+                       }
+                    } catch (JWTAuthException $e) {
+                        return [
+                                'data' => [
+                                    'code' => 500,
+                                    'message' => 'Fail to create token.',
+                                ],
+                                'status' => false
+                            ];
+                    }
+
+                    // Finding User from token.
+                    $user = JWTAuth::toUser($token);
+                    // Checking if user is valid or not.
+                    if($user->isValidUser())
+                    {
+                        if($user->isSuperAdmin())
+                        {
+                            $response['data']['code']               =   200;
+                            $response['data']['message']            =   "Request Successfull!!";
+                            $response['data']['token']              =   User::loginUser($user->id,$token);
+                            $response['data']['result']['userData'] =   $user->getArrayResponse();
+                            $response['status']= true;    
+                        }
+                        elseif($user->isHostelAdmin())
+                        {
+                            $response['data']['code']                =   200;
+                            $response['data']['message']             =   "Request Successfull!!";
+                            $response['data']['token']               =   User::loginUser($user->id,$token);
+                            $response['data']['result']['userData']  =   $user->getArrayResponse();
+                            $response['status']= true;    
+                        }
+                        elseif($user->isStudent())
+                        {
+                            $response['data']['code']                =   200;
+                            $response['data']['message']             =   "Request Successfull!!";
+                            $response['data']['token']               =   User::loginUser($user->id,$token);
+                            $response['data']['result']['userData']  =   $user->getArrayResponse();
+                            $response['status']= true;    
+                        }
+                    }
+                    else
+                    {   
+                        $response['data']['message'] = 'Not a valid user';
+                    }
+                }
+            }
+        }
+        return $response;
+    }
+
+
+
     public function login(Request $request)
     {
-        // inializing a default response in case of something goes wrong.
         $response = [
                 'data' => [
                     'code' => 400,
@@ -33,14 +139,9 @@ class AuthController extends Controller
                 ],
                 'status' => false
             ];
-
-
-
-        // checking if parameters are set or not
         if(isset($request['username'],$request['password']))
         {
 
-            // authenticate token from username and passwrod
             $credentials = $request->only('username', 'password');
             $token = null;
             try {
@@ -66,7 +167,6 @@ class AuthController extends Controller
             // Finding User from token.
             $user = JWTAuth::toUser($token);
             // Checking if user is valid or not.
-
             if($user->isDeleted==0)
             {
                 if($user->isSuperAdmin())
@@ -77,7 +177,7 @@ class AuthController extends Controller
                     $response['data']['result']['userData'] = $user->getArrayResponse();
                     $response['status']= true;    
                 }
-                elseif($user->isAdmin())
+                elseif($user->isHostelAdmin())
                 {
                     if($user->verified==0)
                     {
@@ -91,10 +191,9 @@ class AuthController extends Controller
                     $response['data']['message']                    = "Request Successfull!!";
                     $response['data']['token']                      = User::loginUser($user->id,$token);
                     $response['data']['result']['userData']         = $user->getArrayResponse();
-                    $response['data']['result']['adminData']        = $user->admin->getArrayResponse();
                     $response['status']= true;    
                 }
-                elseif($user->isTrainer())
+                elseif($user->isStudent())
                 {
                     if($user->verified==0)
                     {
@@ -109,27 +208,8 @@ class AuthController extends Controller
                     $response['data']['message']                    = "Request Successfull!!";
                     $response['data']['token']                      = User::loginUser($user->id,$token);
                     $response['data']['result']['userData']         = $user->getArrayResponse();
-                    $response['data']['result']['trainerData']      = $user->trainer->getArrayResponse();
                     $response['status']= true;
                 }
-                elseif($user->isParent())
-                {
-                    if($user->verified==0)
-                    {
-                        $response['data']['code']                   = 220;
-                    }
-                    else
-                    {
-                        $response['data']['code']                   = 200;
-                    }
-                    
-                    $response['data']['message']                    = "Request Successfull!!";
-                    $response['data']['token']                      = User::loginUser($user->id,$token);
-                    $response['data']['result']['userData']         = $user->getArrayResponse();
-                    $response['data']['result']['parentData']       = $user->parent->getArrayResponse();
-                    $response['status']= true;
-                }
-                
             }
             else
             {   
@@ -140,55 +220,199 @@ class AuthController extends Controller
         return $response;
     }
 
-    public function splashLogin(Request $request)
+
+  // ---------- New Login ---------- //
+
+    public function login2(Request $request)
     {
-        // validation user from token.
-        $user = JWTAuth::toUser($request->token);
         $response = [
                 'data' => [
                     'code' => 400,
-                    'message' => 'Invalid Token! User Not Found.',
+                    'message' => 'Invalid credentials or missing parameters',
                 ],
                 'status' => false
             ];
-        if(!empty($user))
-        {
-            if($user->isSuperAdmin())
-            {
-                $response['data']['code']               = 300;
-                $response['data']['message']            = "Request Successfull!!";
-                $response['data']['result']['userData'] = $user->getArrayResponse();
-                $response['status']= true;    
+
+        if(isset($request['username'],$request['password'])){
+
+            $credentials = $request->only('username', 'password');
+
+            $token = null;
+            try {
+               if (!$token = JWTAuth::attempt($credentials)) {
+                    return [
+                        'data' => [
+                            'code' => 400,
+                            'message' => 'Email or password wrong.',
+                        ],
+                        'status' => false
+                    ];
+               }
+            } catch (JWTAuthException $e) {
+                return [
+                        'data' => [
+                            'code' => 500,
+                            'message' => 'Fail to create token.',
+                        ],
+                        'status' => false
+                    ];
             }
-            elseif($user->isAdmin())
+
+            // Finding User from token.
+            $user = JWTAuth::toUser($token);
+            // Checking if user is valid or not.
+            if($user->isValidUser())
             {
-                $response['data']['code']                       = 200;
-                $response['data']['message']                    = "Request Successfull!!";
-                $response['data']['token']                      = User::loginUser($user->id,$token);
-                $response['data']['result']['adminData']        = $user->admin->getArrayResponse();
-                $response['status']= true;    
+                if($user->isSuperAdmin())
+                {
+                    $response['data']['code']                 =  200;
+                    $response['data']['message']              =  "Request Successfull!!";
+                    $response['data']['token']                =  User::loginUser($user->id,$token);
+                    $response['data']['result']['userData']   =  $user->getArrayResponse();
+                    $response['status']= true;    
+                }
+                elseif($user->isHostelAdmin())
+                {
+                    $response['data']['code']                 =  200;
+                    $response['data']['message']              =  "Request Successfull!!";
+                    $response['data']['token']                =  User::loginUser($user->id,$token);
+                    $response['data']['result']['userData']   =  $user->getArrayResponse();
+                    $response['status']= true;    
+                }
+                elseif($user->isStudent())
+                {
+                    $response['data']['code']                 =  200;
+                    $response['data']['message']              =  "Request Successfull!!";
+                    $response['data']['token']                =  User::loginUser($user->id,$token);
+                    $response['data']['result']['userData']   =  $user->getArrayResponse();
+                    $response['status']= true;    
+                }
             }
-            elseif($user->isTrainer())
-            {
-                $response['data']['code']                       = 200;
-                $response['data']['message']                    = "Request Successfull!!";
-                $response['data']['token']                      = User::loginUser($user->id,$token);
-                $response['data']['result']['trainerData']      = $user->trainer->getArrayResponse();
-                $response['status']= true;
-            }
-            elseif($user->isParent())
-            {
-                $response['data']['code']                       = 200;
-                $response['data']['message']                    = "Request Successfull!!";
-                $response['data']['token']                      = User::loginUser($user->id,$token);
-                $response['data']['result']['parentData']       = $user->parent->getArrayResponse();
-                $response['status']= true;
+            else
+            {   
+                $response['data']['message'] = 'Not a valid user';
             }
         }
         return $response;
     }
 
-    public function logout(Request $request){
+    public function forgotPass(Request $request)
+    {
+        $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            $rules = [
+                'username'   =>  ['required'],
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) 
+            {
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors']  = $validator->messages();
+            }
+            else
+            {
+                $user = User::where('username','=',$request['username'])->first();
+                $username = $user->username;
+                           
+                $random = str_shuffle('abcdefghjklmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ234567890!$%^&!$%^&');
+                $password = substr($random, 0, 10);
+                
+                $tousername = $username;
+                
+                \Mail::send('mail',["username"=>$username,"password"=>$password], function ($message) use ($tousername) {
+                $message->from('umarraza2200@gmail.com', 'password');
+                $message->to($tousername)->subject('Forgot Password!');
+               });
+             
+                if ($user) 
+                {
+                    $response['data']['code']       = 200;
+                    $response['status']             = true;
+                    $response['data']['result']     = $user;
+                    $response['data']['message']    = 'Forgot Password email send successfuly';
+                }
+            }
+        return $response;
+    }
+
+
+
+
+
+
+    public function changePassword(Request $request)
+    {
+        $user = JWTAuth::toUser($request->token);
+        $response = [
+                'data' => [
+                   'code'      => 400,
+                   'errors'     => '',
+                   'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+        if(!empty($user))
+        {
+            $response = [
+                'data' => [
+                   'code' => 400,
+                   'message' => 'Something went wrong. Please try again later!',
+                ],
+                'status' => false
+            ];
+            $rules = [
+                'oldPassword'     =>  ['required'],
+                'newPassword'     =>  ['required'],
+                'userId'          =>  ['required'],
+            ];
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails())
+            {
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors']  = $validator->messages();
+            }
+            else
+            {
+                $myUser = User::where('id','=', $request['userId'])->first();
+                $oldPassword  =  $request['oldPassword'];
+                $newPassword  =  $request['newPassword'];
+
+                //if(Hash::check($oldPassword, $myUser->password))
+                {
+                    $myUser->password = bcrypt($newPassword);
+                    if($myUser->save())
+                    {
+                        $response['data']['code']       = 200;
+                        $response['status']             = true;
+                        $response['data']['message']    = 'Request Successfull';
+                    }
+                    else
+                    {
+                        $response['data']['code']       = 400;
+                        $response['status']             = true;
+                        $response['data']['message']    = 'Request Unsuccessfull';
+                    }
+                }
+                // else
+                // {
+                //     $response['data']['code']       = 400;
+                //     $response['status']             = true;
+                //     $response['data']['message']    = 'Request Unsuccessfull';
+                // }    
+            }
+        }
+        return $response;
+    }
+    
+
+    public function logout(Request $request)
+    {
 
         // validation user from token.
         $user = JWTAuth::toUser($request->token);
@@ -199,16 +423,13 @@ class AuthController extends Controller
                 ],
                 'status' => false
             ];
-        if(!empty($user))
-        {
+        if(!empty($user)){
             // if user is valid then expire its token.
             JWTAuth::invalidate($request->token);
             
             // if logout occur from mobile device then clear the device token.
-            if($request->deviceType=="M")
-            {
-                $deviceToken = DeviceToken::where('deviceToken','=',$request->tokenValue)->delete();
-            }
+            // if($request->deviceType=="M")
+            //     $user->clearDeviceToken();
 
             $response['data']['message'] = 'Logout successfully.';
             $response['data']['code'] = 200;
@@ -217,8 +438,7 @@ class AuthController extends Controller
         return $response;
     }
 
-    public function updateUserDevice(Request $request)
-    {
+    public function updateUserDevice(Request $request){
         // validation token.
         $user = JWTAuth::toUser($request->token);
         // generating default response if something gets wrong.
@@ -229,8 +449,7 @@ class AuthController extends Controller
                 ],
                 'status' => false
             ];
-        if(!empty($user))
-        {
+        if(!empty($user)){
             // rules to check weather paramertes comes or not.
             $rules = [
                 'deviceToken' => 'required',
@@ -250,24 +469,10 @@ class AuthController extends Controller
                 $model = User::where('id','=',$user->id)->first();
                 // updating token
                 if(!empty($model)){
-                    $checkToken  = DeviceToken::where('deviceToken','=',$request->deviceToken)->first();
-                    if(empty($checkToken))
-                    {
-                        $model = DeviceToken::create([
-                                'deviceToken' => $request->deviceToken,
-                                'deviceType' => $request->deviceType,
-                                'userId'    =>  $user->id
-                        ]);
-                        // updating token
-                        if($model)
-                        {
-                        }
-                        else
-                        {
-                            // in cans token update is unsuccessfull.
-                            $response['data']['message'] = 'Device token not saved successfully. Please try again.';
-                        }
-                    }
+                    $model->update([
+                        'deviceToken' => $request->deviceToken,
+                        'deviceType' => $request->deviceType
+                    ]);
                 }
                 else
                 {
@@ -279,7 +484,7 @@ class AuthController extends Controller
         return $response;
     }
 
-    public function listRoles(Request $request)
+    public function getRoles(Request $request)
     {
         // generating default response if something gets wrong.
         $response = [
@@ -299,18 +504,22 @@ class AuthController extends Controller
         return $response;
     }
 
-    // ========================================== Secrets ===============================//
-    public function updateSecrets(Request $request)
+    
+
+    // Update Online Status for User
+    public function updateOnlineStatus(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
+        // generating default response if something gets wrong.
         $response = [
                 'data' => [
                     'code'      => 400,
-                    'errors'     => '',
+                    'error'     => '',
                     'message'   => 'Invalid Token! User Not Found.',
                 ],
                 'status' => false
             ];
+        // checking if user exists or not
         if(!empty($user))
         {
             $response = [
@@ -321,126 +530,64 @@ class AuthController extends Controller
                'status' => false
             ];
             $rules = [
-                'secrets'         => ['required'],
+               'status'   => ['required', 'in:0,1']
             ];
-
-            $validator = Validator::make($request->all(), $rules);
-            if ($validator->fails()) 
-            {
-                $response['data']['message'] = 'Invalid input values.';
-                $response['data']['errors'] = $validator->messages();
-            }
-            else
-            {   
-                $mySecrets = base64_decode(base64_decode($request->secrets));
-                $user->secrets = encrypt($mySecrets);
-
-                if($user->save())
-                {
-                    $response['data']['code']       = 200;
-                    $response['status']             = true;
-                    $response['data']['message']    = 'Request Successfully';
-                }
-            }
-        }
-        return $response;
-    }
-
-    public function getSecrets(Request $request)
-    {
-        $user = JWTAuth::toUser($request->token);
-        $response = [
-                'data' => [
-                    'code'      => 400,
-                    'errors'     => '',
-                    'message'   => 'Invalid Token! User Not Found.',
-                ],
-                'status' => false
-            ];
-        if(!empty($user))
-        {
-            $mySecrets = base64_encode(base64_encode(decrypt($user->secrets)));
-
-            $response['data']['code']       = 200;
-            $response['status']             = true;
-            $response['data']['result']     = $mySecrets;
-            $response['data']['message']    = 'Request Successfully';
-                
-        }
-        return $response;
-    }
-
-    public function superAdminGetSecret(Request $request)
-    {
-        $user = JWTAuth::toUser($request->token);
-        $response = [
-                'data' => [
-                    'code'      => 400,
-                    'errors'     => '',
-                    'message'   => 'Invalid Token! User Not Found.',
-                ],
-                'status' => false
-            ];
-        if(!empty($user) && $user->isSuperAdmin())
-        {
-            $myCradential   = MyCradential::find(1);
-
-            $response['data']['code']                           = 200;
-            $response['status']                                 = true;
-            $response['data']['result']                         = $myCradential;
-            $response['data']['message']                        = 'Request Successfull';
-        }
-        return $response;
-    }
-
-    public function superAdminUpdateSecret(Request $request)
-    {
-        $user = JWTAuth::toUser($request->token);
-        $response = [
-                'data' => [
-                    'code'      => 400,
-                    'errors'     => '',
-                    'message'   => 'Invalid Token! User Not Found.',
-                ],
-                'status' => false
-            ];
-        if(!empty($user) && $user->isSuperAdmin())
-        {
-            $response = [
-                'data' => [
-                    'code' => 400,
-                    'message' => 'Something went wrong. Please try again later!',
-                ],
-               'status' => false
-            ];
-            $rules = [
-                'keysST'           => ['required'],
-            ];
-
+            // valiating that weather status comes from front-end or not And its value should be in 0,1
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
                 $response['data']['message'] = 'Invalid input values.';
                 $response['data']['errors'] = $validator->messages();
             }else
             {
-                $myCradential   = MyCradential::find(1);
-
-                $myCradential->keysST = $request->keysST;
-                if($myCradential->save())
-                {
-                    $response['data']['code']                           = 200;
-                    $response['status']                                 = true;
-                    $response['data']['result']                         = $myCradential;
-                    $response['data']['message']                        = 'Request Successfull';
-                }
-                else
-                {
-                    $response['data']['code']                           = 400;
-                    $response['status']                                 = true;
-                    $response['data']['result']                         = $myCradential;
-                    $response['data']['message']                        = 'Request Successfull';   
+                $response['status'] = true;
+                $response['data']['code'] = 401;
+                $isSaved = User::where('id','=',$user->id)
+                                ->update(['onlineStatus' => $request->status]);
+                // updating status in db and if successfully updated send success response.
+                if($isSaved){
+                    $response['data']['code'] = 200;
+                    $response['data']['message'] = 'Request Successfull';
                 }
             }
+        }   
+        return $response;
+    }
+
+
+    public function splashLogin(Request $request)
+    {
+        // Login Api for mobile when on splash screen.
+        $user = JWTAuth::toUser($request->token);
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+        if(!empty($user))
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+
+            if($user->isResponder()){
+                    
+                $response['data']['user'] = base64_encode(json_encode($user->responder->getResponseData()));
+                $response['data']['school'] = base64_encode(json_encode($user->responder->schoolProfile->schoolAdminProfile->getResponseData()));
+            }
+            elseif($user->isStudent()){
+                $response['data']['user'] = base64_encode(json_encode($user->student->getResponseData()));
+                $response['data']['school'] = base64_encode(json_encode($user->student->schoolProfile->schoolAdminProfile->getResponseData()));
+            }
+            $response['data']['code'] = 200;
+            $response['data']['message'] = 'Request Successfull';
+            $response['data']['code'] = 200;
+            $response['status']= true;
         }
         return $response;
     }
