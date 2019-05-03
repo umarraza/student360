@@ -7,14 +7,13 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-
 class ApiUser extends User {
     public static function loginUser($id,$token,$message = '') {
         /* Find User For Provided Email */
         $model = Self::where(['id' => $id])->first();
-
         if ($model->verified == Self::STATUS_INACTIVE) {
-            return Self::generateErrorMessage(false, 400, 'Account not verified. Please verify your account through the verification email sent to your email id.');
+            // return Self::generateErrorMessage(false, 400, 'Account not verified. Please verify your account through the verification email sent to your email id.');
+            return "Your account is on approval by administrator";
         }
         return $token;
     }
@@ -22,8 +21,8 @@ class ApiUser extends User {
     public function sendEmailForgotPassword($token,$firstName){
         $link = "http://antonionascimentofrancisco.pt/GoldSpring/pages/resetPassword/".$this->id."/".$token;
         \Mail::send('mails.forgot-password', [
-                'link'      => $link,
-                'firstName' => $firstName,
+                'link'       =>  $link,
+                'firstName'  =>  $firstName,
             ], function ($message) {
                 $message->from('info@antonionascimentofrancisco.pt', 'The Gold Spring Team');
                 $message->to($this->username)->subject('Password Reset');

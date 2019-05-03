@@ -17,3 +17,11 @@ Route::post('/signup', 'Api\AuthController@signUp');
 Route::post('/login', 'Api\AuthController@login');
 
 
+/*
+|--------------------------------------------------------------------------
+| HOSTEL Routes
+|--------------------------------------------------------------------------
+|
+*/
+
+Route::post('/create-hostel', 'Api\HostelController@create');

@@ -12,8 +12,5 @@
 */
 
 Route::get('/', function () {
-	//markAttendence(12,16,"2019-03-30 19:57:18","CheckIn");
-	parentSignupAgain(85,16);
-        return "yes";
-    return view('Mails2.instituteSignup');
+    return view('welcome');
 });

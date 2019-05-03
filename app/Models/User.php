@@ -83,6 +83,10 @@ class User extends Authenticatable
         return false;
     }
 
+    public function Hostel()
+    {
+        return $this->hasOne(Hostel::class,'userId','id');
+    }
 
     public function isHostelAdmin(){
         
@@ -142,12 +146,25 @@ class User extends Authenticatable
 
 
     public function sendEmailCustomer($mySubject,$content){
+
         \Mail::send('mails.adminMail', [
-                'firstName' => $this->customer->firstName,"content"=>$content,
+        
+            'firstName' => $this->customer->firstName,"content"=>$content,
             ], function ($message) use ($mySubject) {
+        
                 $message->from('hassanamir210@gmail.com', 'The Gold Spring Team');
                 $message->to($this->username)->subject($mySubject);
         });
+        
         return true;
     }
+
+    public function getFullNameAttribute() {
+
+        if ($this->isHostelAdmin() && !empty($this->Hostel))
+
+        return $this->Hostel->hostelName;
+        
+    }
+
 }

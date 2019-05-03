@@ -314,31 +314,7 @@ function parentSignup($id,$password,$instituteId)
     }
     return true;
 }
-function parentSignupAgain($id,$instituteId)
-{
-    //try 
-    {
-        $user = User::find($id);
-        $email = $user->username;
-        $name  = $user->parent->firstName." ".$user->parent->lastName;
 
-        $institute = Institute::find($instituteId);
-        $schoolName  = $institute->name;
-        \Mail::send('Mails2.parentSignupAgain', [
-                    'name'       => $name,
-                    'email'      => $email,
-                    'schoolName' => $schoolName,
-                ], function ($message) use ($email){
-                    $message->from('info@asuretots.com', 'The Asure Tots Team');
-                    $message->to($email)->subject('Wellcome');
-            });
-    } 
-    //catch (Exception $e) 
-    {
-      
-    }
-    return true;
-}
 
 function trainerSignup($id,$password)
 {

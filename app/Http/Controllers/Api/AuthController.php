@@ -44,7 +44,8 @@ class AuthController extends Controller
         if ($validator->fails()) {
             $response['data']['message'] = 'Invalid input values.';
             $response['data']['errors'] = $validator->messages();
-        }else
+        }
+        else
         {
             $username = $request->get('username');
             $password = $request->get('password');
@@ -62,7 +63,6 @@ class AuthController extends Controller
             {
                 if(isset($request['username'],$request['password']))
                 {
-
                     $credentials = $request->only('username', 'password');
 
                     $token = null;
@@ -89,7 +89,7 @@ class AuthController extends Controller
                     // Finding User from token.
                     $user = JWTAuth::toUser($token);
                     // Checking if user is valid or not.
-                    if($user->isValidUser())
+                    if($user->verified == 1)
                     {
                         if($user->isSuperAdmin())
                         {
@@ -165,7 +165,7 @@ class AuthController extends Controller
             // Finding User from token.
             $user = JWTAuth::toUser($token);
             // Checking if user is valid or not.
-            if($user->isDeleted==0)
+            if($user->verfied == 1)
             {
                 if($user->isSuperAdmin())
                 {
