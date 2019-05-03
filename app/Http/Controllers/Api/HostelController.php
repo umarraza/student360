@@ -20,7 +20,6 @@ class HostelController extends Controller
     public function create(Request $request)
     {
 
-        // $user = JWTAuth::toUser($request->token);
         $response = [
                 'data' => [
                     'code'      => 400,
@@ -29,9 +28,6 @@ class HostelController extends Controller
                 ],
                 'status' => false
             ];
-
-        // if(!empty($user) && $user->isHostelAdmin())
-        // {
 
             $response = [
                 'data' => [
@@ -113,7 +109,6 @@ class HostelController extends Controller
                     $response['data']['message']    = 'Hostel created Successfully';
                 }
             }
-        // }
         
         return $response;
     }

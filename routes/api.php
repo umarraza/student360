@@ -25,3 +25,4 @@ Route::post('/login', 'Api\AuthController@login');
 */
 
 Route::post('/create-hostel', 'Api\HostelController@create');
+Route::post('/create-student', 'Api\StudentController@create');
