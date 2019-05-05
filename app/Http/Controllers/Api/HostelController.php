@@ -19,7 +19,7 @@ class HostelController extends Controller
 
     public function create(Request $request)
     {
-
+        
         $response = [
                 'data' => [
                     'code'      => 400,
@@ -43,7 +43,8 @@ class HostelController extends Controller
                 'numberOfBedRooms'   =>   'required',
                 'noOfBeds'         	 =>   'required',
                 'address'		     =>   'required',  
-                'pinLocation'	     =>   'required', 
+                'longitude'          =>   'required',
+                'latitude'           =>   'required',
                 'city'            	 =>   'required',
                 'country'            =>   'required',
                 'description'        =>   'required',
@@ -86,7 +87,8 @@ class HostelController extends Controller
                         'numberOfBedRooms' =>   $request->get('numberOfBedRooms'),
                         'noOfBeds'         =>   $request->get('noOfBeds'),
                         'address'          =>   $request->get('address'),
-                        'pinLocation'      =>   $request->get('pinLocation'),
+                        'longitude'        =>   $request->get('longitude'),
+                        'latitude'         =>   $request->get('latitude'),
                         'city'             =>   $request->get('city'),
                         'country'          =>   $request->get('country'),
                         'description'      =>   $request->get('description'),
@@ -112,4 +114,162 @@ class HostelController extends Controller
         
         return $response;
     }
+
+    public function listHostels(Request $request)
+    {
+        $user = JWTAuth::toUser($request->token);
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isSuperAdmin())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            $allHostels = Hostel::all();
+
+            if (!empty($allHostels)) {
+
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Request Successfull';
+                $response['data']['result']     =  $allHostels;
+                $response['status']             =  true;
+
+            } else {
+
+                $response['data']['code']       =  400;
+                $response['data']['message']    =  'No Hostels Found';
+                $response['status']             =  false;    
+            }
+
+
+        }
+        return $response;
+    }
+
+    public function hostelDetails(Request $request)
+    {
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+
+            $rules = [
+
+            	'id'     =>   'required',
+
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors'] = $validator->messages();
+            }
+            else
+            {
+
+                $hostel = Hostel::find($request->id);
+
+            	if (!empty($hostel)) 
+                {
+                    $response['data']['code']       = 200;
+                    $response['status']             = true;
+                    $response['result']             = $hostel;
+                    $response['data']['message']    = 'Request Successfull';
+
+                } else {
+
+                    $response['data']['code']       = 400;
+                    $response['status']             = false;
+                    $response['data']['message']    = 'Hostel Not Found!';
+                
+                }
+            }
+        
+        return $response;
+    }
+
+    public function delete(Request $request)
+    {
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            $rules = [
+
+            	'id'     =>   'required',
+
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors'] = $validator->messages();
+            }
+            else
+            {
+
+                $hostel = Hostel::find($request->id);
+                $userId = $hostel->userId;
+
+                $user = User::find($userId);
+                
+            	if ($user->delete() && $hostel->delete()) 
+                {
+                    $response['data']['code']       = 200;
+                    $response['status']             = true;
+                    $response['data']['message']    = 'Hostel Deleted Successfully';
+
+                } else {
+
+                    $response['data']['code']       = 400;
+                    $response['status']             = false;
+                    $response['data']['message']    = 'Hostel Not Deleted!';
+                
+                }
+            }
+        
+        return $response;
+    }
+
 }

@@ -42,13 +42,13 @@ class StudentController extends Controller
             	'name'         =>   'required',
                 'phone'        =>   'required',   
                 'email'        =>   'required',
-                'city'         =>   'required',
-                'country'      =>   'required',  
-                'occupation'   =>   'required', 
-                'institute'    =>   'required',
+                // 'city'         =>   'required',
+                // 'country'      =>   'required',  
+                // 'occupation'   =>   'required', 
+                // 'institute'    =>   'required',
                 'dateOfBirth'  =>   'required',
                 'gender'       =>   'required',
-                'CNIC'         =>   'required',
+                // 'CNIC'         =>   'required',
 
             ];
 
@@ -65,16 +65,18 @@ class StudentController extends Controller
                 $username = $request->get('username');
                 $password = $request->get('password');
                 $roleId   = $request->get('roleId');
+                $email    = $request->get('email');
 
                 $user =  User::create([
                     
                     'username'   =>  $username,
+                    'email'      =>  $email,
                     'password'   =>  bcrypt($password),
                     'roleId'     =>  $roleId,
                     'verified'   =>  1,
                     'language'   =>  "English",
 
-                ]);
+                ]); 
 
                 $student = Student::create([
 
@@ -102,6 +104,104 @@ class StudentController extends Controller
                     $response['data']['message']    = 'Student profile created Successfully';
                 }
             }
+        return $response;
+    }
+
+    public function listStudents(Request $request)
+    {
+        $user = JWTAuth::toUser($request->token);
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isSuperAdmin())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            $allStudents = Student::all();
+
+            if (!empty($allStudents)) {
+
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Request Successfull';
+                $response['data']['result']     =  $allStudents;
+                $response['status']             =  true;
+
+            } else {
+
+                $response['data']['code']       =  400;
+                $response['data']['message']    =  'No Hostels Found';
+                $response['status']             =  false;    
+            }
+
+
+        }
+        return $response;
+    }
+
+    public function studentDetails(Request $request)
+    {
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            $rules = [
+
+            	'id'     =>   'required',
+
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors'] = $validator->messages();
+            }
+            else
+            {
+
+                $student = Student::find($request->id);
+
+            	if (!empty($student)) 
+                {
+                    $response['data']['code']       = 200;
+                    $response['status']             = true;
+                    $response['result']             = $student;
+                    $response['data']['message']    = 'Request Successfull';
+
+                } else {
+
+                    $response['data']['code']       = 400;
+                    $response['status']             = false;
+                    $response['data']['message']    = 'Srudent not found';
+
+                }
+            }
+        
         return $response;
     }
 }

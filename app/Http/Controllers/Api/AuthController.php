@@ -27,6 +27,7 @@ class AuthController extends Controller
 
     public function signUp(Request $request)
     {
+
         $response = [
             'data' => [
                 'code' => 400,
@@ -162,10 +163,10 @@ class AuthController extends Controller
                         'status' => false
                     ];
             }
-            // Finding User from token.
+
             $user = JWTAuth::toUser($token);
-            // Checking if user is valid or not.
-            if($user->verfied == 1)
+
+            if($user->verified == 1)
             {
                 if($user->isSuperAdmin())
                 {
@@ -211,8 +212,7 @@ class AuthController extends Controller
             }
             else
             {   
-                // response if user is not valid.
-                $response['data']['message'] = 'Not a valid user';
+                $response['data']['message'] = 'User is not approved yet by administrator!';
             }
         }
         return $response;
@@ -316,16 +316,18 @@ class AuthController extends Controller
             else
             {
                 $user = User::where('username','=',$request['username'])->first();
+                $userId = $user->id;
                 $username = $user->username;
                            
                 $random = str_shuffle('abcdefghjklmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ234567890!$%^&!$%^&');
                 $password = substr($random, 0, 10);
                 
                 $tousername = $username;
-                
-                \Mail::send('mail',["username"=>$username,"password"=>$password], function ($message) use ($tousername) {
+
+                \Mail::send('mail',["username"=>$username, "userId"=>$userId,"password"=>$password], function ($message) use ($tousername) {
                 $message->from('umarraza2200@gmail.com', 'password');
                 $message->to($tousername)->subject('Forgot Password!');
+
                });
              
                 if ($user) 
@@ -338,11 +340,6 @@ class AuthController extends Controller
             }
         return $response;
     }
-
-
-
-
-
 
     public function changePassword(Request $request)
     {
@@ -367,7 +364,6 @@ class AuthController extends Controller
             $rules = [
                 'oldPassword'     =>  ['required'],
                 'newPassword'     =>  ['required'],
-                'userId'          =>  ['required'],
             ];
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails())
@@ -377,18 +373,21 @@ class AuthController extends Controller
             }
             else
             {
-                $myUser = User::where('id','=', $request['userId'])->first();
+
+                $userId = $user->id;
+                $myUser = User::where('id','=', $userId)->first();
+
                 $oldPassword  =  $request['oldPassword'];
                 $newPassword  =  $request['newPassword'];
 
-                //if(Hash::check($oldPassword, $myUser->password))
+                if(Hash::check($oldPassword, $myUser->password))
                 {
                     $myUser->password = bcrypt($newPassword);
                     if($myUser->save())
                     {
                         $response['data']['code']       = 200;
                         $response['status']             = true;
-                        $response['data']['message']    = 'Request Successfull';
+                        $response['data']['message']    = 'Password changed successfully';
                     }
                     else
                     {
@@ -397,12 +396,12 @@ class AuthController extends Controller
                         $response['data']['message']    = 'Request Unsuccessfull';
                     }
                 }
-                // else
-                // {
-                //     $response['data']['code']       = 400;
-                //     $response['status']             = true;
-                //     $response['data']['message']    = 'Request Unsuccessfull';
-                // }    
+                else
+                {
+                    $response['data']['code']       = 400;
+                    $response['status']             = false;
+                    $response['data']['message']    = 'Old password is wrong';
+                }    
             }
         }
         return $response;
@@ -411,8 +410,6 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-
-        // validation user from token.
         $user = JWTAuth::toUser($request->token);
         $response = [
                 'data' => [
@@ -422,7 +419,7 @@ class AuthController extends Controller
                 'status' => false
             ];
         if(!empty($user)){
-            // if user is valid then expire its token.
+
             JWTAuth::invalidate($request->token);
             
             // if logout occur from mobile device then clear the device token.
@@ -448,25 +445,30 @@ class AuthController extends Controller
                 'status' => false
             ];
         if(!empty($user)){
-            // rules to check weather paramertes comes or not.
+
             $rules = [
                 'deviceToken' => 'required',
                 'deviceType' => 'required|Numeric|in:0,1'
             ];
-            // validating rules
+
             $validator = Validator::make($request->all(), $rules);
+            
             if ($validator->fails()) {
+            
                 $response['data']['message'] = 'Invalid input values.';
                 $response['data']['errors'] = $validator->messages();
-            }else
-            {
-                // saving success response.
+            
+            } else {
+
                 $response['status'] = true;
                 $response['data']['code'] = 200;
                 $response['data']['message'] = 'Request Successfull.';
                 $model = User::where('id','=',$user->id)->first();
+                
                 // updating token
+                
                 if(!empty($model)){
+                    
                     $model->update([
                         'deviceToken' => $request->deviceToken,
                         'deviceType' => $request->deviceType
