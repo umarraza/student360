@@ -13,11 +13,11 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::post('/signup', 'Api\AuthController@signUp');
 Route::post('/login', 'Api\AuthController@login');
+Route::get('/logout', 'Api\AuthController@logout');
+Route::post('/signup', 'Api\AuthController@signUp');
 Route::post('/forgot-password', 'Api\AuthController@forgotPass');
 Route::post('/reset-password', 'Api\AuthController@changePassword');
-Route::get('/logout', 'Api\AuthController@logout');
 
 
 /*
@@ -28,10 +28,11 @@ Route::get('/logout', 'Api\AuthController@logout');
 |
 */
 
+
+Route::post('/delete-hostel', 'Api\HostelController@delete');
 Route::post('/create-hostel', 'Api\HostelController@create');
 Route::get('/list-hostels', 'Api\HostelController@listHostels');
 Route::post('/view-hostel', 'Api\HostelController@hostelDetails');
-Route::post('/delete-hostel', 'Api\HostelController@delete');
 Route::post('/update-request', 'Api\HostelController@updateRequest');
 
 
@@ -56,10 +57,10 @@ Route::post('/view-student', 'Api\StudentController@studentDetails');
 |
 */
 
-Route::post('/approve-hostel', 'Api\SuperAdminController@approveHostel');
-Route::post('/verify-hostel', 'Api\SuperAdminController@verifyHostel');
 Route::post('/verify-user', 'Api\SuperAdminController@verifyUser');
 Route::post('/update-hostel', 'Api\SuperAdminController@updateHostel');
+Route::post('/verify-hostel', 'Api\SuperAdminController@verifyHostel');
+Route::post('/approve-hostel', 'Api\SuperAdminController@approveHostel');
 // rejection requests
 Route::post('/reject-update-hostel', 'Api\SuperAdminController@rejectUpdateHostel');
 Route::post('/reject-hostel-approval', 'Api\SuperAdminController@rejectHostelApprovel');

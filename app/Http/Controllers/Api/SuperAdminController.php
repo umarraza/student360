@@ -320,7 +320,6 @@ class SuperAdminController extends Controller
 |
 */
 
-
     public function verifyUser(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
