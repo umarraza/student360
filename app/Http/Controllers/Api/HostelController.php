@@ -12,6 +12,8 @@ use JWTAuthException;
 use JWTAuth;
 
 use App\Models\Api\ApiUser as User;
+use App\Models\Api\ApiUpdateRequests as UpdateRequests;
+
 use App\Models\Api\ApiHostel as Hostel;
 
 class HostelController extends Controller
@@ -34,6 +36,7 @@ class HostelController extends Controller
                     'code' => 400,
                     'message' => 'Something went wrong. Please try again later!',
                 ],
+                
                'status' => false
             ];
             $rules = [
@@ -210,7 +213,6 @@ class HostelController extends Controller
                 
                 }
             }
-        
         return $response;
     }
 
@@ -245,17 +247,16 @@ class HostelController extends Controller
                 
                 $response['data']['message'] = 'Invalid input values.';
                 $response['data']['errors'] = $validator->messages();
-            }
-            else
-            {
+            
+            }else{
 
                 $hostel = Hostel::find($request->id);
                 $userId = $hostel->userId;
 
                 $user = User::find($userId);
                 
-            	if ($user->delete() && $hostel->delete()) 
-                {
+            	if ($user->delete() && $hostel->delete()) {
+
                     $response['data']['code']       = 200;
                     $response['status']             = true;
                     $response['data']['message']    = 'Hostel Deleted Successfully';
@@ -269,6 +270,56 @@ class HostelController extends Controller
                 }
             }
         
+        return $response;
+    }
+
+    public function updateRequest(Request $request)
+    {
+        $user = JWTAuth::toUser($request->token);
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isHostelAdmin())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            $isUpdated = $request->get('isUpdated');
+
+            $updateRequest =  UpdateRequests::create([
+                    
+                'isUpdated'  =>  $isUpdated,
+
+            ]);
+
+
+            if ($updateRequest->save()) {
+
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Request Successfull';
+                $response['data']['result']     =  $updateRequest;
+                $response['status']             =  true;
+
+            } else {
+
+                $response['data']['code']       =  400;
+                $response['data']['message']    =  'No Hostels Found';
+                $response['status']             =  false;    
+            }
+
+
+        }
         return $response;
     }
 

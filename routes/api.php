@@ -32,6 +32,8 @@ Route::post('/create-hostel', 'Api\HostelController@create');
 Route::get('/list-hostels', 'Api\HostelController@listHostels');
 Route::post('/view-hostel', 'Api\HostelController@hostelDetails');
 Route::post('/delete-hostel', 'Api\HostelController@delete');
+Route::post('/update-request', 'Api\HostelController@updateRequest');
+
 
 
 /*
@@ -56,6 +58,14 @@ Route::post('/view-student', 'Api\StudentController@studentDetails');
 
 Route::post('/approve-hostel', 'Api\SuperAdminController@approveHostel');
 Route::post('/verify-hostel', 'Api\SuperAdminController@verifyHostel');
+Route::post('/verify-user', 'Api\SuperAdminController@verifyUser');
+Route::post('/update-hostel', 'Api\SuperAdminController@updateHostel');
+// rejection requests
+Route::post('/reject-update-hostel', 'Api\SuperAdminController@rejectUpdateHostel');
+Route::post('/reject-hostel-approval', 'Api\SuperAdminController@rejectHostelApprovel');
+Route::post('/reject-user-verification', 'Api\SuperAdminController@rejectUserVerification');
+Route::post('/reject-hostel-verification', 'Api\SuperAdminController@rejectHostelVerification');
+
 
 
 /*
@@ -80,3 +90,14 @@ Route::post('/search-hostels','Api\SearchesController@searchHostels');
 
 
 Route::post('/create-image','Api\ImagesController@createImage');
+
+
+/*
+|--------------------------------------------------------------------------
+| USER PROFILE IMAGES Routes
+|--------------------------------------------------------------------------
+| User profile images routes have been define here.
+|
+*/
+
+Route::post('/create-profile-image','Api\ProfileImagesController@createImage');

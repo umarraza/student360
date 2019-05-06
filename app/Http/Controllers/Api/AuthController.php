@@ -36,6 +36,7 @@ class AuthController extends Controller
            'status' => false
         ];
         $rules = [
+            
             'username'    =>   'required',
             'password'    =>   'required',
             'roleId'      =>   'required',

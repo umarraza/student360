@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Images extends Model
+class ProfileImages extends Model
 {
-    protected $table = 'hostel_images';
+    protected $table = 'profile_pictures';
 
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';
@@ -14,8 +14,7 @@ class Images extends Model
      protected $fillable = [
 
         'imageName',
-        'type',
-        'hostelId',
+        'userId',
     ];
 
     /**
@@ -30,10 +29,9 @@ class Images extends Model
         
         return [
 
-                'id'         =>  $this->id,
-                'type'       =>  $this->type,
-                'imageName'  =>  $this->imageName,
-                'hostelId'   =>  $this->hostelId,
+                'id'        =>  $this->id,
+                'imageName' =>  $this->imageName,
+                'userId'    =>  $this->userId,
         ];
     }
 }

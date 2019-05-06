@@ -13,14 +13,15 @@ use JWTAuth;
 
 use App\Models\Api\ApiUser as User;
 use App\Models\Api\ApiHostel as Hostel;
-use App\Models\Api\ApiImages as Images;
+use App\Models\Api\ApiProfileImages as ProfileImages;
 
-class ImagesController extends Controller
+
+class ProfileImagesController extends Controller
 {
     public function createImage(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
-            $response = [
+        $response = [
                 'data' => [
                     'code'      => 400,
                     'errors'    => '',
@@ -28,7 +29,7 @@ class ImagesController extends Controller
                 ],
                 'status' => false
             ];
-        if(!empty($user) && $user->isHostelAdmin())
+        if(!empty($user) && $user->isStudent())
         {
             $response = [
                 'data' => [
@@ -40,13 +41,10 @@ class ImagesController extends Controller
             $rules = [
 
                 'imageData'  =>  'required',
-                'hostelId'   =>  'required',
-                'type'       =>  'required',
 
             ];
 
             $validator = Validator::make($request->all(), $rules);
-            
             if ($validator->fails()) 
             {
                 $response['data']['message'] = 'Invalid input values.';
@@ -61,21 +59,22 @@ class ImagesController extends Controller
                 @list(, $file_data) = explode(',', $file_data);
                 @list(, $type) = explode('/', $type);
 
-                $file_name = 'image_'.time().'.'.$type; 
+                $file_name = 'image_'.time().'.'.$type;
 
-                if($file_data!="")
+                if ($file_data!="")
                 { 
                     
+                    $userId = $user->id;
+
                     \Storage::disk('public')->put($file_name,base64_decode($file_data));
 
-                    $image = Images::create([
+                    $image = ProfileImages::create([
 
-                            'imageName'  => $file_name,
-                            'type'       => $type,
-                            'hostelId'   =>  $request->get('hostelId'),
+                            'imageName' => $file_name,
+                            'userId' => $userId,
     
-                        ]);
-
+                            ]);
+                            
                     if ($image->save())
                     {
                             

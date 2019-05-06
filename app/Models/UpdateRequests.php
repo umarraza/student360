@@ -4,17 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Images extends Model
+class UpdateRequests extends Model
 {
-    protected $table = 'hostel_images';
+    protected $table = 'update_requests';
 
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';
 
      protected $fillable = [
 
-        'imageName',
-        'type',
+        'isUpdated',
         'hostelId',
     ];
 
@@ -30,10 +29,9 @@ class Images extends Model
         
         return [
 
-                'id'         =>  $this->id,
-                'type'       =>  $this->type,
-                'imageName'  =>  $this->imageName,
-                'hostelId'   =>  $this->hostelId,
+                'id'        =>  $this->id,
+                'isUpdated' =>  $this->isUpdated,
+                'hostelId'  =>  $this->hostelId,
         ];
     }
 }

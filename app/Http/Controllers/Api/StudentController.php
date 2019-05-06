@@ -42,6 +42,7 @@ class StudentController extends Controller
             	'name'         =>   'required',
                 'phone'        =>   'required',   
                 'email'        =>   'required',
+                'password'     =>   'required',
                 // 'city'         =>   'required',
                 // 'country'      =>   'required',  
                 // 'occupation'   =>   'required', 
