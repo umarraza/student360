@@ -56,6 +56,9 @@ class HostelController extends Controller
                 'website'            =>   'required',
                 'phoneNumber'        =>   'required',
                 'facilities'         =>   'required',
+                'username'           =>   'required|unique:users',
+                'password'           =>   'required',
+                'roleId'             =>   'required',
 
             ];
 
@@ -156,6 +159,48 @@ class HostelController extends Controller
                 $response['status']             =  false;    
             }
 
+        }
+        return $response;
+    }
+
+    public function registeredHostels(Request $request)
+    {
+        $user = JWTAuth::toUser($request->token);
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isSuperAdmin())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            $registeredHostels = Hostel::where('isVerified', 1)->get();
+
+            if (!empty($registeredHostels)) {
+
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Request Successfull';
+                $response['data']['result']     =  $registeredHostels;
+                $response['status']             =  true;
+
+            } else {
+
+                $response['data']['code']       =  400;
+                $response['data']['message']    =  'No Hostels Found';
+                $response['status']             =  false;    
+            }
+
 
         }
         return $response;
@@ -198,18 +243,25 @@ class HostelController extends Controller
 
                 $hostel = Hostel::find($request->id);
 
+                // Here we have to broke the string to get the info of facilities of a hostel
+
+                $breakData = explode('$$$', $facilities);
+                $data = $breakData[0];
+                $vcardData = explode("@@@",$data);
+
             	if (!empty($hostel)) 
                 {
-                    $response['data']['code']       = 200;
-                    $response['status']             = true;
-                    $response['result']             = $hostel;
-                    $response['data']['message']    = 'Request Successfull';
+
+                    $response['data']['code']       =  200;
+                    $response['status']             =  true;
+                    $response['result']             =  $hostel;
+                    $response['data']['message']    =  'Request Successfull';
 
                 } else {
 
-                    $response['data']['code']       = 400;
-                    $response['status']             = false;
-                    $response['data']['message']    = 'Hostel Not Found!';
+                    $response['data']['code']       =  400;
+                    $response['status']             =  false;
+                    $response['data']['message']    =  'Hostel Not Found!';
                 
                 }
             }

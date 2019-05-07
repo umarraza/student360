@@ -13,8 +13,8 @@ class Student extends Model
 
      protected $fillable = [
 
-        'name',
-        'phone',
+        'fullName',
+        'phoneNumber',
         'email',
         'city',
         'country',
@@ -40,8 +40,8 @@ class Student extends Model
 
                 'id'            =>  $this->id,
                 'email'         =>  $this->email,
-                'name'          =>  $this->name,
-                'phone'         =>  $this->phone,
+                'fullName'      =>  $this->fullName,
+                'phoneNumber'   =>  $this->phoneNumber,
                 'city'          =>  $this->city,
                 'country'       =>  $this->country,
                 'occupation'    =>  $this->occupation,  

@@ -31,9 +31,10 @@ Route::post('/reset-password', 'Api\AuthController@changePassword');
 
 Route::post('/delete-hostel', 'Api\HostelController@delete');
 Route::post('/create-hostel', 'Api\HostelController@create');
-Route::get('/list-hostels', 'Api\HostelController@listHostels');
+Route::get('/list-hostels', 'Api\HostelControfller@listHostels');
 Route::post('/view-hostel', 'Api\HostelController@hostelDetails');
 Route::post('/update-request', 'Api\HostelController@updateRequest');
+Route::get('/view-registered-hostels', 'Api\HostelController@registeredHostels');
 
 
 
@@ -48,6 +49,7 @@ Route::post('/update-request', 'Api\HostelController@updateRequest');
 Route::post('/create-student', 'Api\StudentController@create');
 Route::get('/list-students', 'Api\StudentController@listStudents');
 Route::post('/view-student', 'Api\StudentController@studentDetails');
+Route::post('/update-student', 'Api\StudentController@updateStudent');
 
 /*
 |--------------------------------------------------------------------------
@@ -56,7 +58,6 @@ Route::post('/view-student', 'Api\StudentController@studentDetails');
 | Here is where all super admin related routes have been define.
 |
 */
-
 Route::post('/verify-user', 'Api\SuperAdminController@verifyUser');
 Route::post('/update-hostel', 'Api\SuperAdminController@updateHostel');
 Route::post('/verify-hostel', 'Api\SuperAdminController@verifyHostel');
