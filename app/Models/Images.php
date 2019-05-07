@@ -14,7 +14,7 @@ class Images extends Model
      protected $fillable = [
 
         'imageName',
-        'type',
+        'isThumbnail',
         'hostelId',
     ];
 
@@ -30,10 +30,10 @@ class Images extends Model
         
         return [
 
-                'id'         =>  $this->id,
-                'type'       =>  $this->type,
-                'imageName'  =>  $this->imageName,
-                'hostelId'   =>  $this->hostelId,
+                'id' => $this->id,
+                'isThumbnail' => $this->isThumbnail,
+                'imageName' => $this->imageName,
+                'hostelId' => $this->hostelId,
         ];
     }
 }

@@ -30,7 +30,7 @@ Route::post('/reset-password', 'Api\AuthController@changePassword');
 
 Route::post('/create-hostel', 'Api\HostelController@create');
 Route::post('/delete-hostel', 'Api\HostelController@delete');
-Route::get('/list-hostels', 'Api\HostelControfller@listHostels');
+Route::get('/list-hostels', 'Api\HostelController@listHostels');
 Route::post('/view-hostel', 'Api\HostelController@hostelDetails');
 Route::post('/update-request', 'Api\HostelController@updateRequest');
 Route::get('/view-registered-hostels', 'Api\HostelController@registeredHostels');
@@ -114,3 +114,4 @@ Route::post('/create-profile-image','Api\ProfileImagesController@createImage');
 
 Route::post('/create-review','Api\ReviewsController@create');
 Route::get('/list-reviews','Api\ReviewsController@listReviews');
+Route::get('/list-hostel-reviews','Api\ReviewsController@listHostelReviews');

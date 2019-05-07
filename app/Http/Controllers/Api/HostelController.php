@@ -19,9 +19,18 @@ use App\Models\Api\ApiHostel as Hostel;
 class HostelController extends Controller
 {
 
+     /**
+     * CREATE HOSTEL
+     *
+     * Hostel Admin can register a new hostel.
+     *
+     * @function
+     * 
+     */
+
     public function create(Request $request)
     {
-        
+        return $request;
         $response = [
                 'data' => [
                     'code'      => 400,
@@ -38,6 +47,7 @@ class HostelController extends Controller
                 ],
                 
                'status' => false
+
             ];
             $rules = [
 
@@ -91,7 +101,7 @@ class HostelController extends Controller
                 $hostel = Hostel::create([
 
                         'hostelName'       =>   $request->get('hostelName'),
-                        'hostelType'       =>   $request->get('hostelType'),
+                        'hostelType'       =>   $request->get('hostelType'), //Boys, Girls, Guest House
                         'numberOfBedRooms' =>   $request->get('numberOfBedRooms'),
                         'noOfBeds'         =>   $request->get('noOfBeds'),
                         'address'          =>   $request->get('address'),
@@ -125,6 +135,15 @@ class HostelController extends Controller
         return $response;
     }
 
+    /**
+     * ALL HOSTELS LIST
+     *
+     * Super admin can see a list of all registered / Unapproved hostels
+     *
+     * @function
+     * 
+     */
+
     public function listHostels(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
@@ -148,7 +167,7 @@ class HostelController extends Controller
             ];
             
             $allHostels = Hostel::all();
-
+            
             if (!empty($allHostels)) {
 
                 $response['data']['code']       =  200;
@@ -166,6 +185,15 @@ class HostelController extends Controller
         }
         return $response;
     }
+
+    /**
+     * REGISTERED HOSTELS
+     *
+     * Super admin and normal user both can see the list of 
+     * all registered hostels
+     *
+     * @function
+     */
 
     public function registeredHostels(Request $request)
     {
@@ -209,6 +237,14 @@ class HostelController extends Controller
         }
         return $response;
     }
+    
+    /**
+     * HOSTEL DETAILS
+     *
+     * Super admin and normal user both can see the details
+     *
+     * @function
+     */
 
     public function hostelDetails(Request $request)
     {
@@ -241,17 +277,18 @@ class HostelController extends Controller
                 
                 $response['data']['message'] = 'Invalid input values.';
                 $response['data']['errors'] = $validator->messages();
+
             }
             else
             {
 
                 $hostel = Hostel::find($request->id);
+                
+                $features = $hostel->features;
 
-                // Here we have to broke the string to get the info of features of a hostel
-
-                $breakData = explode('$$$', $features);
-                $data = $breakData[0];
-                $vcardData = explode("@@@",$data);
+                // $breakFeatures = explode('$$$', $features);
+                // $data = $breakFeatures[0];
+                // $vcardData = explode('@@@', $data);
 
             	if (!empty($hostel)) 
                 {
@@ -271,6 +308,14 @@ class HostelController extends Controller
             }
         return $response;
     }
+
+    /**
+     * DELETE HOSTEL
+     *
+     * Super admin or Hostel admin can delete the hostel
+     *
+     * @function
+     */
 
     public function delete(Request $request)
     {
@@ -328,6 +373,16 @@ class HostelController extends Controller
         
         return $response;
     }
+
+    /**
+     * CREATE HOSTEL UPDATE REQUEST
+     *
+     * Hostel Admin can update hostel by sending a request to 
+     * Super admin. Super admin will approve or reject the 
+     * request
+     * 
+     * @function
+     */
 
     public function updateRequest(Request $request)
     {

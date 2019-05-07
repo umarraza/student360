@@ -17,6 +17,17 @@ use App\Models\Api\ApiImages as Images;
 
 class ImagesController extends Controller
 {
+
+    /**
+     * CREATE IMAGES
+     *
+     * Hostel Admin can upload imgaes of his hostel. One thumbnail
+     * image and others are simple images.
+     * 
+     * @function
+     */
+
+
     public function createImage(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
@@ -39,9 +50,9 @@ class ImagesController extends Controller
             ];
             $rules = [
 
-                'imageData'  =>  'required',
-                'hostelId'   =>  'required',
-                'type'       =>  'required',
+                'base64ImageData'   =>  'required',
+                'hostelId'          =>  'required',
+                'isThumbnail'       =>  'required',
 
             ];
 
@@ -55,7 +66,7 @@ class ImagesController extends Controller
             }
             else
             {
-                $file_data   =  $request->get('imageData');
+                $file_data   =  $request->get('base64ImageData');
 
                 @list($type, $file_data) = explode(';', $file_data);
                 @list(, $file_data) = explode(',', $file_data);
@@ -71,8 +82,8 @@ class ImagesController extends Controller
                     $image = Images::create([
 
                             'imageName'  => $file_name,
-                            'type'       => $type,
-                            'hostelId'   =>  $request->get('hostelId'),
+                            'isThumbnail'=> $isThumbnail,
+                            'hostelId'   => $request->get('hostelId'),
     
                         ]);
 
@@ -83,6 +94,7 @@ class ImagesController extends Controller
                         $response['data']['code'] = 200;
                         $response['data']['result'] = $image;
                         $response['status'] = true;
+
                     }
                     else
                     {

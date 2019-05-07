@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 06, 2019 at 03:03 PM
+-- Generation Time: May 07, 2019 at 09:55 AM
 -- Server version: 10.1.38-MariaDB
 -- PHP Version: 7.3.2
 
@@ -35,7 +35,6 @@ CREATE TABLE `hostels_registration-requests` (
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
--- Error reading data for table student360.hostels_registration-requests: #1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM `student360`.`hostels_registration-requests`' at line 1
 
 -- --------------------------------------------------------
 
@@ -46,7 +45,7 @@ CREATE TABLE `hostels_registration-requests` (
 CREATE TABLE `hostel_images` (
   `id` int(10) NOT NULL,
   `imageName` varchar(50) NOT NULL,
-  `type` tinyint(10) NOT NULL DEFAULT '0',
+  `isThumbnail` tinyint(10) NOT NULL DEFAULT '0',
   `hostelId` int(10) NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -56,7 +55,7 @@ CREATE TABLE `hostel_images` (
 -- Dumping data for table `hostel_images`
 --
 
-INSERT INTO `hostel_images` (`id`, `imageName`, `type`, `hostelId`, `createdAt`, `updatedAt`) VALUES
+INSERT INTO `hostel_images` (`id`, `imageName`, `isThumbnail`, `hostelId`, `createdAt`, `updatedAt`) VALUES
 (1, 'image_1557041414.png', 1, 1, '2019-05-05 14:30:14', '2019-05-05 14:30:14'),
 (2, 'image_1557120758.png', 0, 2, '2019-05-06 00:32:38', '2019-05-06 00:32:38'),
 (3, 'image_1557120758.png', 0, 1, '2019-05-06 05:44:29', '2019-05-06 05:44:29'),
@@ -86,11 +85,11 @@ CREATE TABLE `hostel_profiles` (
   `contactName` varchar(50) NOT NULL,
   `contactEmail` varchar(30) NOT NULL,
   `website` varchar(50) NOT NULL,
-  `phoneNumber` int(30) NOT NULL,
+  `phoneNumber` varchar(50) NOT NULL,
   `isApproved` tinyint(4) NOT NULL DEFAULT '0',
   `isVerified` tinyint(3) NOT NULL DEFAULT '0',
   `isAvailable` tinyint(4) DEFAULT '0',
-  `facilities` varchar(1000) NOT NULL,
+  `features` varchar(1000) NOT NULL,
   `userId` int(10) NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -100,11 +99,8 @@ CREATE TABLE `hostel_profiles` (
 -- Dumping data for table `hostel_profiles`
 --
 
-INSERT INTO `hostel_profiles` (`id`, `hostelName`, `hostelType`, `numberOfBedRooms`, `noOfBeds`, `address`, `longitude`, `latitude`, `state`, `postCode`, `city`, `country`, `description`, `contactName`, `contactEmail`, `website`, `phoneNumber`, `isApproved`, `isVerified`, `isAvailable`, `facilities`, `userId`, `createdAt`, `updatedAt`) VALUES
-(1, 'Lahore Hostel', 'Boys', 10, 20, '6-S-A Gulberg II Lahore, Gulberg, 54660 Lahore, Pakistan', '74.358747', '31.520370', NULL, NULL, 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border, and offers free WiFi. Located around 1.2 km from Pace Shopping Mall, the hotel is also 2.1 km away from Lahore Gymkhana. A tour desk can provide information on the area.', 'Haris Awan', 'harisawan@gmail.com', 'www.maironahotel.com', 321, 1, 0, 0, 'wifi, AC,', 15, '2019-05-06 00:25:28', '2019-05-06 06:35:59'),
-(2, 'Continental Hostel', 'Girls', 30, 20, 'Girls hostel in johar town near emporium mall Lahore', '74.358747', '31.520370', NULL, NULL, 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border, and offers free WiFi. Located around 1.2 km from Pace Shopping Mall, the hotel is also 2.1 km away from Lahore Gymkhana. A tour desk can provide information on the area.', 'Momna Khalil', 'momna@gmail.com', 'www.maironahotel.com', 321, 0, 1, 0, 'wifi, AC,', 16, '2019-05-06 00:29:21', '2019-05-06 06:01:15'),
-(3, 'United Hostel', 'Boys', 30, 20, '370,TIP BLOCK KHAYABAN-E-AMIN,DEFENCE ROAD LAHORE 370 TIP BLOCK KHAYABAN E AMEEN LAHORE', '74.358747', '31.520370', NULL, NULL, 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border, and offers free WiFi. Located around 1.2 km from Pace Shopping Mall, the hotel is also 2.1 km away from Lahore Gymkhana. A tour desk can provide information on the area.', 'Rashid Ali', 'rashid@gmail.com', 'www.maironahotel.com', 321, 0, 0, 0, 'wifi, AC,', 18, '2019-05-06 00:52:36', '2019-05-06 00:52:36'),
-(4, 'United Hostel', 'Boys', 30, 20, '370,TIP BLOCK KHAYABAN-E-AMIN,DEFENCE ROAD LAHORE 370 TIP BLOCK KHAYABAN E AMEEN LAHORE', '74.358747', '31.520370', NULL, NULL, 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border, and offers free WiFi. Located around 1.2 km from Pace Shopping Mall, the hotel is also 2.1 km away from Lahore Gymkhana. A tour desk can provide information on the area.', 'Rashid Ali', 'rashid@gmail.com', 'www.maironahotel.com', 321, 0, 0, 0, 'wifi, AC,', 20, '2019-05-06 05:35:07', '2019-05-06 05:35:07');
+INSERT INTO `hostel_profiles` (`id`, `hostelName`, `hostelType`, `numberOfBedRooms`, `noOfBeds`, `address`, `longitude`, `latitude`, `state`, `postCode`, `city`, `country`, `description`, `contactName`, `contactEmail`, `website`, `phoneNumber`, `isApproved`, `isVerified`, `isAvailable`, `features`, `userId`, `createdAt`, `updatedAt`) VALUES
+(7, 'Fast Hostel', 'Girls', 25, 15, '370,TIP BLOCK KHAYABAN-E-AMIN,DEFENCE ROAD LAHORE 370 TIP BLOCK KHAYABAN E AMEEN LAHORE', '74.358747', '31.520370', NULL, NULL, 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border, and offers free WiFi. Located around 1.2 km from Pace Shopping Mall, the hotel is also 2.1 km away from Lahore Gymkhana. A tour desk can provide information on the area.', 'Uzair', 'uzair@gmail.com', 'www.maironahotel.com', '03218840489', 0, 0, 0, 'wifi, AC,', 34, '2019-05-07 00:25:53', '2019-05-07 00:25:53');
 
 -- --------------------------------------------------------
 
@@ -135,9 +131,10 @@ INSERT INTO `profile_pictures` (`id`, `imageName`, `userId`, `createdAt`, `updat
 
 CREATE TABLE `queries` (
   `id` int(10) NOT NULL,
-  `query` varchar(500) NOT NULL,
+  `body` varchar(500) NOT NULL,
   `hostelId` int(10) NOT NULL,
   `userId` int(10) NOT NULL,
+  `threadId` int(11) NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -150,7 +147,7 @@ CREATE TABLE `queries` (
 
 CREATE TABLE `ratings` (
   `id` int(10) NOT NULL,
-  `body` varchar(200) NOT NULL,
+  `score` varchar(200) NOT NULL,
   `userId` int(10) NOT NULL,
   `hostelId` int(10) NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -161,7 +158,7 @@ CREATE TABLE `ratings` (
 -- Dumping data for table `ratings`
 --
 
-INSERT INTO `ratings` (`id`, `body`, `userId`, `hostelId`, `createdAt`, `updatedAt`) VALUES
+INSERT INTO `ratings` (`id`, `score`, `userId`, `hostelId`, `createdAt`, `updatedAt`) VALUES
 (1, 'Very good hostel', 15, 1, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
 (2, 'Quite affordable prices, good facilities', 16, 2, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
 (3, 'Amazing facilities', 18, 3, '2019-05-06 05:54:08', '2019-05-06 05:54:08');
@@ -174,12 +171,19 @@ INSERT INTO `ratings` (`id`, `body`, `userId`, `hostelId`, `createdAt`, `updated
 
 CREATE TABLE `reviews` (
   `id` int(10) NOT NULL,
-  `review` varchar(200) NOT NULL,
+  `body` varchar(200) NOT NULL,
   `hostelId` int(10) NOT NULL,
   `userId` int(10) NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `reviews`
+--
+
+INSERT INTO `reviews` (`id`, `body`, `hostelId`, `userId`, `createdAt`, `updatedAt`) VALUES
+(1, 'Very affordable prices', 7, 34, '2019-05-07 00:29:30', '2019-05-07 00:29:30');
 
 -- --------------------------------------------------------
 
@@ -203,6 +207,20 @@ INSERT INTO `roles` (`id`, `description`, `label`, `createdAt`, `updatedAt`) VAL
 (1, 'Super Admin', 'super_admin', '2019-05-02 12:33:33', '0000-00-00 00:00:00'),
 (2, 'Hostel_Admin', 'hostel_admin', '2019-05-02 12:51:51', '0000-00-00 00:00:00'),
 (3, 'Student', 'student', '2019-05-02 12:51:34', '0000-00-00 00:00:00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `threads`
+--
+
+CREATE TABLE `threads` (
+  `id` int(10) NOT NULL,
+  `userId` int(10) NOT NULL,
+  `hostelId` int(10) NOT NULL,
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -249,12 +267,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `remember_token`, `roleId`, `resetPasswordToken`, `createdResetPToken`, `avatarFilePath`, `deviceToken`, `onlineStatus`, `verified`, `googleLogin`, `facebookLogin`, `language`, `createdAt`, `updatedAt`) VALUES
-(1, 'super.admin@admin.com', 'super.admin@admin.com', '$2y$10$H37nrQO752FJnZsKSHNwdeez2pDm3rLBAx9e1YwBEK5yKR6pUeuIW', NULL, 1, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, '', '2019-05-05 01:56:35', '0000-00-00 00:00:00'),
-(15, 'harisawan@gmail.com', NULL, '$2y$10$nZPN13k3UdQ9csS7vwGWKepu05wTefVSj0x0wsMNLDnvrWGVmBqte', NULL, 2, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 'English', '2019-05-06 00:25:28', '2019-05-06 00:25:28'),
-(16, 'momna@gmail.com', NULL, '$2y$10$KpQ3H9wfQ2krR8n2jrXCVez9ss32XNSSfTAgwfdzblCgWVV48DeZG', NULL, 2, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', '2019-05-06 11:01:15', '2019-05-06 06:01:15'),
-(18, 'rashid@gmail.com', NULL, '$2y$10$/YBrOMbZh1qkMob8Emr39eQ8BfTY5ZdDfy1BlTQ/phSyIsQKQknDO', NULL, 2, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 'English', '2019-05-06 00:52:36', '2019-05-06 00:52:36'),
-(19, 'faizan@gmail.com', NULL, '$2y$10$Hu/U7J.OKpiaO8xcQoTzsev/t9Vs02NFQAuzCjo7DBidDr8wldU6S', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', '2019-05-06 05:03:41', '2019-05-06 05:03:41'),
-(20, 'rashid@gmail.com', NULL, '$2y$10$qAJwHhuQPnL.HmG1SryFqex1SeMZAs/PyfequDQYg2fY23DFhIM8a', NULL, 2, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 'English', '2019-05-06 05:35:07', '2019-05-06 05:35:07');
+(1, 'super.admin@admin.com', 'super.admin@admin.com', '$2y$10$VwROsyn0bDr5gTh/rnCCG.5JN3kZTAWEEUZPJLHfiZf.84ZLdPtwq', NULL, 1, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, '', '2019-05-07 01:14:38', '2019-05-06 20:14:38'),
+(34, 'mahmoodanas4012@gmail.com', NULL, '$2y$10$iwJKoPCYPuWHGXnXvysAPO81Pav848QyK3EiwddLjtqOzzjWb2T/.', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', '2019-05-07 00:05:00', '2019-05-07 00:05:00'),
+(35, 'uzair@gmail.com', NULL, '$2y$10$pJhPCuQskytz6lJuNFrZWOlFv5onJWxE3TUmOlfQCNtRf4kahlQ3q', NULL, 2, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', '2019-05-07 06:35:44', '2019-05-07 00:25:53');
 
 -- --------------------------------------------------------
 
@@ -264,16 +279,16 @@ INSERT INTO `users` (`id`, `username`, `email`, `password`, `remember_token`, `r
 
 CREATE TABLE `user_profiles` (
   `id` int(10) NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `phone` int(20) NOT NULL,
-  `email` varchar(30) NOT NULL,
-  `city` varchar(20) NOT NULL,
-  `country` varchar(20) NOT NULL,
-  `occupation` varchar(20) NOT NULL,
-  `institute` varchar(20) NOT NULL,
-  `dateOfBirth` varchar(50) NOT NULL,
-  `gender` varchar(20) NOT NULL,
-  `CNIC` int(50) NOT NULL,
+  `fullName` varchar(50) NOT NULL,
+  `phoneNumber` varchar(50) DEFAULT NULL,
+  `email` varchar(30) DEFAULT NULL,
+  `city` varchar(20) DEFAULT NULL,
+  `country` varchar(20) DEFAULT NULL,
+  `occupation` varchar(20) DEFAULT NULL,
+  `institute` varchar(20) DEFAULT NULL,
+  `dateOfBirth` varchar(50) DEFAULT NULL,
+  `gender` varchar(20) DEFAULT NULL,
+  `CNIC` int(50) DEFAULT NULL,
   `isVerified` int(10) NOT NULL DEFAULT '0',
   `userId` int(10) NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -284,8 +299,8 @@ CREATE TABLE `user_profiles` (
 -- Dumping data for table `user_profiles`
 --
 
-INSERT INTO `user_profiles` (`id`, `name`, `phone`, `email`, `city`, `country`, `occupation`, `institute`, `dateOfBirth`, `gender`, `CNIC`, `isVerified`, `userId`, `createdAt`, `updatedAt`) VALUES
-(1, 'Faizan E Elahi', 121212, 'faizan@gmail.com', 'Lahore', 'Pakistan', 'Electrical Engineer', 'UET', '15-03-1995', 'Male', 3520, 0, 19, '2019-05-06 05:03:41', '2019-05-06 05:03:41');
+INSERT INTO `user_profiles` (`id`, `fullName`, `phoneNumber`, `email`, `city`, `country`, `occupation`, `institute`, `dateOfBirth`, `gender`, `CNIC`, `isVerified`, `userId`, `createdAt`, `updatedAt`) VALUES
+(1, 'anas', '03249470780', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 34, '2019-05-07 00:05:00', '2019-05-07 00:05:00');
 
 -- --------------------------------------------------------
 
@@ -354,6 +369,12 @@ ALTER TABLE `roles`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `threads`
+--
+ALTER TABLE `threads`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `update_requests`
 --
 ALTER TABLE `update_requests`
@@ -398,7 +419,7 @@ ALTER TABLE `hostel_images`
 -- AUTO_INCREMENT for table `hostel_profiles`
 --
 ALTER TABLE `hostel_profiles`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `profile_pictures`
@@ -422,13 +443,19 @@ ALTER TABLE `ratings`
 -- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
   MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `threads`
+--
+ALTER TABLE `threads`
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `update_requests`
@@ -440,7 +467,7 @@ ALTER TABLE `update_requests`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `user_profiles`
