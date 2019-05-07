@@ -48,6 +48,8 @@ class HostelController extends Controller
                 'address'		     =>   'required',  
                 'longitude'          =>   'required',
                 'latitude'           =>   'required',
+                'state'              =>   'required',
+                'postCode'           =>   'required',
                 'city'            	 =>   'required',
                 'country'            =>   'required',
                 'description'        =>   'required',
@@ -55,7 +57,7 @@ class HostelController extends Controller
                 'contactEmail'       =>   'required',
                 'website'            =>   'required',
                 'phoneNumber'        =>   'required',
-                'facilities'         =>   'required',
+                'features'           =>   'required',
                 'username'           =>   'required|unique:users',
                 'password'           =>   'required',
                 'roleId'             =>   'required',
@@ -95,6 +97,8 @@ class HostelController extends Controller
                         'address'          =>   $request->get('address'),
                         'longitude'        =>   $request->get('longitude'),
                         'latitude'         =>   $request->get('latitude'),
+                        'state'            =>   $request->get('state'),
+                        'postCode'         =>   $request->get('postCode'),
                         'city'             =>   $request->get('city'),
                         'country'          =>   $request->get('country'),
                         'description'      =>   $request->get('description'),
@@ -102,7 +106,7 @@ class HostelController extends Controller
                         'contactEmail'     =>   $request->get('contactEmail'),
                         'website'          =>   $request->get('website'),
                         'phoneNumber'      =>   $request->get('phoneNumber'),
-                        'facilities'       =>   $request->get('facilities'),
+                        'features'         =>   $request->get('features'),
                         'userId'           =>   $user->id,
 
                     ]);
@@ -243,9 +247,9 @@ class HostelController extends Controller
 
                 $hostel = Hostel::find($request->id);
 
-                // Here we have to broke the string to get the info of facilities of a hostel
+                // Here we have to broke the string to get the info of features of a hostel
 
-                $breakData = explode('$$$', $facilities);
+                $breakData = explode('$$$', $features);
                 $data = $breakData[0];
                 $vcardData = explode("@@@",$data);
 

@@ -28,9 +28,8 @@ Route::post('/reset-password', 'Api\AuthController@changePassword');
 |
 */
 
-
-Route::post('/delete-hostel', 'Api\HostelController@delete');
 Route::post('/create-hostel', 'Api\HostelController@create');
+Route::post('/delete-hostel', 'Api\HostelController@delete');
 Route::get('/list-hostels', 'Api\HostelControfller@listHostels');
 Route::post('/view-hostel', 'Api\HostelController@hostelDetails');
 Route::post('/update-request', 'Api\HostelController@updateRequest');
@@ -103,3 +102,15 @@ Route::post('/create-image','Api\ImagesController@createImage');
 */
 
 Route::post('/create-profile-image','Api\ProfileImagesController@createImage');
+
+
+/*
+|--------------------------------------------------------------------------
+| Reviews Routes
+|--------------------------------------------------------------------------
+| All review related routes have been defined here.
+|
+*/
+
+Route::post('/create-review','Api\ReviewsController@create');
+Route::get('/list-reviews','Api\ReviewsController@listReviews');

@@ -31,7 +31,7 @@ class Hostel extends Model
         'phoneNumber',
         'isApproved',
         'isAvailable',
-        'facilities',
+        'features',
         'userId',
     ];
 
@@ -55,8 +55,8 @@ class Hostel extends Model
                 'address'           =>  $this->address,
                 'longitude'         =>  $this->longitude,  
                 'latitude'          =>  $this->latitude,  
-                // 'state'             =>  $this->state,
-                // 'postCode'          =>  $this->postCode,  
+                'state'             =>  $this->state,
+                'postCode'          =>  $this->postCode,  
                 'city'              =>  $this->city,
                 'country'           =>  $this->country,
                 'contactName'       =>  $this->contactName, 
@@ -65,7 +65,7 @@ class Hostel extends Model
                 'phoneNumber'       =>  $this->phoneNumber,  
                 'isApproved'        =>  $this->isApproved,  
                 'isAvailable'       =>  $this->isAvailable, 
-                'facilities'        =>  $this->facilities,  
+                'features'          =>  $this->features,  
                 'userId'            =>  $this->userId,  
 
         ];

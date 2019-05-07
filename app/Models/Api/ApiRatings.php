@@ -3,10 +3,10 @@
 namespace App\Models\Api;
 
 
-use App\Models\Reviews;
+use App\Models\Ratings;
 use Illuminate\Database\Eloquent\Model;
 
-class ApiReviews extends Reviews
+class ApiRatings extends Ratings
 {
     //
 }
