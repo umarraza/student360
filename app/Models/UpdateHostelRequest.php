@@ -35,7 +35,6 @@ class UpdateHostelRequest extends Model
         'hostelId',
         'userId',
 
-
     ];
 
     /**

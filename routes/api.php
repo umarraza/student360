@@ -132,3 +132,12 @@ Route::get('/list-hostel-reviews','Api\ReviewsController@listHostelReviews');
 Route::post('/update-mess-menu', 'Api\MessMenuController@updateMessMenu');
 Route::post('/list-mess-menu', 'Api\MessMenuController@listMessMenu');
 
+/*
+|--------------------------------------------------------------------------
+| Queries Routes
+|--------------------------------------------------------------------------
+| All Queries routes have been defined here.
+|
+*/
+
+Route::post('/create-query', 'Api\QueriesController@create');

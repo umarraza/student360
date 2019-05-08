@@ -13,8 +13,9 @@ use JWTAuth;
 
 use App\Models\Api\ApiUser as User;
 use App\Models\Api\ApiUpdateHostelRequest as UpdateHostelRequest;
-
 use App\Models\Api\ApiHostel as Hostel;
+use App\Models\Api\ApiThreads as Threads;
+
 
 class HostelController extends Controller
 {
@@ -97,8 +98,24 @@ class HostelController extends Controller
                     'roleId'     =>  $roleId,
                     'verified'   =>  0,
                     'language'   =>  "English",
-
                 ]);
+
+                    $userId = $user->id;
+
+                    $thread = Threads::create([
+                        'userId'  => $userId,
+                        'adminId' => 1,
+                    ]);
+
+                    $thread->save();
+
+                    $threadId = $thread->id;
+
+                    $updateThread = User::where('id', '=', $userId)->update([
+
+                        'threadId' => $threadId,
+
+                    ]);
 
                 $hostel = Hostel::create([
 
@@ -171,6 +188,7 @@ class HostelController extends Controller
             ];
             
             $allHostels = Hostel::all();
+            // $allHostels = Hostel::all()->select('hostelName',  'address', 'hostelCategory', 'isVerified', 'isApproved');
             
             // If there are thousands of hostels, getting the list with all parameters will put load to server as well as network. ask musab if we can select just few fields. 
 

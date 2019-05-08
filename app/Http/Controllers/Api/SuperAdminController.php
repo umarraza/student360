@@ -54,7 +54,7 @@ class SuperAdminController extends Controller
             
             $rules = [
 
-            	'id' => 'required',
+            	'hostelId' => 'required',
 
             ];
 
@@ -67,7 +67,7 @@ class SuperAdminController extends Controller
 
             }else{
 
-                $hostel = Hostel::find($request->id)->update([
+                $hostel = Hostel::find($request->hostelId)->update([
                     'isApproved' => 1,
                 ]);
 
@@ -122,7 +122,7 @@ class SuperAdminController extends Controller
             
             $rules = [
 
-            	'id' => 'required',
+            	'hostelId' => 'required',
 
             ];
 
@@ -135,7 +135,7 @@ class SuperAdminController extends Controller
 
             }else{
 
-                $hostel = Hostel::find($request->id)->update([
+                $hostel = Hostel::find($request->hostelId)->update([
                     'isApproved' => 0,
                 ]);
 
@@ -397,7 +397,6 @@ class SuperAdminController extends Controller
                'status' => false
             ];
             
-            $approveUpdateRequest = UpdateHostelRequest::find($request->id);
 
             $approveUpdateRequest = UpdateHostelRequest::find($request->id)->update([
                 'status' => 1,
@@ -426,7 +425,6 @@ class SuperAdminController extends Controller
             $features         =   $hostel->features;
             $userId           =   $hostel->userId;
          
-            $updateHostel = Hostel::find($hostelId);
 
             $updateHostel = Hostel::find($hostelId)->update([
 
@@ -508,9 +506,9 @@ class SuperAdminController extends Controller
 
             } else {
 
-                $rejectUpdateRequest = UpdateRequests::find($request->id)->update([
+                $rejectUpdateRequest = UpdateHostelRequest::find($request->id)->update([
 
-                    'isUpdated' => 0,
+                    'status' => 0,
 
                 ]);
 
