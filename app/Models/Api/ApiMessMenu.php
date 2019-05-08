@@ -2,10 +2,11 @@
 
 namespace App\Models\Api;
 
-use App\Models\UpdateRequests;
+
+use App\Models\MessMenu;
 use Illuminate\Database\Eloquent\Model;
 
-class ApiUpdateRequests extends UpdateRequests
+class ApiMessMenu extends MessMenu
 {
     //
 }

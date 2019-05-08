@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Hostel extends Model
+class UpdateHostelRequest extends Model
 {
-    protected $table = 'hostel_profiles';
+    protected $table = 'update-hostels-requests';
 
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';
@@ -30,19 +30,17 @@ class Hostel extends Model
         'contactEmail',
         'website',
         'phoneNumber',
-        'isApproved',
-        'isAvailable',
         'features',
+        'status',
+        'hostelId',
         'userId',
+
+
     ];
 
     /**
      * @return mixed
      */
-    public function user()
-    {
-        return $this->hasOne(User::class,'id','userId');
-    }
 
     public function getArrayResponse() {
         
@@ -65,9 +63,9 @@ class Hostel extends Model
                 'contactEmail'      =>  $this->contactEmail,  
                 'website'           =>  $this->website, 
                 'phoneNumber'       =>  $this->phoneNumber,  
-                'isApproved'        =>  $this->isApproved,  
-                'isAvailable'       =>  $this->isAvailable, 
                 'features'          =>  $this->features,  
+                'status'            =>  $this->status,  
+                'hostelId'          =>  $this->hostelId,  
                 'userId'            =>  $this->userId,  
 
         ];

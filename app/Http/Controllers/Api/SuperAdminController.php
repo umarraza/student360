@@ -14,7 +14,7 @@ use JWTAuth;
 use App\Models\Api\ApiUser as User;
 use App\Models\Api\ApiHostel as Hostel;
 use App\Models\Api\ApiStudent as Student;
-use App\Models\Api\ApiUpdateRequests as UpdateRequests;
+use App\Models\Api\ApiUpdateHostelRequest as UpdateHostelRequest;
 
 
 class SuperAdminController extends Controller
@@ -311,11 +311,20 @@ class SuperAdminController extends Controller
     }
 
 
-    public function updateHostel(Request $request)
+ 
+     /**
+     * ALL UPDATE HOSTELS REQUESTS LIST
+     *
+     * Super admin can see a list of all hostels that send the request to update info
+     *
+     * @function
+     * 
+     */
+
+    public function listHostelsUpdates(Request $request)
     {
-
         $user = JWTAuth::toUser($request->token);
-
+        
         $response = [
                 'data' => [
                     'code'      => 400,
@@ -335,75 +344,128 @@ class SuperAdminController extends Controller
                'status' => false
             ];
             
-            $rules = [
+            $allUpdateRequests = UpdateHostelRequest::select('id','hostelName', 'hostelCategory', 'address', 'country', 'state', 'status','hostelId')
+                    ->where('status', '=', 0)->get();
+            
+            if (!empty($allUpdateRequests)) {
 
-                'id'                 =>   'required',
-                'hostelType'         =>   'required',   // Boys, Girls, Guest House
-                'numberOfBedRooms'   =>   'required',
-                'noOfBeds'         	 =>   'required',
-                'address'		     =>   'required',  
-                'longitude'          =>   'required',
-                'latitude'           =>   'required',
-                'city'            	 =>   'required',
-                'country'            =>   'required',
-                'description'        =>   'required',
-                'contactName'        =>   'required',
-                'contactEmail'       =>   'required',
-                'website'            =>   'required',
-                'phoneNumber'        =>   'required',
-                'facilities'         =>   'required',
-
-            ];
-
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                
-                $response['data']['message'] = 'Invalid input values.';
-                $response['data']['errors'] = $validator->messages();
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Request Successfull';
+                $response['data']['result']     =  $allUpdateRequests;
+                $response['status']             =  true;
 
             } else {
 
-                $approveUpdateRequest = UpdateRequests::find($request->id)->update([
+                $response['data']['code']       =  400;
+                $response['data']['message']    =  'No Hostels Found';
+                $response['status']             =  false;    
+            }
 
-                    'isUpdated' => 1,
+        }
+        return $response;
+    }
 
+ /**
+     * APPROVE UPDATE REQUEST
+     *
+     * Super admin can see a list of all hostels that send the request to update info
+     *
+     * @function
+     * 
+     */
+
+    public function approveUpdateRequest(Request $request)
+    {
+        $user = JWTAuth::toUser($request->token);
+        
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isSuperAdmin())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            $approveUpdateRequest = UpdateHostelRequest::find($request->id);
+
+            $approveUpdateRequest = UpdateHostelRequest::find($request->id)->update([
+                'status' => 1,
+            ]);
+            
+            $hostel = UpdateHostelRequest::find($request->id);
+
+            $hostelId         =   $hostel->hostelId;
+            $hostelName       =   $hostel->hostelName;
+            $hostelCategory   =   $hostel->hostelCategory;
+            $numberOfBedRooms =   $hostel->numberOfBedRooms;
+            $noOfBeds         =   $hostel->noOfBeds;
+            $priceRange       =   $hostel->priceRange;
+            $address          =   $hostel->address;
+            $longitude        =   $hostel->longitude;
+            $latitude         =   $hostel->latitude;
+            $state            =   $hostel->state;
+            $postCode         =   $hostel->postCode;
+            $city             =   $hostel->city;
+            $country          =   $hostel->country;
+            $description      =   $hostel->description;
+            $contactName      =   $hostel->contactName;
+            $contactEmail     =   $hostel->contactEmail;
+            $website          =   $hostel->website;
+            $phoneNumber      =   $hostel->phoneNumber;
+            $features         =   $hostel->features;
+            $userId           =   $hostel->userId;
+         
+            $updateHostel = Hostel::find($hostelId);
+
+            $updateHostel = Hostel::find($hostelId)->update([
+
+                'hostelName'        =>   $hostelName,
+                'hostelCategory'    =>   $hostelCategory,
+                'numberOfBedRooms'  =>   $numberOfBedRooms,
+                'noOfBeds'          =>   $noOfBeds,
+                'priceRange'        =>   $priceRange,
+                'address'           =>   $address,
+                'longitude'         =>   $longitude,
+                'latitude'          =>   $latitude,
+                'state'             =>   $state,
+                'postCode'          =>   $postCode,
+                'city'              =>   $city,
+                'country'           =>   $country,
+                'description'       =>   $description,
+                'contactName'       =>   $contactName,
+                'contactEmail'      =>   $contactEmail,
+                'website'           =>   $website,
+                'phoneNumber'       =>   $phoneNumber,
+                'features'          =>   $features,
+
+            ]);
+
+                $user = User::where('id', '=', $userId)->update([
+                    'email' => $contactEmail,
                 ]);
 
-                $hostelDetails = Hostel::find($request->id)->update([
+            if ($approveUpdateRequest) {
 
-                    'hostelName'       =>   $request->get('hostelName'),
-                    'hostelType'       =>   $request->get('hostelType'),
-                    'numberOfBedRooms' =>   $request->get('numberOfBedRooms'),
-                    'noOfBeds'         =>   $request->get('noOfBeds'),
-                    'address'          =>   $request->get('address'),
-                    'longitude'        =>   $request->get('longitude'),
-                    'latitude'         =>   $request->get('latitude'),
-                    'city'             =>   $request->get('city'),
-                    'country'          =>   $request->get('country'),
-                    'description'      =>   $request->get('description'),
-                    'contactName'      =>   $request->get('contactName'),
-                    'contactEmail'     =>   $request->get('contactEmail'),
-                    'website'          =>   $request->get('website'),
-                    'phoneNumber'      =>   $request->get('phoneNumber'),
-                    'facilities'       =>   $request->get('facilities'),
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Hostel Updated successfully!';
+                $response['status']             =  true;
 
-                ]);
+            } else {
 
-                
-                if ($approveUpdateRequest && $hostelDetails){
-
-                    $response['data']['code']       =  200;
-                    $response['status']             =  true;
-                    $response['data']['message']    =  'Request to update a hostel have been approved!';
-
-                }else{
-
-                    $response['data']['code']       =  400;
-                    $response['status']             =  false;
-                    $response['data']['message']    =  'Request to update hostel failed!';
-
-                }
+                $response['data']['code']       =  400;
+                $response['data']['message']    =  'No Hostels Found';
+                $response['status']             =  false;    
             }
         }
         return $response;

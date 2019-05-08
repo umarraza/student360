@@ -4,17 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UpdateRequests extends Model
+class MessMenu extends Model
 {
-    protected $table = 'update_requests';
+    protected $table = 'mess_menu';
 
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';
 
      protected $fillable = [
 
-        'isUpdated',
-        'hostelId',
+        'day',
+        'breakFastTiming',
+        'dinnerTiming',
+
     ];
 
     /**
@@ -29,9 +31,11 @@ class UpdateRequests extends Model
         
         return [
 
-                'id'        =>  $this->id,
-                'isUpdated' =>  $this->isUpdated,
-                'hostelId'  =>  $this->hostelId,
+                'id' => $this->id,
+                'day' => $this->day,
+                'breakFastTiming' => $this->breakFastTiming,
+                'dinnerTiming'=> $this->dinnerTiming,
+
         ];
     }
 }

@@ -86,14 +86,14 @@ class StudentController extends Controller
 
                         'fullName'     =>   $request->get('fullName'),
                         'phoneNumber'  =>   $request->get('phoneNumber'),
-                        'email'        =>   $request->get('email'),
-                        'city'         =>   $request->get('city'),
-                        'country'      =>   $request->get('country'),
-                        'occupation'   =>   $request->get('occupation'),
-                        'institute'    =>   $request->get('institute'),
-                        'dateOfBirth'  =>   $request->get('dateOfBirth'),
-                        'gender'       =>   $request->get('gender'),
-                        'CNIC'         =>   $request->get('CNIC'),
+                        // 'email'        =>   $request->get('email'),
+                        // 'city'         =>   $request->get('city'),
+                        // 'country'      =>   $request->get('country'),
+                        // 'occupation'   =>   $request->get('occupation'),
+                        // 'institute'    =>   $request->get('institute'),
+                        // 'dateOfBirth'  =>   $request->get('dateOfBirth'),
+                        // 'gender'       =>   $request->get('gender'),
+                        // 'CNIC'         =>   $request->get('CNIC'),
                         'userId'       =>   $user->id,
 
                     ]);
@@ -179,8 +179,8 @@ class StudentController extends Controller
             
             $updateStudent = Student::find($request->id)->update([
 
-                'name'        =>  $request->get('name'),
-                'phone'       =>  $request->get('phone'),
+                'fullName'    =>  $request->get('fullName'),
+                'phoneNumber' =>  $request->get('phoneNumber'),
                 'email'       =>  $request->get('email'),
                 'city'        =>  $request->get('city'),
                 'country'     =>  $request->get('country'),
@@ -194,7 +194,7 @@ class StudentController extends Controller
 
                 $student = Student::find($request->id);
 
-                if ($student->phone != NULL && $student->city != NULL && $student->country != NULL && $student->occupation != NULL && $student->institute != NULL && $student->CNIC != NULL){
+                if ($student->email != NULL && $student->phoneNumber != NULL && $student->city != NULL && $student->country != NULL && $student->occupation != NULL && $student->institute != NULL && $student->CNIC != NULL){
 
                   $student->isVerified = 1;
 

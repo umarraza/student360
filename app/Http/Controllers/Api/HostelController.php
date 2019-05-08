@@ -12,7 +12,7 @@ use JWTAuthException;
 use JWTAuth;
 
 use App\Models\Api\ApiUser as User;
-use App\Models\Api\ApiUpdateRequests as UpdateRequests;
+use App\Models\Api\ApiUpdateHostelRequest as UpdateHostelRequest;
 
 use App\Models\Api\ApiHostel as Hostel;
 
@@ -30,7 +30,6 @@ class HostelController extends Controller
 
     public function create(Request $request)
     {
-        return $request;
         $response = [
                 'data' => [
                     'code'      => 400,
@@ -50,11 +49,12 @@ class HostelController extends Controller
 
             ];
             $rules = [
-                // hotelCtaegory need to change from front end
+                // hostelCtaegory need to change from front end
             	'hostelName'         =>   'required',
                 'hostelCategory'     =>   'required',   // Boys, Girls, Guest House
                 'numberOfBedRooms'   =>   'required',
                 'noOfBeds'         	 =>   'required',
+                'priceRange'         =>   'required',  // price can be a range or a single value. e.g 5000/month or 5000 to 15000/month
                 'address'		     =>   'required',  
                 'longitude'          =>   'required',
                 'latitude'           =>   'required',
@@ -87,10 +87,12 @@ class HostelController extends Controller
                 $username = $request->get('username');
                 $password = $request->get('password');
                 $roleId   = $request->get('roleId');
+                $email    = $request->get('contactEmail');
 
                 $user =  User::create([
                     
                     'username'   =>  $username,
+                    'email'      =>  $email,
                     'password'   =>  bcrypt($password),
                     'roleId'     =>  $roleId,
                     'verified'   =>  0,
@@ -101,9 +103,10 @@ class HostelController extends Controller
                 $hostel = Hostel::create([
 
                         'hostelName'       =>   $request->get('hostelName'),
-                        'hostelCategory'       =>   $request->get('hostelCategory'), //Boys, Girls, Guest House
+                        'hostelCategory'   =>   $request->get('hostelCategory'), //Boys, Girls, Guest House
                         'numberOfBedRooms' =>   $request->get('numberOfBedRooms'),
                         'noOfBeds'         =>   $request->get('noOfBeds'),
+                        'priceRange'       =>   $request->get('priceRange'),
                         'address'          =>   $request->get('address'),
                         'longitude'        =>   $request->get('longitude'),
                         'latitude'         =>   $request->get('latitude'),
@@ -147,6 +150,7 @@ class HostelController extends Controller
     public function listHostels(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
+        
         $response = [
                 'data' => [
                     'code'      => 400,
@@ -183,6 +187,61 @@ class HostelController extends Controller
                 $response['data']['message']    =  'No Hostels Found';
                 $response['status']             =  false;    
             }
+
+        }
+        return $response;
+    }
+
+    /**
+     * UPDATE AVAILBILITY
+     *
+     * show if hostel is available to book for rooms or not
+     *
+     * @function
+     */
+
+    public function updateAvailbility(Request $request)
+    {
+        $user = JWTAuth::toUser($request->token);
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isHostelAdmin())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            $updateAvailability =  Hostel::find($request->id)->update([
+                    
+                'isAvailable'  =>  1,
+
+            ]);
+
+
+            if ($updateRequest->save()) {
+
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Request Successfull';
+                $response['status']             =  true;
+
+            } else {
+
+                $response['data']['code']       =  400;
+                $response['data']['message']    =  'Requst Unsuccessfull';
+                $response['status']             =  false;    
+            }
+
 
         }
         return $response;
@@ -286,10 +345,16 @@ class HostelController extends Controller
 
                 $hostel = Hostel::find($request->id);
                 
-                $features = $hostel->features;
+                // $features = $hostel->features;
 
-                // $breakFeatures = explode('$$$', $features);
+                // $data = json_decode($features);
+                // $ATM = $data[0];
+                // $BBQ = $data[1];
+                // return $BBQ;
+
+                // $breakFeatures = explode(',', $features);
                 // $data = $breakFeatures[0];
+                // return $data;
                 // $vcardData = explode('@@@', $data);
 
             	if (!empty($hostel)) 
@@ -386,8 +451,9 @@ class HostelController extends Controller
      * @function
      */
 
-    public function updateRequest(Request $request)
+    public function updateHostelRequest(Request $request)
     {
+
         $user = JWTAuth::toUser($request->token);
         $response = [
                 'data' => [
@@ -398,41 +464,91 @@ class HostelController extends Controller
                 'status' => false
             ];
 
-        if(!empty($user) && $user->isHostelAdmin())
-        {
-            $response = [
-                'data' => [
-                    'code' => 400,
-                    'message' => 'Something went wrong. Please try again later!',
-                ],
-               'status' => false
-            ];
-            
-            $isUpdated = $request->get('isUpdated');
+        if(!empty($user) && $user->isHostelAdmin()){
 
-            $updateRequest =  UpdateRequests::create([
+                $response = [
+                    'data' => [
+                        'code' => 400,
+                        'message' => 'Something went wrong. Please try again later!',
+                    ],
                     
-                'isUpdated'  =>  $isUpdated,
+                    'status' => false
 
-            ]);
+                ];
+                $rules = [
+                    // hostelCtaegory need to change from front end
+
+                    'hostelName'         =>   'required',
+                    'hostelCategory'     =>   'required',   // Boys, Girls, Guest House
+                    'numberOfBedRooms'   =>   'required',
+                    'noOfBeds'         	 =>   'required',
+                    'priceRange'         =>   'required',  // price can be a range or a single value. e.g 5000/month or 5000 to 15000/month
+                    'address'		     =>   'required',  
+                    'longitude'          =>   'required',
+                    'latitude'           =>   'required',
+                    'state'              =>   'required',
+                    'postCode'           =>   'required',
+                    'city'            	 =>   'required',
+                    'country'            =>   'required',
+                    'description'        =>   'required',
+                    'contactName'        =>   'required',
+                    'contactEmail'       =>   'required',
+                    'website'            =>   'required',
+                    'phoneNumber'        =>   'required',
+                    'features'           =>   'required',
+                    'status'             =>   'required',
+                    'hostelId'           =>   'required',
+
+                ];
+
+                $validator = Validator::make($request->all(), $rules);
+
+                if ($validator->fails()) {
+                    
+                    $response['data']['message'] = 'Invalid input values.';
+                    $response['data']['errors'] = $validator->messages();
+                }
+                else
+                {
+
+                $userId = $user->id;
+                   
+                    $updateHostel = UpdateHostelRequest::create([
+
+                            'hostelName'       =>   $request->get('hostelName'),
+                            'hostelCategory'   =>   $request->get('hostelCategory'), //Boys, Girls, Guest House
+                            'numberOfBedRooms' =>   $request->get('numberOfBedRooms'),
+                            'noOfBeds'         =>   $request->get('noOfBeds'),
+                            'priceRange'       =>   $request->get('priceRange'),
+                            'address'          =>   $request->get('address'),
+                            'longitude'        =>   $request->get('longitude'),
+                            'latitude'         =>   $request->get('latitude'),
+                            'state'            =>   $request->get('state'),
+                            'postCode'         =>   $request->get('postCode'),
+                            'city'             =>   $request->get('city'),
+                            'country'          =>   $request->get('country'),
+                            'description'      =>   $request->get('description'),
+                            'contactName'      =>   $request->get('contactName'),
+                            'contactEmail'     =>   $request->get('contactEmail'),
+                            'website'          =>   $request->get('website'),
+                            'phoneNumber'      =>   $request->get('phoneNumber'),
+                            'features'         =>   $request->get('features'),
+                            'status'           =>   $request->get('status'),
+                            'hostelId'         =>   $request->get('hostelId'),
+                            'userId'           =>   $userId,
+
+                        ]);
 
 
-            if ($updateRequest->save()) {
-
-                $response['data']['code']       =  200;
-                $response['data']['message']    =  'Request Successfull';
-                $response['data']['result']     =  $updateRequest;
-                $response['status']             =  true;
-
-            } else {
-
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'No Hostels Found';
-                $response['status']             =  false;    
+                    if ($updateHostel->save()) 
+                    {
+                        $response['data']['code']       = 200;
+                        $response['status']             = true;
+                        $response['result']             = $updateHostel;
+                        $response['data']['message']    = 'Update request for hostel created Successfully';
+                    }
+                }
             }
-
-
-        }
         return $response;
     }
 
