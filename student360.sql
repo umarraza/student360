@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 07, 2019 at 09:55 AM
+-- Generation Time: May 08, 2019 at 06:24 AM
 -- Server version: 10.1.38-MariaDB
--- PHP Version: 7.3.2
+-- PHP Version: 7.1.27
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -71,7 +71,7 @@ INSERT INTO `hostel_images` (`id`, `imageName`, `isThumbnail`, `hostelId`, `crea
 CREATE TABLE `hostel_profiles` (
   `id` int(10) NOT NULL,
   `hostelName` varchar(50) NOT NULL,
-  `hostelType` varchar(50) NOT NULL,
+  `hostelCategory` varchar(50) NOT NULL,
   `numberOfBedRooms` int(10) NOT NULL,
   `noOfBeds` int(10) NOT NULL,
   `address` varchar(100) NOT NULL,
@@ -99,7 +99,7 @@ CREATE TABLE `hostel_profiles` (
 -- Dumping data for table `hostel_profiles`
 --
 
-INSERT INTO `hostel_profiles` (`id`, `hostelName`, `hostelType`, `numberOfBedRooms`, `noOfBeds`, `address`, `longitude`, `latitude`, `state`, `postCode`, `city`, `country`, `description`, `contactName`, `contactEmail`, `website`, `phoneNumber`, `isApproved`, `isVerified`, `isAvailable`, `features`, `userId`, `createdAt`, `updatedAt`) VALUES
+INSERT INTO `hostel_profiles` (`id`, `hostelName`, `hostelCategory`, `numberOfBedRooms`, `noOfBeds`, `address`, `longitude`, `latitude`, `state`, `postCode`, `city`, `country`, `description`, `contactName`, `contactEmail`, `website`, `phoneNumber`, `isApproved`, `isVerified`, `isAvailable`, `features`, `userId`, `createdAt`, `updatedAt`) VALUES
 (7, 'Fast Hostel', 'Girls', 25, 15, '370,TIP BLOCK KHAYABAN-E-AMIN,DEFENCE ROAD LAHORE 370 TIP BLOCK KHAYABAN E AMEEN LAHORE', '74.358747', '31.520370', NULL, NULL, 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border, and offers free WiFi. Located around 1.2 km from Pace Shopping Mall, the hotel is also 2.1 km away from Lahore Gymkhana. A tour desk can provide information on the area.', 'Uzair', 'uzair@gmail.com', 'www.maironahotel.com', '03218840489', 0, 0, 0, 'wifi, AC,', 34, '2019-05-07 00:25:53', '2019-05-07 00:25:53');
 
 -- --------------------------------------------------------
@@ -131,7 +131,7 @@ INSERT INTO `profile_pictures` (`id`, `imageName`, `userId`, `createdAt`, `updat
 
 CREATE TABLE `queries` (
   `id` int(10) NOT NULL,
-  `body` varchar(500) NOT NULL,
+  `message` varchar(500) NOT NULL,
   `hostelId` int(10) NOT NULL,
   `userId` int(10) NOT NULL,
   `threadId` int(11) NOT NULL,
@@ -171,7 +171,7 @@ INSERT INTO `ratings` (`id`, `score`, `userId`, `hostelId`, `createdAt`, `update
 
 CREATE TABLE `reviews` (
   `id` int(10) NOT NULL,
-  `body` varchar(200) NOT NULL,
+  `message` varchar(200) NOT NULL,
   `hostelId` int(10) NOT NULL,
   `userId` int(10) NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -182,7 +182,7 @@ CREATE TABLE `reviews` (
 -- Dumping data for table `reviews`
 --
 
-INSERT INTO `reviews` (`id`, `body`, `hostelId`, `userId`, `createdAt`, `updatedAt`) VALUES
+INSERT INTO `reviews` (`id`, `message`, `hostelId`, `userId`, `createdAt`, `updatedAt`) VALUES
 (1, 'Very affordable prices', 7, 34, '2019-05-07 00:29:30', '2019-05-07 00:29:30');
 
 -- --------------------------------------------------------

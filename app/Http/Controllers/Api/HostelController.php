@@ -50,9 +50,9 @@ class HostelController extends Controller
 
             ];
             $rules = [
-
+                // hotelCtaegory need to change from front end
             	'hostelName'         =>   'required',
-                'hostelType'         =>   'required',   // Boys, Girls, Guest House
+                'hostelCategory'     =>   'required',   // Boys, Girls, Guest House
                 'numberOfBedRooms'   =>   'required',
                 'noOfBeds'         	 =>   'required',
                 'address'		     =>   'required',  
@@ -101,7 +101,7 @@ class HostelController extends Controller
                 $hostel = Hostel::create([
 
                         'hostelName'       =>   $request->get('hostelName'),
-                        'hostelType'       =>   $request->get('hostelType'), //Boys, Girls, Guest House
+                        'hostelCategory'       =>   $request->get('hostelCategory'), //Boys, Girls, Guest House
                         'numberOfBedRooms' =>   $request->get('numberOfBedRooms'),
                         'noOfBeds'         =>   $request->get('noOfBeds'),
                         'address'          =>   $request->get('address'),
@@ -168,6 +168,8 @@ class HostelController extends Controller
             
             $allHostels = Hostel::all();
             
+            // If there are thousands of hostels, getting the list with all parameters will put load to server as well as network. ask musab if we can select just few fields. 
+
             if (!empty($allHostels)) {
 
                 $response['data']['code']       =  200;

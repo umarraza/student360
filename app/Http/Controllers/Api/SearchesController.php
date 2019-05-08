@@ -26,7 +26,11 @@ class SearchesController extends Controller
 | search radius. User can also search hostels by institute. The search result 
 | should show the name of the hostel, rating, address, distance from the 
 | searched area, price range (Monthly) 	and facilities of the hostel. 
+|
+| Search results will be sorted in high to low ratings.
 */
+
+// Join with rating,
 
     public function searchHostels(Request $request)
     {

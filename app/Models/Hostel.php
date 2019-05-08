@@ -14,7 +14,7 @@ class Hostel extends Model
      protected $fillable = [
 
         'hostelName',
-        'hostelType',
+        'hostelCategory',
         'numberOfBedRooms',
         'noOfBeds',
         'address',
@@ -49,7 +49,7 @@ class Hostel extends Model
 
                 'id'                =>  $this->id,
                 'hostelName'        =>  $this->hostelName,
-                'hostelType'        =>  $this->hostelType,
+                'hostelCategory'    =>  $this->hostelCategory,
                 'numberOfBedRooms'  =>  $this->numberOfBedRooms,
                 'noOfBeds'          =>  $this->noOfBeds,
                 'address'           =>  $this->address,

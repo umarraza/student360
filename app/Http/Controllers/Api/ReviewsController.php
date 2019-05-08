@@ -44,7 +44,7 @@ class ReviewsController extends Controller
 
                 $rules = [
 
-                    'body'      =>  'required',
+                    'message'      =>  'required',
                     'hostelId'  =>  'required',   
                     'userId'    =>  'required',
 
@@ -63,7 +63,7 @@ class ReviewsController extends Controller
 
                     $review = Review::create([
 
-                            'body'      =>  $request->get('body'),
+                            'message'   =>  $request->get('message'),
                             'hostelId'  =>  $request->get('hostelId'),
                             'userId'    =>  $user->id,
 

@@ -13,7 +13,7 @@ class Reviews extends Model
 
      protected $fillable = [
 
-        'body',
+        'message',
         'hostelId',
         'userId',
     ];
@@ -31,7 +31,7 @@ class Reviews extends Model
         return [
 
                 'id'       =>  $this->id,
-                'body'     =>  $this->body,
+                'message'  =>  $this->message,
                 'hostelId' =>  $this->hostelId,
                 'userId'   =>  $this->userId,
         ];
