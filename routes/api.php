@@ -49,7 +49,7 @@ Route::post('/update-hostel-request', 'Api\HostelController@updateHostelRequest'
 
 Route::post('/create-student', 'Api\StudentController@create');
 Route::get('/list-students', 'Api\StudentController@listStudents');
-Route::post('/view-student', 'Api\StudentController@studentDetails');
+Route::post('/student-details', 'Api\StudentController@studentDetails');
 Route::post('/update-student', 'Api\StudentController@updateStudent');
 
 /*
@@ -59,11 +59,13 @@ Route::post('/update-student', 'Api\StudentController@updateStudent');
 | Here is where all super admin related routes have been define.
 |
 */
+
 Route::post('/verify-user', 'Api\SuperAdminController@verifyUser');
 Route::post('/verify-hostel', 'Api\SuperAdminController@verifyHostel');
 Route::post('/approve-hostel', 'Api\SuperAdminController@approveHostel');
 Route::get('/update-hostel-requests', 'Api\SuperAdminController@listHostelsUpdates');
 Route::post('/approve-update-request', 'Api\SuperAdminController@approveUpdateRequest');
+Route::get('/list-approval-requests', 'Api\SuperAdminController@listapprovalRequests');
 
 // rejection requests
 Route::post('/reject-hostel-approval', 'Api\SuperAdminController@rejectHostelApprovel');
@@ -82,6 +84,9 @@ Route::post('/reject-hostel-verification', 'Api\SuperAdminController@rejectHoste
 Route::post('/create-review','Api\ReviewsController@create');
 Route::get('/list-reviews','Api\ReviewsController@listReviews');
 Route::get('/list-hostel-reviews','Api\ReviewsController@listHostelReviews');
+Route::post('/update-review','Api\ReviewsController@updateReview');
+Route::post('/delete-review','Api\ReviewsController@deleteReview');
+
 
 
 /*
@@ -111,7 +116,7 @@ Route::post('/search-hostels','Api\SearchesController@searchHostels');
 |--------------------------------------------------------------------------
 | HOSTEL IMAGES Routes
 |--------------------------------------------------------------------------
-| Here is where all super admin related routes have been define.
+| Here is where all Hostel Images routes have been define.
 |
 */
 
@@ -139,6 +144,7 @@ Route::post('/create-profile-image','Api\ProfileImagesController@createImage');
 */
 
 Route::post('/create-query', 'Api\QueriesController@create');
+Route::post('/delete-query', 'Api\QueriesController@delete');
 
 /*
 |--------------------------------------------------------------------------
@@ -149,3 +155,4 @@ Route::post('/create-query', 'Api\QueriesController@create');
 */
 
 Route::get('/list-threads','Api\ThreadsController@listThreads');
+Route::post('/approve-hostel-request', 'Api\RequestsController@create');

@@ -91,4 +91,46 @@ class QueriesController extends Controller
         return $response;
     }
 
+    public function delete(Request $request)
+    {
+
+        $user = JWTAuth::toUser($request->token);
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isStudent())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            $query = Queries::find($request->id)->delete();
+
+            if ($query) {
+
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Query Deleted SuccessfullY';
+                $response['status']             =  true;
+
+            } else {
+
+                $response['data']['code']       =  400;
+                $response['data']['message']    =  'Request Unsuccessfull';
+                $response['status']             =  false;    
+            }
+
+        }
+        return $response;
+    }
+
 }

@@ -15,10 +15,54 @@ use App\Models\Api\ApiUser as User;
 use App\Models\Api\ApiHostel as Hostel;
 use App\Models\Api\ApiStudent as Student;
 use App\Models\Api\ApiUpdateHostelRequest as UpdateHostelRequest;
+use App\Models\Api\ApiApproveHostelRequests as ApproveHostelRequest;
 
 
 class SuperAdminController extends Controller
 {
+
+    public function listapprovalRequests(Request $request)
+    {
+        $user = JWTAuth::toUser($request->token);
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isSuperAdmin())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            $requests = ApproveHostelRequest::select('approveStatus', 'hostelId')->where('approveStatus', '=', 0)->get();
+
+            if (!empty($requests)) {
+
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Request Successfull';
+                $response['data']['result']     =  $requests;
+                $response['status']             =  true;
+
+            } else {
+
+                $response['data']['code']       =  400;
+                $response['data']['message']    =  'Request Unsuccessfull';
+                $response['status']             =  false;    
+            }
+
+        }
+        return $response;
+    }
+
 
 /*
 |--------------------------------------------------------------------------
@@ -49,7 +93,6 @@ class SuperAdminController extends Controller
                     'code' => 400,
                     'message' => 'Something went wrong. Please try again later!',
                 ],
-
                'status' => false
             ];
             
@@ -68,27 +111,48 @@ class SuperAdminController extends Controller
 
             }else{
 
-                $hostel = Hostel::find($request->id)->update([
-                    'isApproved' => 1,
+                $requestData = ApproveHostelRequest::find($request->id);
+                $hostelId = $requestData->hostelId;
+
+                $hostel = Hostel::where('id', '=', $hostelId)->first();
+
+                if($hostel->isApproved == 1){
+
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Hostel is already approved!';
+                    $response['data']['result']     =  $hostel;
+                    $response['status']             =  true;
+                }
+
+                $approveRequest = ApproveHostelRequest::find($request->id)->update([
+
+                    'approveStatus' => 1,
+
                 ]);
 
-                if ($hostel){
+                $hostel = Hostel::where('id', '=', $hostelId)->update([
+                    'isApproved' => 1,
+                ]);
+                
 
-                    $response['data']['code']     = 200;
-                    $response['status']           = true;
-                    $response['data']['message']  = 'Hostel Approved Successfully';
+                if ($approveRequest) {
 
-                }else{
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Hostel approved successfully!';
+                    $response['data']['result']     =  $approveRequest;
+                    $response['status']             =  true;
 
-                    $response['data']['code']     = 400;
-                    $response['status']           = false;
-                    $response['data']['message']  = 'Request to approve hostel failed!';
+                } else {
 
+                    $response['data']['code']       =  400;
+                    $response['data']['message']    =  'Request Unsuccessfull';
+                    $response['status']             =  false;    
                 }
             }
         }
         return $response;
     }
+
 
 /*
 |--------------------------------------------------------------------------
@@ -123,7 +187,7 @@ class SuperAdminController extends Controller
             
             $rules = [
 
-            	'hostelId' => 'required',
+            	'id' => 'required',
 
             ];
 
@@ -136,11 +200,16 @@ class SuperAdminController extends Controller
 
             }else{
 
-                $hostel = Hostel::find($request->hostelId)->update([
-                    'isApproved' => 0,
-                ]);
+                // $requestData = ApproveHostelRequest::find($request->id);
+                // $hostelId = $requestData->hostelId;
 
-                if ($hostel){
+                $rejectApprovalRequest = ApproveHostelRequest::find($request->id)->update([
+                    
+                    'approveStatus' => 0,
+                
+                ]);
+                
+                if ($rejectApprovalRequest ){
 
                     $response['data']['code']     = 200;
                     $response['status']           = true;

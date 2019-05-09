@@ -161,7 +161,7 @@ class StudentController extends Controller
                'status' => false
             ];
             
-            $allStudents = Student::all();
+            $allStudents = Student::select('id', 'fullName', 'phoneNumber', 'email', 'isVerified')->get();
 
             if (!empty($allStudents)) {
 

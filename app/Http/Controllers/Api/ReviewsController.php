@@ -19,6 +19,13 @@ use App\Models\Api\ApiReviews as Review;
 
 class ReviewsController extends Controller
 {
+
+/*
+|--------------------------------------------------------------------------
+|  CREATE A REVIEW AGAINST A HOSTEL
+|--------------------------------------------------------------------------
+|
+*/
     public function create(Request $request)
     {
 
@@ -82,6 +89,13 @@ class ReviewsController extends Controller
         return $response;
     }
 
+/*
+|--------------------------------------------------------------------------
+|  LIST OF ALL REVIEWS AGAINST ALL HOSTELS
+|--------------------------------------------------------------------------
+|
+*/
+
     public function listReviews(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
@@ -123,7 +137,12 @@ class ReviewsController extends Controller
         }
         return $response;
     }
-
+/*
+|--------------------------------------------------------------------------
+|  LIST  ALL REVIEWS AGAINST A HOSTEL
+|--------------------------------------------------------------------------
+|
+*/
     public function listHostelReviews(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
@@ -166,4 +185,109 @@ class ReviewsController extends Controller
         return $response;
     }
 
+/*
+|--------------------------------------------------------------------------
+|  UPDATE REVIEW
+|--------------------------------------------------------------------------
+|
+*/
+
+    public function updateReview(Request $request)
+    {
+        $user = JWTAuth::toUser($request->token);
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isStudent())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            $message = $request->get('message');
+
+            $reviews = Review::find($request->id)->update([
+                
+                'message' => $message,
+
+            ]);
+
+            if ($reviews) {
+
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Review updated SuccessfullY';
+                $response['status']             =  true;
+
+            } else {
+
+                $response['data']['code']       =  400;
+                $response['data']['message']    =  'Request Unsuccessfull';
+                $response['status']             =  false;    
+            }
+
+        }
+        return $response;
+    }
+
+/*
+|--------------------------------------------------------------------------
+|  DELETE REVIEW
+|--------------------------------------------------------------------------
+|
+*/
+
+
+    public function deleteReview(Request $request)
+    {
+
+        $user = JWTAuth::toUser($request->token);
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isStudent())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            $reviews = Review::find($request->id)->delete();
+
+            if ($reviews) {
+
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Review Deleted SuccessfullY';
+                $response['status']             =  true;
+
+            } else {
+
+                $response['data']['code']       =  400;
+                $response['data']['message']    =  'Request Unsuccessfull';
+                $response['status']             =  false;    
+            }
+
+        }
+        return $response;
+    }
+
+    
 }

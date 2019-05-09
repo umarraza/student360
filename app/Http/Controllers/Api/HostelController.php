@@ -12,9 +12,11 @@ use JWTAuthException;
 use JWTAuth;
 
 use App\Models\Api\ApiUser as User;
-use App\Models\Api\ApiUpdateHostelRequest as UpdateHostelRequest;
 use App\Models\Api\ApiHostel as Hostel;
 use App\Models\Api\ApiThreads as Threads;
+use App\Models\Api\ApiUpdateHostelRequest as UpdateHostelRequest;
+use App\Models\Api\ApiVerifyHostelRequests as VerifyHostelRequests;
+
 
 
 class HostelController extends Controller
@@ -126,8 +128,16 @@ class HostelController extends Controller
 
                     ]);
 
+                $hostelId  = $hostel->id;
 
-            	if ($hostel->save() && $user->save()) 
+                $verifyRequest = VerifyHostelRequests::create([
+
+                    'approvalStatus' => 0,
+                    'hostelId' => $hostelId
+                
+                    ]);
+
+            	if ($hostel->save() && $user->save() && $verifyRequest->save()) 
                 {
                     $response['data']['code']       = 200;
                     $response['status']             = true;
