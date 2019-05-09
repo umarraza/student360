@@ -100,22 +100,7 @@ class HostelController extends Controller
                     'language'   =>  "English",
                 ]);
 
-                    $userId = $user->id;
-
-                    $thread = Threads::create([
-                        'userId'  => $userId,
-                        'adminId' => 1,
-                    ]);
-
-                    $thread->save();
-
-                    $threadId = $thread->id;
-
-                    $updateThread = User::where('id', '=', $userId)->update([
-
-                        'threadId' => $threadId,
-
-                    ]);
+                $userId = $user->id;
 
                 $hostel = Hostel::create([
 
@@ -363,24 +348,12 @@ class HostelController extends Controller
 
                 $hostel = Hostel::find($request->id);
                 
-                // $features = $hostel->features;
-
-                // $data = json_decode($features);
-                // $ATM = $data[0];
-                // $BBQ = $data[1];
-                // return $BBQ;
-
-                // $breakFeatures = explode(',', $features);
-                // $data = $breakFeatures[0];
-                // return $data;
-                // $vcardData = explode('@@@', $data);
-
             	if (!empty($hostel)) 
                 {
 
                     $response['data']['code']       =  200;
                     $response['status']             =  true;
-                    $response['result']             =  $hostel;
+                    $response['data']['result']     =  $hostel;
                     $response['data']['message']    =  'Request Successfull';
 
                 } else {

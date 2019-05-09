@@ -71,7 +71,29 @@ Route::post('/reject-user-verification', 'Api\SuperAdminController@rejectUserVer
 Route::post('/reject-hostel-verification', 'Api\SuperAdminController@rejectHostelVerification');
 
 
+/*
+|--------------------------------------------------------------------------
+| Reviews Routes
+|--------------------------------------------------------------------------
+| All review related routes have been defined here.
+|
+*/
 
+Route::post('/create-review','Api\ReviewsController@create');
+Route::get('/list-reviews','Api\ReviewsController@listReviews');
+Route::get('/list-hostel-reviews','Api\ReviewsController@listHostelReviews');
+
+
+/*
+|--------------------------------------------------------------------------
+| Mess Menu Routes
+|--------------------------------------------------------------------------
+| All Mess Menu related routes have been defined here.
+|
+*/
+
+Route::post('/update-mess-menu', 'Api\MessMenuController@updateMessMenu');
+Route::post('/list-mess-menu', 'Api\MessMenuController@listMessMenu');
 
 /*
 |--------------------------------------------------------------------------
@@ -110,30 +132,6 @@ Route::post('/create-profile-image','Api\ProfileImagesController@createImage');
 
 /*
 |--------------------------------------------------------------------------
-| Reviews Routes
-|--------------------------------------------------------------------------
-| All review related routes have been defined here.
-|
-*/
-
-Route::post('/create-review','Api\ReviewsController@create');
-Route::get('/list-reviews','Api\ReviewsController@listReviews');
-Route::get('/list-hostel-reviews','Api\ReviewsController@listHostelReviews');
-
-
-/*
-|--------------------------------------------------------------------------
-| Mess Menu Routes
-|--------------------------------------------------------------------------
-| All Mess Menu related routes have been defined here.
-|
-*/
-
-Route::post('/update-mess-menu', 'Api\MessMenuController@updateMessMenu');
-Route::post('/list-mess-menu', 'Api\MessMenuController@listMessMenu');
-
-/*
-|--------------------------------------------------------------------------
 | Queries Routes
 |--------------------------------------------------------------------------
 | All Queries routes have been defined here.
@@ -141,3 +139,13 @@ Route::post('/list-mess-menu', 'Api\MessMenuController@listMessMenu');
 */
 
 Route::post('/create-query', 'Api\QueriesController@create');
+
+/*
+|--------------------------------------------------------------------------
+| Threads Routes
+|--------------------------------------------------------------------------
+| All Threads routes have been defined here.
+|
+*/
+
+Route::get('/list-threads','Api\ThreadsController@listThreads');

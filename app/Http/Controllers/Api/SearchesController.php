@@ -22,12 +22,12 @@ class SearchesController extends Controller
 |--------------------------------------------------------------------------
 | Hostels Searching Module
 |--------------------------------------------------------------------------
-| User can search hostels on the basis of 3 parameters. His location, hostel type
-| search radius. User can also search hostels by institute. The search result 
-| should show the name of the hostel, rating, address, distance from the 
-| searched area, price range (Monthly) 	and facilities of the hostel. 
-|
-| Search results will be sorted in high to low ratings.
+| User can search hostels on the basis of 3 parameters. location, hostel type and
+| search radius. The search result should show the name of the hostel, rating,
+| address, distance from the searched area, price range (Monthly) and
+| facilities of the hostel. Search results will be sorted in high 
+| to low ratings.
+| 
 */
 
 // Join with rating,

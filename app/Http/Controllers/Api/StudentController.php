@@ -14,6 +14,7 @@ use JWTAuth;
 use App\Models\Api\ApiUser as User;
 use App\Models\Api\ApiHostel as Hostel;
 use App\Models\Api\ApiStudent as Student;
+use App\Models\Api\ApiThreads as Threads;
 
 
 class StudentController extends Controller
@@ -81,6 +82,33 @@ class StudentController extends Controller
                     'language'   =>  "English",
 
                 ]); 
+
+                    $userId = $user->id;
+
+                    /* 
+                        Thread respresents the conversation between a registered user and super admin.
+                        Registered user can ask queries to super admin about anything regrading 
+                        hostels. All messages between a registered user and super admin will 
+                        form a conversation/thread. Thread is being created while 
+                        registering a user because
+
+                    */ 
+
+                    $thread = Threads::create([
+                        'userId'  => $userId,
+                        'adminId' => 1,
+                    ]);
+
+                    $thread->save();
+
+                    $threadId = $thread->id;
+
+                    $updateThread = User::where('id', '=', $userId)->update([
+
+                        'threadId' => $threadId,
+
+                    ]);
+
 
                 $student = Student::create([
 

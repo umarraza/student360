@@ -49,12 +49,13 @@ class SuperAdminController extends Controller
                     'code' => 400,
                     'message' => 'Something went wrong. Please try again later!',
                 ],
+
                'status' => false
             ];
             
             $rules = [
 
-            	'hostelId' => 'required',
+            	'id' => 'required',
 
             ];
 
@@ -67,7 +68,7 @@ class SuperAdminController extends Controller
 
             }else{
 
-                $hostel = Hostel::find($request->hostelId)->update([
+                $hostel = Hostel::find($request->id)->update([
                     'isApproved' => 1,
                 ]);
 

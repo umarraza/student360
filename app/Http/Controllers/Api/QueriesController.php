@@ -55,8 +55,8 @@ class QueriesController extends Controller
                 $rules = [
             
                     'message'    =>   'required',
-                    'hostelId'   =>   'required',
-                    'userId'     =>   'required',
+                    'type'       =>   'required',
+                    'threadId'   =>   'required',
 
                 ];
 
@@ -72,10 +72,9 @@ class QueriesController extends Controller
 
                     $query = Queries::create([
 
-                            'message'    =>   $request->get('message'),
-                            'hostelId'   =>   $request->get('hostelId'),
-                            'threadId'   =>   $request->get('threadId'),
-                            'userId'     =>   $user->id,
+                            'message'   =>   $request->get('message'),
+                            'type'      =>   $request->get('type'),
+                            'threadId'  =>   $request->get('threadId'),
 
                         ]);
 

@@ -14,8 +14,8 @@ class Queries extends Model
      protected $fillable = [
 
         'message',
-        'hostelId',
-        'userId',
+        'type',
+        'threadId',
     ];
 
     /**
@@ -30,10 +30,10 @@ class Queries extends Model
         
         return [
 
-                'id'       =>  $this->id,
-                'message'  =>  $this->message,
-                'hostelId' =>  $this->hostelId,
-                'userId'   =>  $this->userId,
+                'id'        =>  $this->id,
+                'message'   =>  $this->message,
+                'type'      =>  $this->type,
+                'threadId'  =>  $this->threadId,
         ];
     }
 }
