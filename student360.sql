@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 08, 2019 at 10:00 AM
+-- Generation Time: May 09, 2019 at 10:07 AM
 -- Server version: 10.1.38-MariaDB
 -- PHP Version: 7.3.2
 
@@ -25,12 +25,33 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `approve_hostel_requests`
+--
+
+CREATE TABLE `approve_hostel_requests` (
+  `id` int(10) NOT NULL,
+  `approveStatus` int(10) NOT NULL,
+  `hostelId` int(10) NOT NULL,
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `approve_hostel_requests`
+--
+
+INSERT INTO `approve_hostel_requests` (`id`, `approveStatus`, `hostelId`, `createdAt`, `updatedAt`) VALUES
+(4, 1, 9, '2019-05-09 02:46:03', '2019-05-09 02:47:19');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `hostels_registration-requests`
 --
 
 CREATE TABLE `hostels_registration-requests` (
   `id` int(10) NOT NULL,
-  `isApproved` tinyint(4) NOT NULL DEFAULT '0',
+  `approvalStatus` tinyint(4) NOT NULL DEFAULT '0',
   `hostelId` int(10) NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
@@ -70,7 +91,7 @@ INSERT INTO `hostel_images` (`id`, `imageName`, `isThumbnail`, `hostelId`, `crea
 
 CREATE TABLE `hostel_profiles` (
   `id` int(10) NOT NULL,
-  `hostelName` varchar(50) NOT NULL,
+  `hostelName` varchar(200) NOT NULL,
   `hostelCategory` varchar(50) NOT NULL,
   `numberOfBedRooms` int(10) NOT NULL,
   `noOfBeds` int(10) NOT NULL,
@@ -87,8 +108,8 @@ CREATE TABLE `hostel_profiles` (
   `contactEmail` varchar(30) NOT NULL,
   `website` varchar(50) NOT NULL,
   `phoneNumber` varchar(50) NOT NULL,
-  `isApproved` tinyint(4) NOT NULL DEFAULT '0',
-  `isVerified` tinyint(3) NOT NULL DEFAULT '0',
+  `isApproved` int(10) NOT NULL DEFAULT '0',
+  `isVerified` int(10) NOT NULL DEFAULT '0',
   `isAvailable` tinyint(4) DEFAULT '0',
   `features` varchar(1000) NOT NULL,
   `userId` int(10) NOT NULL,
@@ -101,9 +122,9 @@ CREATE TABLE `hostel_profiles` (
 --
 
 INSERT INTO `hostel_profiles` (`id`, `hostelName`, `hostelCategory`, `numberOfBedRooms`, `noOfBeds`, `priceRange`, `address`, `longitude`, `latitude`, `state`, `postCode`, `city`, `country`, `description`, `contactName`, `contactEmail`, `website`, `phoneNumber`, `isApproved`, `isVerified`, `isAvailable`, `features`, `userId`, `createdAt`, `updatedAt`) VALUES
-(9, 'boys', 'Boys', 10, 20, '10000-15000', 'iqbal town', '31.520370', '74.358747', 'punjab', 54000, 'lahore', 'pakistan', 'average', 'anas', 'abc@gmail.com', 'abc.com', '03249470780', 0, 0, 0, '[\"ATM\",\"BBQ area\"]', 39, '2019-05-07 21:44:54', '2019-05-07 21:44:54'),
-(13, 'Continental Hostel', 'Boys', 30, 20, '15000', 'Johar Town Lahore', '74.358747', '31.520370', 'Punjab', 15253, 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border', 'Sikandar', 'sikandar@gmail.com', 'www.continentalhostel.com', '03034969407', 0, 0, 0, '[\"ATM\",\"BBQ area\"]', 43, '2019-05-07 23:39:56', '2019-05-08 00:37:28'),
-(14, 'Fast Hostel', 'Girls', 25, 15, '5000', '370,TIP BLOCK KHAYABAN-E-AMIN,DEFENCE ROAD LAHORE 370 TIP BLOCK KHAYABAN E AMEEN LAHORE', '74.358747', '31.520370', 'Punjab', 212121, 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border, and offers free WiFi. Located around 1.2 km from Pace Shopping Mall, the hotel is also 2.1 km away from Lahore Gymkhana. A tour desk can provide information on the area.', 'Uzair', 'uzair@gmail.com', 'www.maironahotel.com', '03218840489', 0, 0, 0, '[\"ATM\",\"BBQ area\"]', 48, '2019-05-08 03:00:12', '2019-05-08 03:00:12');
+(9, 'MASHALLAH BOYS HOSTEL GULBERG 3 NEAR HAJVERY UNIVERSITY', 'Boys', 10, 20, '10000-15000', 'iqbal town', '31.520370', '74.358747', 'punjab', 54000, 'lahore', 'pakistan', 'Mashallah Boys Hostel Gulberg 3 near hajvery university Facilities: Wifi Internet - Free UPS Connection - Free TV cable Connection - Free Attach Bath Carpeted Room Geyser for Hot Water in winters Electric Water Cooler for Drinking -Electricity (separate sub meters installed) Room Sharing Rent 4000 (Security 5000) Full Room Rent 8000 (Security 10000) Max 2 persons allowed in a room.', 'anas', 'abc@gmail.com', 'abc.com', '03249470780', 1, 0, 0, '[\"ATM\",\"BBQ area\"]', 39, '2019-05-07 21:44:54', '2019-05-09 02:47:19'),
+(15, 'Fast Hostel', 'Girls', 25, 15, '5000', '370,TIP BLOCK KHAYABAN-E-AMIN,DEFENCE ROAD LAHORE 370 TIP BLOCK KHAYABAN E AMEEN LAHORE', '74.358747', '31.520370', 'Punjab', 212121, 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border, and offers free WiFi. Located around 1.2 km from Pace Shopping Mall, the hotel is also 2.1 km away from Lahore Gymkhana. A tour desk can provide information on the area.', 'Uzair', 'uzairsalar@gmail.com', 'www.maironahotel.com', '03218840489', 0, 0, 0, '[\"ATM\",\"BBQ area\"]', 49, '2019-05-08 20:30:14', '2019-05-08 20:30:14'),
+(17, 'Continental Hostel', 'Girls', 25, 15, '5000', '370,TIP BLOCK KHAYABAN-E-AMIN,DEFENCE ROAD LAHORE 370 TIP BLOCK KHAYABAN E AMEEN LAHORE', '74.358747', '31.520370', 'Punjab', 212121, 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border, and offers free WiFi. Located around 1.2 km from Pace Shopping Mall, the hotel is also 2.1 km away from Lahore Gymkhana. A tour desk can provide information on the area.', 'Umar Raza', 'umarraza@gmail.com', 'www.maironahotel.com', '03218840489', 0, 0, 0, '[\"ATM\",\"BBQ area\"]', 52, '2019-05-09 03:04:45', '2019-05-09 03:04:45');
 
 -- --------------------------------------------------------
 
@@ -168,6 +189,15 @@ CREATE TABLE `queries` (
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `queries`
+--
+
+INSERT INTO `queries` (`id`, `message`, `type`, `threadId`, `createdAt`, `updatedAt`) VALUES
+(1, 'What are the prices?', 'U', 3, '2019-05-08 21:03:10', '2019-05-08 21:03:10'),
+(2, 'Wifi available?', 'U', 3, '2019-05-08 21:05:17', '2019-05-08 21:05:17'),
+(3, 'What are the prices of mess menu?', 'U', 4, '2019-05-08 21:17:24', '2019-05-08 21:17:24');
 
 -- --------------------------------------------------------
 
@@ -257,7 +287,10 @@ CREATE TABLE `threads` (
 --
 
 INSERT INTO `threads` (`id`, `userId`, `adminId`, `createdAt`, `updatedAt`) VALUES
-(2, 48, 1, '2019-05-08 03:00:12', '2019-05-08 03:00:12');
+(3, 49, 1, '2019-05-08 20:30:14', '2019-05-08 20:30:14'),
+(4, 34, 1, '2019-05-09 02:07:49', '2019-05-09 02:07:49'),
+(5, 39, 1, '2019-05-09 02:36:12', '2019-05-09 02:36:12'),
+(6, 50, 1, '2019-05-08 22:34:09', '2019-05-08 22:34:09');
 
 -- --------------------------------------------------------
 
@@ -332,10 +365,11 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `remember_token`, `roleId`, `resetPasswordToken`, `createdResetPToken`, `avatarFilePath`, `deviceToken`, `onlineStatus`, `verified`, `googleLogin`, `facebookLogin`, `language`, `threadId`, `createdAt`, `updatedAt`) VALUES
 (1, 'super.admin@admin.com', 'super.admin@admin.com', '$2y$10$VwROsyn0bDr5gTh/rnCCG.5JN3kZTAWEEUZPJLHfiZf.84ZLdPtwq', NULL, 1, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, '', 0, '2019-05-07 01:14:38', '2019-05-06 20:14:38'),
-(34, 'mahmoodanas4012@gmail.com', NULL, '$2y$10$iwJKoPCYPuWHGXnXvysAPO81Pav848QyK3EiwddLjtqOzzjWb2T/.', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', 0, '2019-05-07 00:05:00', '2019-05-07 00:05:00'),
+(34, 'mahmoodanas4012@gmail.com', NULL, '$2y$10$iwJKoPCYPuWHGXnXvysAPO81Pav848QyK3EiwddLjtqOzzjWb2T/.', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', 4, '2019-05-09 02:08:15', '2019-05-07 00:05:00'),
 (39, 'l1f14bscs0068', NULL, '$2y$10$qQ4eksvopVasJatY2OzaZul9KpkpIA.YqmPBGKn3e6mpUOmVOMXby', NULL, 2, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 'English', 0, '2019-05-07 21:44:54', '2019-05-07 21:44:54'),
-(43, 'uzairsalar', 'sikandar@gmail.com', '$2y$10$0Jc5lXCuaWPa6xSpMren7.cPZJXD58BGdC.1VWsD/6SSpyF7VaK4S', NULL, 2, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', 0, '2019-05-08 05:37:28', '2019-05-08 00:37:28'),
-(48, 'uzair@gmail.com', 'uzair@gmail.com', '$2y$10$s//L74mMqNEwi3e05.nA4OGdwY6gkS9h/uDA7noG55xAOS60Ad69i', NULL, 2, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 'English', 2, '2019-05-08 08:00:12', '2019-05-08 03:00:12');
+(49, 'uzairsalar@gmail.com', 'uzairsalar@gmail.com', '$2y$10$w5J5dS6PdH3vsOLNRndpcOFZH7pUBqnkdQco0QdPlN8Pey7SPW/Ai', NULL, 2, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', 3, '2019-05-09 05:54:22', '2019-05-08 20:30:14'),
+(50, 'usman@gmail.com', NULL, '$2y$10$90jzB05LV4yLB4nVxbbHYOv249xHfzonyiSDeiOgRxLpAL6rBruLe', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', 6, '2019-05-09 03:34:09', '2019-05-08 22:34:09'),
+(52, 'umarraza@gmail.com', 'umarraza@gmail.com', '$2y$10$OXOrevcQvUsO38t3douf6O.JehyC3TLCH1BVCKxLxblTE5H5XpFF.', NULL, 2, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 'English', NULL, '2019-05-09 03:04:45', '2019-05-09 03:04:45');
 
 -- --------------------------------------------------------
 
@@ -366,11 +400,18 @@ CREATE TABLE `user_profiles` (
 --
 
 INSERT INTO `user_profiles` (`id`, `fullName`, `phoneNumber`, `email`, `city`, `country`, `occupation`, `institute`, `dateOfBirth`, `gender`, `CNIC`, `isVerified`, `userId`, `createdAt`, `updatedAt`) VALUES
-(1, 'anas', '03249470780', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 34, '2019-05-07 00:05:00', '2019-05-07 00:05:00');
+(1, 'anas', '03249470780', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 34, '2019-05-07 00:05:00', '2019-05-07 00:05:00'),
+(2, 'Usman Munir', '03034969407', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 50, '2019-05-08 22:34:09', '2019-05-08 22:34:09');
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `approve_hostel_requests`
+--
+ALTER TABLE `approve_hostel_requests`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `hostels_registration-requests`
@@ -456,6 +497,12 @@ ALTER TABLE `user_profiles`
 --
 
 --
+-- AUTO_INCREMENT for table `approve_hostel_requests`
+--
+ALTER TABLE `approve_hostel_requests`
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT for table `hostels_registration-requests`
 --
 ALTER TABLE `hostels_registration-requests`
@@ -471,7 +518,7 @@ ALTER TABLE `hostel_images`
 -- AUTO_INCREMENT for table `hostel_profiles`
 --
 ALTER TABLE `hostel_profiles`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `mess_menu`
@@ -489,7 +536,7 @@ ALTER TABLE `profile_pictures`
 -- AUTO_INCREMENT for table `queries`
 --
 ALTER TABLE `queries`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `ratings`
@@ -513,7 +560,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `threads`
 --
 ALTER TABLE `threads`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `update-hostels-requests`
@@ -525,13 +572,13 @@ ALTER TABLE `update-hostels-requests`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `user_profiles`
 --
 ALTER TABLE `user_profiles`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
