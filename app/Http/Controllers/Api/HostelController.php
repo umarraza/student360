@@ -182,27 +182,7 @@ class HostelController extends Controller
                'status' => false
             ];
             
-            // $allHostels = Hostel::select('hostelName',  'address', 'hostelCategory', 'isVerified', 'isApproved')->value('address');
-            // $allHostels = Hostel::select('hostelName',  'address', 'hostelCategory', 'isVerified', 'isApproved')->get();
-            // $allHostels = Hostel::where('hostelName', 'Fast Hostel')->value('address');
-            // $allHostels = Hostel::find(9)->select('address')->get();
-            // $allHostels = Hostel::find(9)->pluck('address');
-            // $allHostels = Hostel::orderBy('id')->get();
-
-            $allHostels = Hostel::orderBy('id')->chunk(2, function ($hostels){
-                return $hostels;
-            });
-
-
-            $data = [];
-
-            for($i = 0; $i < count($allHostels); $i++){
-
-                $data[] = $allHostels[$i];
-                
-            }
-
-            return $data;
+            $allHostels = Hostel::select('hostelName',  'address', 'hostelCategory', 'isVerified', 'isApproved')->get();
             
             if (!empty($allHostels)) {
 
