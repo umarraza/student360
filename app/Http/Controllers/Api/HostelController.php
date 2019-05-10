@@ -52,8 +52,8 @@ class HostelController extends Controller
 
             ];
             $rules = [
-                // hostelCtaegory need to change from front end
-            	'hostelName'         =>   'required',
+
+                'hostelName'         =>   'required',
                 'hostelCategory'     =>   'required',   // Boys, Girls, Guest House
                 'numberOfBedRooms'   =>   'required',
                 'noOfBeds'         	 =>   'required',
@@ -107,7 +107,7 @@ class HostelController extends Controller
                 $hostel = Hostel::create([
 
                         'hostelName'       =>   $request->get('hostelName'),
-                        'hostelCategory'   =>   $request->get('hostelCategory'), //Boys, Girls, Guest House
+                        'hostelCategory'   =>   $request->get('hostelCategory'), 
                         'numberOfBedRooms' =>   $request->get('numberOfBedRooms'),
                         'noOfBeds'         =>   $request->get('noOfBeds'),
                         'priceRange'       =>   $request->get('priceRange'),
@@ -132,7 +132,7 @@ class HostelController extends Controller
 
                 $verifyRequest = VerifyHostelRequests::create([
 
-                    'approvalStatus' => 0,
+                    'verificationStatus' => 0,
                     'hostelId' => $hostelId
                 
                     ]);
@@ -182,11 +182,28 @@ class HostelController extends Controller
                'status' => false
             ];
             
-            $allHostels = Hostel::all();
-            // $allHostels = Hostel::all()->select('hostelName',  'address', 'hostelCategory', 'isVerified', 'isApproved');
-            
-            // If there are thousands of hostels, getting the list with all parameters will put load to server as well as network. ask musab if we can select just few fields. 
+            // $allHostels = Hostel::select('hostelName',  'address', 'hostelCategory', 'isVerified', 'isApproved')->value('address');
+            // $allHostels = Hostel::select('hostelName',  'address', 'hostelCategory', 'isVerified', 'isApproved')->get();
+            // $allHostels = Hostel::where('hostelName', 'Fast Hostel')->value('address');
+            // $allHostels = Hostel::find(9)->select('address')->get();
+            // $allHostels = Hostel::find(9)->pluck('address');
+            // $allHostels = Hostel::orderBy('id')->get();
 
+            $allHostels = Hostel::orderBy('id')->chunk(2, function ($hostels){
+                return $hostels;
+            });
+
+
+            $data = [];
+
+            for($i = 0; $i < count($allHostels); $i++){
+
+                $data[] = $allHostels[$i];
+                
+            }
+
+            return $data;
+            
             if (!empty($allHostels)) {
 
                 $response['data']['code']       =  200;
@@ -477,13 +494,12 @@ class HostelController extends Controller
 
                 ];
                 $rules = [
-                    // hostelCtaegory need to change from front end
 
                     'hostelName'         =>   'required',
-                    'hostelCategory'     =>   'required',   // Boys, Girls, Guest House
+                    'hostelCategory'     =>   'required',  
                     'numberOfBedRooms'   =>   'required',
                     'noOfBeds'         	 =>   'required',
-                    'priceRange'         =>   'required',  // price can be a range or a single value. e.g 5000/month or 5000 to 15000/month
+                    'priceRange'         =>   'required',  
                     'address'		     =>   'required',  
                     'longitude'          =>   'required',
                     'latitude'           =>   'required',

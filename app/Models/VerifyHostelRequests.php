@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class VerifyHostelRequests extends Model
 {
-    protected $table = 'approve_hostel_requests';
+    protected $table = 'hostels_registration-requests';
 
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';
 
      protected $fillable = [
 
-        'approvalStatus',
+        'verificationStatus',
         'hostelId',
     ];
 
@@ -30,7 +30,7 @@ class VerifyHostelRequests extends Model
         return [
 
                 'id' => $this->id,
-                'approvalStatus' => $this->approvalStatus,
+                'verificationStatus' => $this->verificationStatus,
                 'hostelId' => $this->hostelId,
         ];
     }
