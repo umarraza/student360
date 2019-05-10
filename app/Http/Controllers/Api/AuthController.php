@@ -213,7 +213,9 @@ class AuthController extends Controller
             }
             else
             {   
-                $response['data']['message'] = 'User is not approved yet by administrator!';
+                $response['data']['code'] = 400;
+                $response['data']['message'] = 'Sorry! Your request to register a new hostel is not approved yet by administrator!';
+                $response['status']= false;
             }
         }
         return $response;

@@ -19,12 +19,11 @@ Route::post('/signup', 'Api\AuthController@signUp');
 Route::post('/forgot-password', 'Api\AuthController@forgotPass');
 Route::post('/reset-password', 'Api\AuthController@changePassword');
 
-
 /*
 |--------------------------------------------------------------------------
 | HOSTEL Routes
 |--------------------------------------------------------------------------
-| Here is where register new hostels routes have been define.
+| register new hostels routes have been define.
 |
 */
 
@@ -34,16 +33,12 @@ Route::get('/list-hostels', 'Api\HostelController@listHostels');
 Route::post('/view-hostel', 'Api\HostelController@hostelDetails');
 Route::get('/view-registered-hostels', 'Api\HostelController@registeredHostels');
 Route::post('/hostel-available', 'Api\HostelController@updateAvailbility');
-Route::post('/update-hostel-request', 'Api\HostelController@updateHostelRequest');
-
-
-
 
 /*
 |--------------------------------------------------------------------------
 | STUDENTS/USERS Routes
 |--------------------------------------------------------------------------
-| Here is where register new students/users routes have been define.
+| register new students/users routes have been define.
 |
 */
 
@@ -56,7 +51,7 @@ Route::post('/update-student', 'Api\StudentController@updateStudent');
 |--------------------------------------------------------------------------
 | SUPER ADMIN Routes
 |--------------------------------------------------------------------------
-| Here is where all super admin related routes have been define.
+| all super admin related routes have been define.
 |
 */
 
@@ -73,7 +68,6 @@ Route::post('/reject-hostel-approval', 'Api\SuperAdminController@rejectHostelApp
 Route::post('/reject-user-verification', 'Api\SuperAdminController@rejectUserVerification');
 Route::post('/reject-hostel-verification', 'Api\SuperAdminController@rejectHostelVerification');
 
-
 /*
 |--------------------------------------------------------------------------
 | Reviews Routes
@@ -87,8 +81,6 @@ Route::get('/list-reviews','Api\ReviewsController@listReviews');
 Route::get('/list-hostel-reviews','Api\ReviewsController@listHostelReviews');
 Route::post('/update-review','Api\ReviewsController@updateReview');
 Route::post('/delete-review','Api\ReviewsController@deleteReview');
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -105,25 +97,23 @@ Route::post('/list-mess-menu', 'Api\MessMenuController@listMessMenu');
 |--------------------------------------------------------------------------
 | HOSTEL SEARCHES Routes
 |--------------------------------------------------------------------------
-| Here is where all super admin related routes have been define.
+| all super admin related routes have been define.
 |
 */
 
 Route::post('/search-hostels','Api\SearchesController@searchHostels');
-
-
+Route::post('/search-by-prices','Api\SearchesController@searchByPrices');
+Route::post('/search-by-features','Api\SearchesController@searchByFeatures');
 
 /*
 |--------------------------------------------------------------------------
 | HOSTEL IMAGES Routes
 |--------------------------------------------------------------------------
-| Here is where all Hostel Images routes have been define.
+| all Hostel Images routes have been define.
 |
 */
 
-
 Route::post('/create-image','Api\ImagesController@createImage');
-
 
 /*
 |--------------------------------------------------------------------------
@@ -134,7 +124,6 @@ Route::post('/create-image','Api\ImagesController@createImage');
 */
 
 Route::post('/create-profile-image','Api\ProfileImagesController@createImage');
-
 
 /*
 |--------------------------------------------------------------------------
@@ -157,3 +146,12 @@ Route::post('/delete-query', 'Api\QueriesController@delete');
 
 Route::get('/list-threads','Api\ThreadsController@listThreads');
 Route::post('/approve-hostel-request', 'Api\RequestsController@create');
+
+/*
+|--------------------------------------------------------------------------
+| REQUESTS Routes
+|--------------------------------------------------------------------------
+| All requests routes to super admin i.e request to approve, verify and 
+| update hostel have been define here.
+*/
+Route::post('/update-hostel-request', 'Api\RequestsController@updateHostelRequest');

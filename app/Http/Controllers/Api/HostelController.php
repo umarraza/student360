@@ -130,6 +130,19 @@ class HostelController extends Controller
 
                 $hostelId  = $hostel->id;
 
+                /*
+                *  After completing registration proccess and submitting form, a request will be send to 
+                *  super admin for hostel verification. After approval by admin, hostel will be 
+                *  registered and hostel admin can login. Below function creates new request 
+                *  and store in hostels_registration-requests table in database. From this 
+                *  table, super admin can get all approved, rejected & new requests.
+                ************************************
+                *  verificationStatus = 0 => request is pending
+                *  verificationStatus = 1 => request have been approved
+                *  verificationStatus = 2 => request have been rejected
+                *  
+                */
+
                 $verifyRequest = VerifyHostelRequests::create([
 
                     'verificationStatus' => 0,
@@ -141,7 +154,7 @@ class HostelController extends Controller
                 {
                     $response['data']['code']       = 200;
                     $response['status']             = true;
-                    $response['result']             = $hostel;
+                    $response['data']['result']     = $hostel;
                     $response['user']               = $user;
                     $response['data']['message']    = 'Hostel created Successfully';
                 }
@@ -182,8 +195,8 @@ class HostelController extends Controller
                'status' => false
             ];
             
-            $allHostels = Hostel::select('hostelName',  'address', 'hostelCategory', 'isVerified', 'isApproved')->get();
-            
+            $allHostels = Hostel::select('id','hostelName',  'address', 'hostelCategory', 'isVerified', 'isApproved')->get();
+
             if (!empty($allHostels)) {
 
                 $response['data']['code']       =  200;
@@ -303,8 +316,6 @@ class HostelController extends Controller
                 $response['data']['message']    =  'No Hostels Found';
                 $response['status']             =  false;    
             }
-
-
         }
         return $response;
     }
@@ -439,114 +450,6 @@ class HostelController extends Controller
         return $response;
     }
 
-    /**
-     * CREATE HOSTEL UPDATE REQUEST
-     *
-     * Hostel Admin can update hostel by sending a request to 
-     * Super admin. Super admin will approve or reject the 
-     * request
-     * 
-     * @function
-     */
-
-    public function updateHostelRequest(Request $request)
-    {
-
-        $user = JWTAuth::toUser($request->token);
-        $response = [
-                'data' => [
-                    'code'      => 400,
-                    'errors'    => '',
-                    'message'   => 'Invalid Token! User Not Found.',
-                ],
-                'status' => false
-            ];
-
-        if(!empty($user) && $user->isHostelAdmin()){
-
-                $response = [
-                    'data' => [
-                        'code' => 400,
-                        'message' => 'Something went wrong. Please try again later!',
-                    ],
-                    
-                    'status' => false
-
-                ];
-                $rules = [
-
-                    'hostelName'         =>   'required',
-                    'hostelCategory'     =>   'required',  
-                    'numberOfBedRooms'   =>   'required',
-                    'noOfBeds'         	 =>   'required',
-                    'priceRange'         =>   'required',  
-                    'address'		     =>   'required',  
-                    'longitude'          =>   'required',
-                    'latitude'           =>   'required',
-                    'state'              =>   'required',
-                    'postCode'           =>   'required',
-                    'city'            	 =>   'required',
-                    'country'            =>   'required',
-                    'description'        =>   'required',
-                    'contactName'        =>   'required',
-                    'contactEmail'       =>   'required',
-                    'website'            =>   'required',
-                    'phoneNumber'        =>   'required',
-                    'features'           =>   'required',
-                    'status'             =>   'required',
-                    'hostelId'           =>   'required',
-
-                ];
-
-                $validator = Validator::make($request->all(), $rules);
-
-                if ($validator->fails()) {
-                    
-                    $response['data']['message'] = 'Invalid input values.';
-                    $response['data']['errors'] = $validator->messages();
-                }
-                else
-                {
-
-                $userId = $user->id;
-                   
-                    $updateHostel = UpdateHostelRequest::create([
-
-                            'hostelName'       =>   $request->get('hostelName'),
-                            'hostelCategory'   =>   $request->get('hostelCategory'), //Boys, Girls, Guest House
-                            'numberOfBedRooms' =>   $request->get('numberOfBedRooms'),
-                            'noOfBeds'         =>   $request->get('noOfBeds'),
-                            'priceRange'       =>   $request->get('priceRange'),
-                            'address'          =>   $request->get('address'),
-                            'longitude'        =>   $request->get('longitude'),
-                            'latitude'         =>   $request->get('latitude'),
-                            'state'            =>   $request->get('state'),
-                            'postCode'         =>   $request->get('postCode'),
-                            'city'             =>   $request->get('city'),
-                            'country'          =>   $request->get('country'),
-                            'description'      =>   $request->get('description'),
-                            'contactName'      =>   $request->get('contactName'),
-                            'contactEmail'     =>   $request->get('contactEmail'),
-                            'website'          =>   $request->get('website'),
-                            'phoneNumber'      =>   $request->get('phoneNumber'),
-                            'features'         =>   $request->get('features'),
-                            'status'           =>   $request->get('status'),
-                            'hostelId'         =>   $request->get('hostelId'),
-                            'userId'           =>   $userId,
-
-                        ]);
-
-
-                    if ($updateHostel->save()) 
-                    {
-                        $response['data']['code']       = 200;
-                        $response['status']             = true;
-                        $response['result']             = $updateHostel;
-                        $response['data']['message']    = 'Update request for hostel created Successfully';
-                    }
-                }
-            }
-        return $response;
-    }
+    
 
 }

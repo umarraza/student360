@@ -41,14 +41,6 @@ class StudentController extends Controller
 
             	'fullName'       =>   'required',
                 'phoneNumber'    =>   'required',   
-                // 'email'        =>   'required',
-                // 'city'         =>   'required',
-                // 'country'      =>   'required',  
-                // 'occupation'   =>   'required', 
-                // 'institute'    =>   'required',
-                // 'dateOfBirth'  =>   'required',
-                // 'gender'       =>   'required',
-                // 'CNIC'         =>   'required',
                 'username'       =>   'required|unique:users',
                 'password'       =>   'required',
                 'roleId'         =>   'required',
@@ -90,7 +82,7 @@ class StudentController extends Controller
                         Registered user can ask queries to super admin about anything regrading 
                         hostels. All messages between a registered user and super admin will 
                         form a conversation/thread. Thread is being created while 
-                        registering a user because
+                        registering a user because...
 
                     */ 
 
@@ -114,14 +106,6 @@ class StudentController extends Controller
 
                         'fullName'     =>   $request->get('fullName'),
                         'phoneNumber'  =>   $request->get('phoneNumber'),
-                        // 'email'        =>   $request->get('email'),
-                        // 'city'         =>   $request->get('city'),
-                        // 'country'      =>   $request->get('country'),
-                        // 'occupation'   =>   $request->get('occupation'),
-                        // 'institute'    =>   $request->get('institute'),
-                        // 'dateOfBirth'  =>   $request->get('dateOfBirth'),
-                        // 'gender'       =>   $request->get('gender'),
-                        // 'CNIC'         =>   $request->get('CNIC'),
                         'userId'       =>   $user->id,
 
                     ]);
@@ -131,13 +115,19 @@ class StudentController extends Controller
                 {
                     $response['data']['code']       = 200;
                     $response['status']             = true;
-                    $response['result']             = $student;
+                    $response['data']['result']     = $student;
                     $response['user']               = $user;
                     $response['data']['message']    = 'Student profile created Successfully';
                 }
             }
         return $response;
     }
+
+     /**
+     * LIST OF ALL USERS/STUDENTS
+     *
+     * @function
+     */
 
     public function listStudents(Request $request)
     {
@@ -181,6 +171,12 @@ class StudentController extends Controller
         }
         return $response;
     }
+
+     /**
+     * UPDATE USER/STUDENT
+     *
+     * @function
+     */
 
     public function updateStudent(Request $request)
     {
@@ -254,6 +250,12 @@ class StudentController extends Controller
         return $response;
     }
 
+    /**
+     * STUDENT DETAILS
+     *
+     * @function
+     */
+
     public function studentDetails(Request $request)
     {
         $response = [
@@ -294,7 +296,7 @@ class StudentController extends Controller
                 {
                     $response['data']['code']       = 200;
                     $response['status']             = true;
-                    $response['result']             = $student;
+                    $response['data']['result']     = $student;
                     $response['data']['message']    = 'Request Successfull';
 
                 } else {
