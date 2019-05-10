@@ -392,11 +392,10 @@ class SuperAdminController extends Controller
 
     /**
      * ALL HOSTELS VERIFICATION REQUESTS LIST
-     *
      * Super admin can see a list of all hostels that send the request to register the hostel
-     *
-     * @function
      * 
+     * @param VerifyHostelRequest $verificationStatus
+     * @return Model
      */
 
     public function listHostelsVerifyRequests(Request $request)

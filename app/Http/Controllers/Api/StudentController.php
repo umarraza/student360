@@ -78,6 +78,8 @@ class StudentController extends Controller
                     $userId = $user->id;
 
                     /* 
+                        Create a new ThreadModel instance.
+                        ---------------------
                         Thread respresents the conversation between a registered user and super admin.
                         Registered user can ask queries to super admin about anything regrading 
                         hostels. All messages between a registered user and super admin will 
