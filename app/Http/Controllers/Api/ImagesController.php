@@ -30,6 +30,9 @@ class ImagesController extends Controller
 
     public function createImage(Request $request)
     {
+
+        return $request;
+
         $user = JWTAuth::toUser($request->token);
             $response = [
                 'data' => [

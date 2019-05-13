@@ -14,9 +14,13 @@ use JWTAuth;
 use App\Models\Api\ApiUser as User;
 use App\Models\Api\ApiHostel as Hostel;
 use App\Models\Api\ApiThreads as Threads;
+use App\Models\Api\ApiImages as Image;
+use App\Models\Api\ApiReviews as Review;
+use App\Models\Api\ApiRatings as Rating;
+use App\Models\Api\ApiMessMenu as MessMenu;
+use App\Models\Api\ApiMessMenuTiming as MessMenuTiming;
 use App\Models\Api\ApiUpdateHostelRequest as UpdateHostelRequest;
 use App\Models\Api\ApiVerifyHostelRequests as VerifyHostelRequests;
-
 
 
 class HostelController extends Controller
@@ -130,7 +134,7 @@ class HostelController extends Controller
 
                 $hostelId  = $hostel->id;
 
-                /*
+                /**
                 *  After completing registration proccess and submitting form, a request will be send to 
                 *  super admin for hostel verification. After approval by admin, hostel will be 
                 *  registered and hostel admin can login. Below function creates new request 
@@ -150,13 +154,83 @@ class HostelController extends Controller
                 
                     ]);
 
-            	if ($hostel->save() && $user->save() && $verifyRequest->save()) 
+                /**
+                 * 
+                 *  Create Mess Menu list Meals for braekfast
+                 *  lunch and dinner
+                 *  @return Model
+                 * 
+                 */
+
+                $day            =  $request->get('day');
+                $breakFastMeal  =  $request->get('breakFastMeal');
+                $LunchMeal      =  $request->get('LunchMeal');
+                $dinnerMeal     =  $request->get('dinnerMeal');
+
+                $messMenue = MessMenu::create([
+
+                    'day'            =>  'Set Day',
+                    'breakFastMeal'  =>  'Set Break Fast Meal',
+                    'LunchMeal'      =>  'Set lunch Meal',
+                    'dinnerMeal'     =>  'Set Dinner Meal',
+                    'hostelId'       =>  $hostelId,
+
+                ]);
+
+                $messMenue->save();
+
+
+                $messMunuId = $messMenue->id;
+
+                /**
+                 * 
+                 *  Create Mess Menu list timmings and status if menu is available/set or not.
+                 *  We are creating mess menu while registering a user because we didn't 
+                 *  want to allow the option to crate mess menu for hostel admin. 
+                 *  Hostel admin cannot create mess menu again and again after
+                 *  registration.
+                 * 
+                 *  @return Model
+                 * 
+                 */
+
+                $bkfastStartTime = $request->get('bkfastStartTime');
+                $bkfastEndTime   = $request->get('bkfastEndTime');
+                $lunchStartTime  = $request->get('lunchStartTime');
+                $lunchEndTime    = $request->get('lunchEndTime');
+                $dinnerStartTime = $request->get('dinnerStartTime');
+                $dinnerEndTime   = $request->get('dinnerEndTime');
+                $isSetBreakFast  = $request->get('isSetBreakFast');
+                $isSetLunch      = $request->get('isSetLunch');
+                $isSetDinner     = $request->get('isSetDinner');
+                $messMenuId      = $request->get('messMenuId');
+
+
+                $messMenuTiming = MessMenuTiming::create([
+
+                    'bkfastStartTime'  =>  '07:00 AM ',
+                    'bkfastEndTime'    =>  '10:00 AM',
+                    'lunchStartTime'   =>  '01:00 PM',
+                    'lunchEndTime'     =>  '03:00 PM',
+                    'dinnerStartTime'  =>  '07:00 PM',
+                    'dinnerEndTime'    =>  '07:10 PM',
+                    'isSetBreakFast'   =>  0,
+                    'isSetLunch'       =>  0,
+                    'isSetDinner'      =>  0,
+                    'messMenuId'       =>  $messMunuId,
+                    'hostelId'         =>  $hostelId,
+
+                ]);
+
+            	if ($hostel->save() && $user->save() && $verifyRequest->save() && $messMenuTiming->save()) 
                 {
-                    $response['data']['code']       = 200;
-                    $response['status']             = true;
-                    $response['data']['result']     = $hostel;
-                    $response['user']               = $user;
-                    $response['data']['message']    = 'Hostel created Successfully';
+                    $response['data']['code'] = 200;
+                    $response['status']  = true;
+                    $response['data']['result'] = $hostel;
+                    $response['data']['user'] = $user;
+                    $response['data']['messMenue'] = $messMenue;
+                    $response['data']['messMenuTiming'] = $messMenuTiming;
+                    $response['data']['message'] = 'Hostel created Successfully';
                 }
             }
         
@@ -366,6 +440,80 @@ class HostelController extends Controller
 
                 $hostel = Hostel::find($request->id);
 
+                $hostelImages = Image::where('hostelId', '=', $request->id)->get();
+
+                $reviews = Review::where('hostelId', '=', $request->id)->get();
+
+                $ratings = Rating::where('hostelId', '=', $request->id)->get();
+
+                if (!empty($hostel)) 
+                {
+
+                    $response['data']['code']       =  200;
+                    $response['status']             =  true;
+                    $response['data']['result']     =  $hostel;
+                    $response['data']['images']     =  $hostelImages;
+                    $response['data']['reviews']    =  $reviews;
+                    $response['data']['ratings']    =  $ratings;
+                    $response['data']['message']    =  'Request Successfull';
+
+                } else {
+
+                    $response['data']['code']       =  400;
+                    $response['status']             =  false;
+                    $response['data']['message']    =  'Hostel Not Found!';
+                
+                }
+            }
+        return $response;
+    }
+        /**
+     * HOSTEL DETAILS
+     *
+     * Super admin and normal user both can see the details
+     *
+     * @function
+     */
+
+    public function loggedInHostelDetails(Request $request)
+    {
+
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+
+            $rules = [
+
+            	'id'     =>   'required',
+
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors'] = $validator->messages();
+
+            }
+            else
+            {
+
+                $hostel = Hostel::where('userId', '=', $request->id)->first();
+
             	if (!empty($hostel)) 
                 {
 
@@ -384,6 +532,7 @@ class HostelController extends Controller
             }
         return $response;
     }
+
 
     /**
      * DELETE HOSTEL

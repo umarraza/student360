@@ -14,8 +14,10 @@ class MessMenu extends Model
      protected $fillable = [
 
         'day',
-        'breakFastTiming',
-        'dinnerTiming',
+        'breakFastMeal',
+        'LunchMeal',
+        'dinnerMeal',
+        'hostelId',
 
     ];
 
@@ -33,8 +35,11 @@ class MessMenu extends Model
 
                 'id' => $this->id,
                 'day' => $this->day,
-                'breakFastTiming' => $this->breakFastTiming,
-                'dinnerTiming'=> $this->dinnerTiming,
+                'breakFastMeal' => $this->breakFastMeal,
+                'LunchMeal'=> $this->LunchMeal,
+                'dinnerMeal'=> $this->dinnerMeal,
+                'hostelId'=> $this->hostelId,
+
 
         ];
     }

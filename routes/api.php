@@ -31,8 +31,11 @@ Route::post('/create-hostel', 'Api\HostelController@create');
 Route::post('/delete-hostel', 'Api\HostelController@delete');
 Route::get('/list-hostels', 'Api\HostelController@listHostels');
 Route::post('/view-hostel', 'Api\HostelController@hostelDetails');
+// Route::post('/show-hostel', 'Api\HostelController@hostelDetails');
+
 Route::get('/view-registered-hostels', 'Api\HostelController@registeredHostels');
 Route::post('/hostel-available', 'Api\HostelController@updateAvailbility');
+Route::post('/loggedIn-hostel-details', 'Api\HostelController@loggedInHostelDetails');
 
 /*
 |--------------------------------------------------------------------------
