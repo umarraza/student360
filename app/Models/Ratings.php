@@ -11,16 +11,23 @@ class Ratings extends Model
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';
 
-     protected $fillable = [
+    //  protected $fillable = [
 
-        'body',
-        'hostelId',
-        'userId',
-    ];
+    //     'score',
+    //     'hostelId',
+    //     'userId',
+    // ];
 
+        protected $guarded = [];
     /**
      * @return mixed
      */
+
+    public function hostel(){
+
+        return $this->hasOne(Hostel::class, 'id', 'hostelId');
+    } 
+    
     public function user()
     {
         return $this->hasOne(User::class,'id','userId');
@@ -31,7 +38,7 @@ class Ratings extends Model
         return [
 
                 'id'       =>  $this->id,
-                'body'     =>  $this->body,
+                'score'    =>  $this->score,
                 'hostelId' =>  $this->hostelId,
                 'userId'   =>  $this->userId,
         ];

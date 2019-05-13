@@ -82,10 +82,12 @@ class ImagesController extends Controller
                     $image = Images::create([
 
                             'imageName'  => $file_name,
-                            'isThumbnail'=> $isThumbnail,
+                            'isThumbnail'=> $request->get('isThumbnail'),
                             'hostelId'   => $request->get('hostelId'),
     
                         ]);
+
+
 
                     if ($image->save())
                     {
@@ -116,4 +118,64 @@ class ImagesController extends Controller
         }    
         return $response;
     }
+
+    public function listImages(Request $request)
+    {
+        $user = JWTAuth::toUser($request->token);
+        
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isSuperAdmin())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            /** 
+             * 
+             *  SELECT * FROM Images WHERE hostel_id = '1' OR hostel_id = '2' OR hostel_id = '3'
+             *  SELECT * FROM Images WHERE hostel_id IN ('1', '1', '3') -> whereIn() for Laravel
+             *  SELECT * FROM Images WHERE hostel_id NOT IN ('1', '1', '3') -> whereNotIn() for Laravel
+             * 
+             */
+
+
+            $images = Images::select('imageName', 'hostelId')
+                ->whereBetween('hostelId', [1,10])
+                ->orderBy('hostelId', 'asc')
+                ->limit(2)
+                ->get();
+
+
+
+
+            if (!empty($images)) {
+
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Request Successfull';
+                $response['data']['result']     =  $images;
+                $response['status']             =  true;
+
+            } else {
+
+                $response['data']['code']       =  400;
+                $response['data']['message']    =  'No Hostels Found';
+                $response['status']             =  false;    
+            }
+
+        }
+        return $response;
+    }
+
 }

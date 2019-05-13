@@ -11,6 +11,7 @@ class Images extends Model
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';
 
+
      protected $fillable = [
 
         'imageName',
@@ -21,6 +22,12 @@ class Images extends Model
     /**
      * @return mixed
      */
+
+    public function hostel(){
+
+        return $this->belongsTo(Hostel::class);
+    }
+
     public function user()
     {
         return $this->hasOne(User::class,'id','userId');

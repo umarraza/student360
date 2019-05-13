@@ -36,13 +36,26 @@ class Hostel extends Model
         'userId',
     ];
 
-    /**
-     * @return mixed
-     */
+    public function images(){
+
+        return $this->hasMany(Images::class, 'id','hostelId');
+    }
+
+    public function ratings(){
+
+        return $this->hasMany(Ratings::class, 'id','hostelId');
+    }
+
     public function user()
     {
         return $this->hasOne(User::class,'id','userId');
     }
+
+    public function addRating($score){
+
+        $this->ratings()->create(compact('score'));
+    }
+
 
     public function getArrayResponse() {
         

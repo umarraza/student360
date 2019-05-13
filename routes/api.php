@@ -114,6 +114,7 @@ Route::post('/search-by-features','Api\SearchesController@searchByFeatures');
 */
 
 Route::post('/create-image','Api\ImagesController@createImage');
+Route::get('/list-image','Api\ImagesController@listImages');
 
 /*
 |--------------------------------------------------------------------------
@@ -155,3 +156,5 @@ Route::post('/approve-hostel-request', 'Api\RequestsController@create');
 | update hostel have been define here.
 */
 Route::post('/update-hostel-request', 'Api\RequestsController@updateHostelRequest');
+
+Route::post('/create-rating', 'Api\RatingsController@store');

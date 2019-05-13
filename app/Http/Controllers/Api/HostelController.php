@@ -365,7 +365,7 @@ class HostelController extends Controller
             {
 
                 $hostel = Hostel::find($request->id);
-                
+
             	if (!empty($hostel)) 
                 {
 

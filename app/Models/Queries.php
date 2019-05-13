@@ -21,6 +21,7 @@ class Queries extends Model
     /**
      * @return mixed
      */
+
     public function user()
     {
         return $this->hasOne(User::class,'id','userId');
