@@ -11,14 +11,13 @@ class Ratings extends Model
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';
 
-    //  protected $fillable = [
+     protected $fillable = [
 
-    //     'score',
-    //     'hostelId',
-    //     'userId',
-    // ];
+        'score',
+        'hostelId',
+        'userId',
+    ];
 
-        protected $guarded = [];
     /**
      * @return mixed
      */

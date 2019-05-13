@@ -46,16 +46,20 @@ class SearchesController extends Controller
            $location = $request->get('location');
            $searchRadius = $request->get('searchRadius');
            $hostelCategory = $request->get('hostelCategory');
+
             if (isset($hostelCategory)) {
 
-                $hostelsResults = DB::table('hostel_profiles')
+                $hostelsResults = DB::table('hostel_profiles AS hostel')
 
-                    ->join('hostel_images', 'hostel_images.hostelId', '=', 'hostel_profiles.id')
-                    ->join('ratings', 'ratings.hostelId', '=', 'hostel_profiles.id')
-                    ->select('hostel_profiles.id', 'hostel_profiles.hostelName', 'hostel_profiles.address', 'hostel_profiles.hostelCategory', 'ratings.score', 'hostel_images.imageName', 'hostel_images.isThumbnail' )
-                    ->where('hostel_profiles.hostelCategory','REGEXP', $hostelCategory)
-                    ->where('hostel_images.isThumbnail','=', 1)
-                    ->orderBy('ratings.score', 'desc')
+                    ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
+                    ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
+
+                    ->select('hostel.id', 'hostel.hostelName', 'hostel.address', 'hostel.hostelCategory', 'rating.score', 'image.imageName', 'image.isThumbnail' )
+                    
+                    ->where('hostel.hostelCategory','REGEXP', $hostelCategory)
+                    ->where('image.isThumbnail','=', 1)
+                    
+                    ->orderBy('rating.score', 'desc')
 
                 ->get();
 
