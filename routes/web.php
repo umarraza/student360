@@ -14,3 +14,9 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+/**
+ *   In availability, user can update rooms and beds, whether how many of them are available.   What does it mean by availibilty?
+ *   Threadid to show in result set of queries?
+ * 
+ */

@@ -139,6 +139,7 @@ Route::post('/create-profile-image','Api\ProfileImagesController@createImage');
 
 Route::post('/create-query', 'Api\QueriesController@create');
 Route::post('/delete-query', 'Api\QueriesController@delete');
+Route::post('/list-queries','Api\QueriesController@listQueries');
 
 /*
 |--------------------------------------------------------------------------

@@ -17,9 +17,17 @@ use App\Models\Api\ApiQueries as Queries;
 use App\Models\Api\ApiThreads as Threads;
 
 
-
 class ThreadsController extends Controller
 {
+
+
+    /**
+     *  List of all threads that contains queies against threads.
+     * (minimum one query against a thread)
+     * 
+     *  @return  Threads
+     */
+
     public function listThreads(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
@@ -44,6 +52,7 @@ class ThreadsController extends Controller
             
             $queries = Queries::select('threadId')->distinct()->get();
             $threads = Threads::select('id')->get();
+
 
             /* 
                 Super admin can view all threads/conversations. Conversations between registered user and 

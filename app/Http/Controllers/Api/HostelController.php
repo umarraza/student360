@@ -65,8 +65,8 @@ class HostelController extends Controller
                 'address'		     =>   'required',  
                 'longitude'          =>   'required',
                 'latitude'           =>   'required',
-                'state'              =>   'required',
-                'postCode'           =>   'required',
+                // 'state'              =>   'required',    State & Postcode are optional
+                // 'postCode'           =>   'required',
                 'city'            	 =>   'required',
                 'country'            =>   'required',
                 'description'        =>   'required',
@@ -157,7 +157,7 @@ class HostelController extends Controller
                 /**
                  * 
                  *  Create Mess Menu list Meals for braekfast
-                 *  lunch and dinner
+                 *  lunch and dinner.
                  *  @return Model
                  * 
                  */
@@ -184,7 +184,7 @@ class HostelController extends Controller
 
                 /**
                  * 
-                 *  Create Mess Menu list timmings and status if menu is available/set or not.
+                 *  Create Mess Menu list timings and status if menu is available/set or not.
                  *  We are creating mess menu while registering a user because we didn't 
                  *  want to allow the option to crate mess menu for hostel admin. 
                  *  Hostel admin cannot create mess menu again and again after
@@ -399,7 +399,7 @@ class HostelController extends Controller
      *
      * Super admin and normal user both can see the details
      *
-     * @function
+     * @return SingleHostelDetails
      */
 
     public function hostelDetails(Request $request)
