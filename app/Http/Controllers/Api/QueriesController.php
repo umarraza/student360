@@ -167,23 +167,38 @@ class QueriesController extends Controller
                'status' => false
             ];
             
-            $threadId = $request->get('threadId');
-            $queries = Queries::select('id', 'message', 'type', 'threadId')->where('threadId', '=', $threadId)->get();
+            $rules = [
 
-            if (!empty($queries)) {
+            	'threadId' => 'required',
 
-                $response['data']['code']       =  200;
-                $response['data']['message']    =  'Request Successfull';
-                $response['data']['result']     =  $queries;
-                $response['status']             =  true;
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors'] = $validator->messages();
 
             } else {
 
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'Request Unsuccessfull';
-                $response['status']             =  false;    
-            }
+                $threadId = $request->get('threadId');
+                $queries = Queries::select('id', 'message', 'type', 'threadId')->where('threadId', '=', $threadId)->get();
 
+                if (!empty($queries)) {
+
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Request Successfull';
+                    $response['data']['result']     =  $queries;
+                    $response['status']             =  true;
+
+                } else {
+
+                    $response['data']['code']       =  400;
+                    $response['data']['message']    =  'Request Unsuccessfull';
+                    $response['status']             =  false;    
+                }
+            }
         }
         return $response;
     }

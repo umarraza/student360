@@ -31,7 +31,6 @@ class Hostel extends Model
         'website',
         'phoneNumber',
         'isApproved',
-        'isAvailable',
         'features',
         'userId',
     ];
@@ -79,7 +78,6 @@ class Hostel extends Model
                 'website'           =>  $this->website, 
                 'phoneNumber'       =>  $this->phoneNumber,  
                 'isApproved'        =>  $this->isApproved,  
-                'isAvailable'       =>  $this->isAvailable, 
                 'features'          =>  $this->features,  
                 'userId'            =>  $this->userId,  
 

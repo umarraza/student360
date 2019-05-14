@@ -13,9 +13,9 @@ use JWTAuthException;
 use JWTAuth;
 
 use App\Models\Api\ApiUser as User;
-use App\Models\Api\ApiUpdateRequests as UpdateRequests;
-
 use App\Models\Api\ApiMessMenu as MessMenu;
+use App\Models\Api\ApiMessMenuTiming as MessMenuTiming;
+use App\Models\Api\ApiUpdateRequests as UpdateRequests;
 
 class MessMenuController extends Controller
 {
@@ -48,33 +48,85 @@ class MessMenuController extends Controller
                 ],
                'status' => false
             ];
-            
 
-            $breakFastTiming = $request->get('breakFastTiming');
-            $dinnerTiming = $request->get('dinnerTiming');
+            $rules = [
 
-            $updateMessMenu =  MessMenu::find($request->id)->update([
-                    
-                'breakFastTiming'  =>  $breakFastTiming,
-                'dinnerTiming'  =>  $dinnerTiming,
+            	'day'             => 'required',
+            	'breakFastMeal'   => 'required',
+            	'LunchMeal'       => 'required',
+            	'dinnerMeal'      => 'required',
+            	'bkfastStartTime' => 'required',
+            	'bkfastEndTime'   => 'required',
+            	'lunchStartTime'  => 'required',
+            	'lunchEndTime'    => 'required',
+            	'dinnerStartTime' => 'required',
+            	'dinnerEndTime'   => 'required',
+            	'isSetBreakFast'  => 'required',
+            	'isSetLunch'      => 'required',
+            	'isSetDinner'     => 'required',
+            	'hostelId'        => 'required',
 
-            ]);
+            ];
 
+            $validator = Validator::make($request->all(), $rules);
 
-            if ($updateMessMenu) {
-
-                $response['data']['code']       =  200;
-                $response['data']['message']    =  'Request Successfull';
-                $response['status']             =  true;
+            if ($validator->fails()) {
+                
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors'] = $validator->messages();
 
             } else {
 
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'Requst Unsuccessfull';
-                $response['status']             =  false;    
+                $hostelId  =  $request->get('hostelId');
+                $LunchMeal  =  $request->get('LunchMeal');
+                $dinnerMeal   =  $request->get('dinnerMeal');
+                $breakFastMeal  =  $request->get('breakFastMeal');
+
+                $updateMessMenu =  MessMenu::find($request->id)->update([
+                        
+                    'breakFastMeal' =>  $breakFastMeal,
+                    'LunchMeal'     =>  $LunchMeal,
+                    'dinnerMeal'    =>  $dinnerMeal,
+
+                ]);
+
+                $isSetLunch        =   $request->get('isSetLunch');
+                $isSetDinner       =   $request->get('isSetDinner');
+                $lunchEndTime      =   $request->get('lunchEndTime');
+                $bkfastEndTime     =   $request->get('bkfastEndTime');
+                $dinnerEndTime     =   $request->get('dinnerEndTime');
+                $isSetBreakFast    =   $request->get('isSetBreakFast');
+                $lunchStartTime    =   $request->get('lunchStartTime');
+                $dinnerStartTime   =   $request->get('dinnerStartTime');
+                $bkfastStartTime   =   $request->get('bkfastStartTime');
+
+                $updateMenuTiming = MessMenuTiming::where('hostelId', '=', $hostelId)->update([
+
+                    'bkfastStartTime'  =>  $bkfastStartTime,
+                    'bkfastEndTime'    =>  $bkfastEndTime,
+                    'lunchStartTime'   =>  $lunchStartTime,
+                    'lunchEndTime'     =>  $lunchEndTime,
+                    'dinnerStartTime'  =>  $dinnerStartTime,
+                    'dinnerEndTime'    =>  $dinnerEndTime,
+                    'isSetBreakFast'   =>  $isSetBreakFast,
+                    'isSetLunch'       =>  $isSetLunch,
+                    'isSetDinner'      =>  $isSetDinner,
+
+                ]);
+
+                if ($updateMessMenu && $updateMenuTiming) {
+
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Request Successfull';
+                    $response['status']             =  true;
+
+                } else {
+
+                    $response['data']['code']       =  400;
+                    $response['data']['message']    =  'Requst Unsuccessfull';
+                    $response['status']             =  false;    
+                }
             }
-
-
         }
         return $response;
     }
@@ -88,7 +140,7 @@ class MessMenuController extends Controller
      * 
      */
 
-    public function listMessMenu(Request $request)
+    public function showMessMenu(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
         $response = [
@@ -109,26 +161,72 @@ class MessMenuController extends Controller
                 ],
                'status' => false
             ];
-            
-            $listOfMessMenu = MessMenu::all();
-            
-            // If there are thousands of hostels, getting the list with all parameters will put load to server as well as network. ask musab if we can select just few fields. 
 
-            if (!empty($listOfMessMenu)) {
+            $rules = [
 
-                $response['data']['code']       =  200;
-                $response['data']['message']    =  'Request Successfull';
-                $response['data']['result']     =  $listOfMessMenu;
-                $response['status']             =  true;
+            	'hostelId' => 'required',
+
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors'] = $validator->messages();
 
             } else {
 
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'No Hostels Found';
-                $response['status']             =  false;    
-            }
+                $hostelId = $request->get('hostelId');
 
+                $messMenu = MessMenu::select(
+                    
+                    'id', 
+                    'day', 
+                    'breakFastMeal', 
+                    'LunchMeal', 
+                    'dinnerMeal', 
+                    'hostelId')
+                    
+                    ->where('hostelId', '=', $hostelId)
+                    ->get();
+
+                $messMenuTiming = MessMenuTiming::select(
+                    
+                    'id', 
+                    'bkfastStartTime', 
+                    'bkfastEndTime', 
+                    'lunchStartTime', 
+                    'lunchEndTime', 
+                    'dinnerStartTime', 
+                    'dinnerEndTime' , 
+                    'isSetBreakFast' , 
+                    'isSetLunch', 
+                    'isSetDinner', 
+                    'hostelId')
+                    
+                    ->where('hostelId', '=', $hostelId)
+                    ->first();
+                
+                // If there are thousands of hostels, getting the list with all parameters will put load to server as well as network. ask musab if we can select just few fields. 
+
+                if (!empty($messMenu && $messMenuTiming)) {
+
+                    $response['data']['code']            =  200;
+                    $response['data']['message']         =  'Request Successfull';
+                    $response['data']['result']          =  $messMenu;
+                    $response['data']['messMenuTiming']  =  $messMenuTiming;
+                    $response['status']                  =  true;
+
+                } else {
+
+                    $response['data']['code']       =  400;
+                    $response['data']['message']    =  'No Hostels Found';
+                    $response['status']             =  false;    
+                }
+            }
         }
         return $response;
     }
+
 }

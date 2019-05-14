@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 13, 2019 at 12:47 PM
+-- Generation Time: May 14, 2019 at 12:38 PM
 -- Server version: 10.1.38-MariaDB
 -- PHP Version: 7.3.2
 
@@ -62,7 +62,8 @@ CREATE TABLE `hostels_registration-requests` (
 --
 
 INSERT INTO `hostels_registration-requests` (`id`, `verificationStatus`, `hostelId`, `createdAt`, `updatedAt`) VALUES
-(3, 0, 22, '2019-05-13 05:25:47', '2019-05-13 05:25:47');
+(3, 0, 22, '2019-05-13 05:25:47', '2019-05-13 05:25:47'),
+(5, 0, 24, '2019-05-14 00:38:33', '2019-05-14 00:38:33');
 
 -- --------------------------------------------------------
 
@@ -84,11 +85,7 @@ CREATE TABLE `hostel_images` (
 --
 
 INSERT INTO `hostel_images` (`id`, `imageName`, `isThumbnail`, `hostelId`, `createdAt`, `updatedAt`) VALUES
-(1, 'image_1557041414.png', 1, 9, '2019-05-05 14:30:14', '2019-05-05 14:30:14'),
-(2, 'image_1557120758.png', 1, 15, '2019-05-06 00:32:38', '2019-05-06 00:32:38'),
-(3, 'image_1557120758.png', 1, 20, '2019-05-06 05:44:29', '2019-05-06 05:44:29'),
-(4, 'image_1557122005.png', 1, 17, '2019-05-06 00:53:25', '2019-05-06 00:53:25'),
-(6, 'image_1557122005.png', 0, 3, '2019-05-06 05:58:47', '2019-05-06 05:58:47');
+(9, 'image_1557809594.png', 1, 20, '2019-05-13 23:53:14', '2019-05-13 23:53:14');
 
 -- --------------------------------------------------------
 
@@ -106,18 +103,17 @@ CREATE TABLE `hostel_profiles` (
   `address` varchar(100) NOT NULL,
   `longitude` varchar(50) NOT NULL,
   `latitude` varchar(50) NOT NULL,
-  `state` varchar(50) NOT NULL,
-  `postCode` int(20) NOT NULL,
+  `state` varchar(50) DEFAULT NULL,
+  `postCode` int(20) DEFAULT NULL,
   `city` varchar(50) NOT NULL,
   `country` varchar(50) NOT NULL,
   `description` varchar(500) NOT NULL,
   `contactName` varchar(50) NOT NULL,
-  `contactEmail` varchar(30) NOT NULL,
+  `contactEmail` varchar(30) DEFAULT NULL,
   `website` varchar(50) NOT NULL,
   `phoneNumber` varchar(50) NOT NULL,
   `isApproved` int(10) NOT NULL DEFAULT '0',
   `isVerified` int(10) NOT NULL DEFAULT '0',
-  `isAvailable` tinyint(4) DEFAULT '0',
   `features` varchar(2000) NOT NULL,
   `userId` int(10) NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -128,12 +124,13 @@ CREATE TABLE `hostel_profiles` (
 -- Dumping data for table `hostel_profiles`
 --
 
-INSERT INTO `hostel_profiles` (`id`, `hostelName`, `hostelCategory`, `numberOfBedRooms`, `noOfBeds`, `priceRange`, `address`, `longitude`, `latitude`, `state`, `postCode`, `city`, `country`, `description`, `contactName`, `contactEmail`, `website`, `phoneNumber`, `isApproved`, `isVerified`, `isAvailable`, `features`, `userId`, `createdAt`, `updatedAt`) VALUES
-(9, 'MASHALLAH BOYS HOSTEL GULBERG 3 NEAR HAJVERY UNIVERSITY', 'Boys', 10, 20, '10000-15000', 'iqbal town', '31.520370', '74.358747', 'punjab', 54000, 'lahore', 'pakistan', 'Mashallah Boys Hostel Gulberg 3 near hajvery university Facilities: Wifi Internet - Free UPS Connection - Free TV cable Connection - Free Attach Bath Carpeted Room Geyser for Hot Water in winters Electric Water Cooler for Drinking -Electricity (separate sub meters installed) Room Sharing Rent 4000 (Security 5000) Full Room Rent 8000 (Security 10000) Max 2 persons allowed in a room.', 'anas', 'abc@gmail.com', 'abc.com', '03249470780', 1, 0, 0, '[\"ATM\",\"waterFilter\"]', 39, '2019-05-07 21:44:54', '2019-05-09 02:47:19'),
-(15, 'Fast Hostel', 'Boys', 25, 15, '10000-15000', '370,TIP BLOCK KHAYABAN-E-AMIN,DEFENCE ROAD LAHORE 370 TIP BLOCK KHAYABAN E AMEEN LAHORE', '74.358747', '31.520370', 'Punjab', 212121, 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border, and offers free WiFi. Located around 1.2 km from Pace Shopping Mall, the hotel is also 2.1 km away from Lahore Gymkhana. A tour desk can provide information on the area.', 'Uzair', 'uzairsalar@gmail.com', 'www.maironahotel.com', '03218840489', 0, 0, 0, '[\"ATM\",\"attachedBathroom\",\"seprate\"]', 49, '2019-05-08 20:30:14', '2019-05-08 20:30:14'),
-(17, 'Continental Hostel', 'Boys', 25, 15, '5000', '370,TIP BLOCK KHAYABAN-E-AMIN,DEFENCE ROAD LAHORE 370 TIP BLOCK KHAYABAN E AMEEN LAHORE', '74.358747', '31.520370', 'Punjab', 212121, 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border, and offers free WiFi. Located around 1.2 km from Pace Shopping Mall, the hotel is also 2.1 km away from Lahore Gymkhana. A tour desk can provide information on the area.', 'Umar Raza', 'umarraza@gmail.com', 'www.maironahotel.com', '03218840489', 0, 0, 0, '[\"ATM\",\"attachedBathroom\",\"seprate\"]', 52, '2019-05-09 03:04:45', '2019-05-09 03:04:45'),
-(20, 'Friends Hostel', 'Boys', 20, 30, '10000-12000', '280 D block, Faisal town lahore', '31.520370', '74.358747', 'punjab', 54000, 'Lahore', 'Pakistan', 'hostel is at good location with all the fascilities.', 'Rehan', 'Rehan@gmail.com', 'friends.com', '03211234567', 0, 0, 0, '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\",\"Parking area\",\"Board Games\",\"Mess\",\"TV\",\"Ceiling Fan\",\"Childrens play area\",\"Common Room\",\"Currency Exchange\",\"Direct Dial Telephone\",\"Kitchen\",\"Elevator\",\"Free Internet Access\",\"Free Parking\",\"Free WiFi\",\"Fridge/Freezer\",\"Fusball\",\"Games Room\",\"Gym\",\"Housekeeping\",\"Internet Access\",\"Iron/ironing Board\",\"Laundry Facilities\",\"Lockers\",\"Luggage Storage\",\"Microwave\",\"Outdoor Swimming Pool\",\"Outdoor Terrace\",\"Pool Table\",\"Reception (limited hours)\",\"Swimming Pool\",\"Tea & Coffee Making Facilities\",\"Vending Machines\",\"Wake-up calls\",\"Washing Machine\",\"Wheelchair Accessible\",\"Video games\",\"Transport\",\"CCTV\",\"Sports area\",\"Lawn\",\"Attached bathrooms\",\"Room service\",\"Pets allowed\",\"Guests allowed\",\"Water filter\",\"First aid\",\"Furnished\",\"Not furnished\",\"UPS\",\"Geyser\",\"Study room\",\"Medical support\",\"Ground Floor\",\"Professional cook\",\"Carpeted rooms\",\"Cupboards\",\"Daily news paper\",\"Electricity 24/7\",\"3-time meal\",\"Non- Smoking\",\"seprate\"]', 57, '2019-05-09 22:47:08', '2019-05-09 22:47:08'),
-(22, '5 Star Hostel', 'Girls', 25, 15, '5000', 'Haji Sadiq Rd, Block B2 Block B 2 Phase 1 Johar Town, Lahore, Punjab 54600, Pakistan', '74.358747', '31.520370', 'Sindh', 212121, 'Karachi', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border.', 'Irshad Sadiqque', 'irshad@gmail.com', 'www.maironahotel.com', '03218840489', 0, 0, 0, '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\",\"Parking area\",\"Board Games\",\"Mess\",\"TV\",\"Ceiling Fan\",\"Childrens play area\",\"Common Room\",\"Currency Exchange\",\"Direct Dial Telephone\",\"Kitchen\",\"Elevator\",\"Free Internet Access\",\"Free Parking\",\"Free WiFi\",\"Fridge/Freezer\",\"Fusball\",\"Games Room\",\"Gym\",\"Housekeeping\",\"Internet Access\",\"Iron/ironing Board\",\"Laundry Facilities\",\"Lockers\",\"Luggage Storage\",\"Microwave\",\"Outdoor Swimming Pool\",\"Outdoor Terrace\",\"Pool Table\",\"Reception (limited hours)\",\"Swimming Pool\",\"Tea & Coffee Making Facilities\",\"Vending Machines\",\"Wake-up calls\",\"Washing Machine\",\"Wheelchair Accessible\",\"Video games\",\"Transport\",\"CCTV\",\"Sports area\",\"Lawn\",\"Attached bathrooms\",\"Room service\",\"Pets allowed\",\"Guests allowed\",\"Water filter\",\"First aid\",\"Furnished\",\"Not furnished\",\"UPS\",\"Geyser\",\"Study room\",\"Medical support\",\"Ground Floor\",\"Professional cook\",\"Carpeted rooms\",\"Cupboards\",\"Daily news paper\",\"Electricity 24/7\",\"3-time meal\",\"Non- Smoking\",\"seprate\"]', 59, '2019-05-13 05:25:47', '2019-05-13 05:25:47');
+INSERT INTO `hostel_profiles` (`id`, `hostelName`, `hostelCategory`, `numberOfBedRooms`, `noOfBeds`, `priceRange`, `address`, `longitude`, `latitude`, `state`, `postCode`, `city`, `country`, `description`, `contactName`, `contactEmail`, `website`, `phoneNumber`, `isApproved`, `isVerified`, `features`, `userId`, `createdAt`, `updatedAt`) VALUES
+(9, 'MASHALLAH BOYS HOSTEL GULBERG 3 NEAR HAJVERY UNIVERSITY', 'Boys', 10, 20, '10000-15000', 'iqbal town', '31.520370', '74.358747', 'punjab', 54000, 'lahore', 'pakistan', 'Mashallah Boys Hostel Gulberg 3 near hajvery university Facilities: Wifi Internet - Free UPS Connection - Free TV cable Connection - Free Attach Bath Carpeted Room Geyser for Hot Water in winters Electric Water Cooler for Drinking -Electricity (separate sub meters installed) Room Sharing Rent 4000 (Security 5000) Full Room Rent 8000 (Security 10000) Max 2 persons allowed in a room.', 'anas', 'abc@gmail.com', 'abc.com', '03249470780', 1, 0, '[\"ATM\",\"waterFilter\"]', 39, '2019-05-07 21:44:54', '2019-05-09 02:47:19'),
+(15, 'Fast Hostel', 'Boys', 25, 15, '10000-15000', '370,TIP BLOCK KHAYABAN-E-AMIN,DEFENCE ROAD LAHORE 370 TIP BLOCK KHAYABAN E AMEEN LAHORE', '74.358747', '31.520370', 'Punjab', 212121, 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border, and offers free WiFi. Located around 1.2 km from Pace Shopping Mall, the hotel is also 2.1 km away from Lahore Gymkhana. A tour desk can provide information on the area.', 'Uzair', 'uzairsalar@gmail.com', 'www.maironahotel.com', '03218840489', 0, 0, '[\"ATM\",\"attachedBathroom\",\"seprate\"]', 49, '2019-05-08 20:30:14', '2019-05-08 20:30:14'),
+(17, 'Continental Hostel', 'Boys', 25, 15, '5000', '370,TIP BLOCK KHAYABAN-E-AMIN,DEFENCE ROAD LAHORE 370 TIP BLOCK KHAYABAN E AMEEN LAHORE', '74.358747', '31.520370', 'Punjab', 212121, 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border, and offers free WiFi. Located around 1.2 km from Pace Shopping Mall, the hotel is also 2.1 km away from Lahore Gymkhana. A tour desk can provide information on the area.', 'Umar Raza', 'umarraza@gmail.com', 'www.maironahotel.com', '03218840489', 0, 0, '[\"ATM\",\"attachedBathroom\",\"seprate\"]', 52, '2019-05-09 03:04:45', '2019-05-09 03:04:45'),
+(20, 'chillHostel', 'Boys', 200, 300, '10000-15000', '280 D block, Faisal town lahore,pakistan', '31.520370', '74.358747', 'punjabsfdds', 54000, 'Lahorezsddsf', 'Pakistanzdsfsdf', 'hostel is at good location with all the fascilities.zsdfsdfsf', 'Rehana', NULL, 'friendieeeeee.com', '0321123456700', 0, 0, '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\",\"Board Games\",\"Mess\"]', 57, '2019-05-09 22:47:08', '2019-05-14 05:26:58'),
+(22, '5 Star Hostel', 'Girls', 25, 15, '5000', 'Haji Sadiq Rd, Block B2 Block B 2 Phase 1 Johar Town, Lahore, Punjab 54600, Pakistan', '74.358747', '31.520370', 'Sindh', 212121, 'Karachi', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border.', 'Irshad Sadiqque', 'irshad@gmail.com', 'www.maironahotel.com', '03218840489', 0, 0, '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\",\"Parking area\",\"Board Games\",\"Mess\",\"TV\",\"Ceiling Fan\",\"Childrens play area\",\"Common Room\",\"Currency Exchange\",\"Direct Dial Telephone\",\"Kitchen\",\"Elevator\",\"Free Internet Access\",\"Free Parking\",\"Free WiFi\",\"Fridge/Freezer\",\"Fusball\",\"Games Room\",\"Gym\",\"Housekeeping\",\"Internet Access\",\"Iron/ironing Board\",\"Laundry Facilities\",\"Lockers\",\"Luggage Storage\",\"Microwave\",\"Outdoor Swimming Pool\",\"Outdoor Terrace\",\"Pool Table\",\"Reception (limited hours)\",\"Swimming Pool\",\"Tea & Coffee Making Facilities\",\"Vending Machines\",\"Wake-up calls\",\"Washing Machine\",\"Wheelchair Accessible\",\"Video games\",\"Transport\",\"CCTV\",\"Sports area\",\"Lawn\",\"Attached bathrooms\",\"Room service\",\"Pets allowed\",\"Guests allowed\",\"Water filter\",\"First aid\",\"Furnished\",\"Not furnished\",\"UPS\",\"Geyser\",\"Study room\",\"Medical support\",\"Ground Floor\",\"Professional cook\",\"Carpeted rooms\",\"Cupboards\",\"Daily news paper\",\"Electricity 24/7\",\"3-time meal\",\"Non- Smoking\",\"seprate\"]', 59, '2019-05-13 05:25:47', '2019-05-13 05:25:47'),
+(24, 'Continental Hostel', 'Boys', 30, 20, '15000', 'Johar Town Lahore', '74.358747', '31.520370', 'Punjab', 15253, 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border', 'Sikandar', NULL, 'www.continentalhostel.com', '03034969407', 0, 0, '[\"ATM\",\"BBQ area\"]', 61, '2019-05-14 00:38:33', '2019-05-14 05:25:33');
 
 -- --------------------------------------------------------
 
@@ -152,7 +149,6 @@ CREATE TABLE `mess-menu-timinigs` (
   `isSetBreakFast` tinyint(3) NOT NULL DEFAULT '0',
   `isSetLunch` tinyint(3) NOT NULL DEFAULT '0',
   `isSetDinner` tinyint(3) NOT NULL DEFAULT '0',
-  `messMenuId` int(10) NOT NULL,
   `hostelId` int(10) NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -162,8 +158,8 @@ CREATE TABLE `mess-menu-timinigs` (
 -- Dumping data for table `mess-menu-timinigs`
 --
 
-INSERT INTO `mess-menu-timinigs` (`id`, `bkfastStartTime`, `bkfastEndTime`, `lunchStartTime`, `lunchEndTime`, `dinnerStartTime`, `dinnerEndTime`, `isSetBreakFast`, `isSetLunch`, `isSetDinner`, `messMenuId`, `hostelId`, `createdAt`, `updatedAt`) VALUES
-(1, '07:00 AM ', '10:00 AM', '01:00 PM', '03:00 PM', '07:00 PM', '07:10 PM', 0, 0, 0, 1, 22, '2019-05-13 05:25:47', '2019-05-13 05:25:47');
+INSERT INTO `mess-menu-timinigs` (`id`, `bkfastStartTime`, `bkfastEndTime`, `lunchStartTime`, `lunchEndTime`, `dinnerStartTime`, `dinnerEndTime`, `isSetBreakFast`, `isSetLunch`, `isSetDinner`, `hostelId`, `createdAt`, `updatedAt`) VALUES
+(1, '07:00 AM ', '10:00 AM', '01:00 PM', '03:00 PM', '07:00 PM', '07:10 PM', 0, 0, 0, 24, '2019-05-14 00:38:33', '2019-05-14 00:38:33');
 
 -- --------------------------------------------------------
 
@@ -187,12 +183,12 @@ CREATE TABLE `mess_menu` (
 --
 
 INSERT INTO `mess_menu` (`id`, `day`, `breakFastMeal`, `LunchMeal`, `dinnerMeal`, `hostelId`, `createdAt`, `updatedAt`) VALUES
-(1, 'Mon', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 22, '2019-05-13 05:25:47', '2019-05-13 05:25:47'),
-(2, 'Tue', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 22, '2019-05-13 10:35:38', '2019-05-13 10:35:38'),
-(3, 'Wed', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 22, '2019-05-13 10:42:04', '2019-05-13 10:42:04'),
-(4, 'Thu', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 22, '2019-05-13 10:42:30', '2019-05-13 10:42:30'),
-(5, 'Fri', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 22, '2019-05-13 10:42:59', '2019-05-13 10:42:59'),
-(6, 'Sat', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 22, '2019-05-13 10:43:24', '2019-05-13 10:43:24');
+(1, 'Mon', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 24, '2019-05-14 00:38:33', '2019-05-14 00:38:33'),
+(2, 'Tue', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 24, '2019-05-14 00:38:33', '2019-05-14 00:38:33'),
+(3, 'Wed', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 24, '2019-05-14 00:38:33', '2019-05-14 00:38:33'),
+(4, 'Thu', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 24, '2019-05-14 00:38:33', '2019-05-14 00:38:33'),
+(5, 'Fri', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 24, '2019-05-14 00:38:33', '2019-05-14 00:38:33'),
+(6, 'Sat', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 24, '2019-05-14 00:38:33', '2019-05-14 00:38:33');
 
 -- --------------------------------------------------------
 
@@ -329,8 +325,7 @@ CREATE TABLE `threads` (
 INSERT INTO `threads` (`id`, `userId`, `adminId`, `createdAt`, `updatedAt`) VALUES
 (3, 49, 1, '2019-05-08 20:30:14', '2019-05-08 20:30:14'),
 (4, 34, 1, '2019-05-09 02:07:49', '2019-05-09 02:07:49'),
-(5, 39, 1, '2019-05-09 02:36:12', '2019-05-09 02:36:12'),
-(6, 50, 1, '2019-05-08 22:34:09', '2019-05-08 22:34:09');
+(5, 39, 1, '2019-05-09 02:36:12', '2019-05-09 02:36:12');
 
 -- --------------------------------------------------------
 
@@ -348,13 +343,13 @@ CREATE TABLE `update-hostels-requests` (
   `address` varchar(100) NOT NULL,
   `longitude` varchar(100) NOT NULL,
   `latitude` varchar(100) NOT NULL,
-  `state` varchar(20) NOT NULL,
-  `postCode` varchar(20) NOT NULL,
+  `state` varchar(20) DEFAULT NULL,
+  `postCode` varchar(20) DEFAULT NULL,
   `city` varchar(20) NOT NULL,
   `country` varchar(50) NOT NULL,
   `description` varchar(1000) NOT NULL,
   `contactName` varchar(50) NOT NULL,
-  `contactEmail` varchar(50) NOT NULL,
+  `contactEmail` varchar(50) DEFAULT NULL,
   `website` varchar(50) NOT NULL,
   `phoneNumber` varchar(50) NOT NULL,
   `features` varchar(1000) NOT NULL,
@@ -370,7 +365,9 @@ CREATE TABLE `update-hostels-requests` (
 --
 
 INSERT INTO `update-hostels-requests` (`id`, `hostelName`, `hostelCategory`, `numberOfBedRooms`, `noOfBeds`, `priceRange`, `address`, `longitude`, `latitude`, `state`, `postCode`, `city`, `country`, `description`, `contactName`, `contactEmail`, `website`, `phoneNumber`, `features`, `status`, `hostelId`, `userId`, `createdAt`, `updatedAt`) VALUES
-(3, 'Continental Hostel', 'Boys', 30, 20, '15000', 'Johar Town Lahore', '74.358747', '31.520370', 'Punjab', '15253', 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border', 'Sikandar', 'sikandar@gmail.com', 'www.continentalhostel.com', '03034969407', '[\"ATM\",\"BBQ area\"]', 1, 13, 43, '2019-05-08 00:15:53', '2019-05-08 00:37:28');
+(3, 'Continental Hostel', 'Boys', 30, 20, '15000', 'Johar Town Lahore', '74.358747', '31.520370', 'Punjab', '15253', 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border', 'Sikandar', 'sikandar@gmail.com', 'www.continentalhostel.com', '03034969407', '[\"ATM\",\"BBQ area\"]', 1, 13, 43, '2019-05-08 00:15:53', '2019-05-08 00:37:28'),
+(4, 'Continental Hostel', 'Boys', 30, 20, '15000', 'Johar Town Lahore', '74.358747', '31.520370', 'Punjab', '15253', 'Lahore', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border', 'Sikandar', NULL, 'www.continentalhostel.com', '03034969407', '[\"ATM\",\"BBQ area\"]', 1, 24, 61, '2019-05-14 03:11:43', '2019-05-14 05:25:33'),
+(6, 'chillHostel', 'Boys', 200, 300, '10000-15000', '280 D block, Faisal town lahore,pakistan', '31.520370', '74.358747', 'punjabsfdds', '54000', 'Lahorezsddsf', 'Pakistanzdsfsdf', 'hostel is at good location with all the fascilities.zsdfsdfsf', 'Rehana', NULL, 'friendieeeeee.com', '0321123456700', '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\",\"Board Games\",\"Mess\"]', 1, 20, 57, '2019-05-14 04:39:39', '2019-05-14 05:26:58');
 
 -- --------------------------------------------------------
 
@@ -411,7 +408,8 @@ INSERT INTO `users` (`id`, `username`, `email`, `password`, `remember_token`, `r
 (50, 'usman@gmail.com', NULL, '$2y$10$90jzB05LV4yLB4nVxbbHYOv249xHfzonyiSDeiOgRxLpAL6rBruLe', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', 6, '2019-05-09 03:34:09', '2019-05-08 22:34:09'),
 (52, 'umarraza@gmail.com', 'umarraza@gmail.com', '$2y$10$OXOrevcQvUsO38t3douf6O.JehyC3TLCH1BVCKxLxblTE5H5XpFF.', NULL, 2, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', NULL, '2019-05-13 07:41:11', '2019-05-09 03:04:45'),
 (57, 'rehan.rehan', 'Rehan@gmail.com', '$2y$10$9Z.NhqP63wq6jpl8qxLgQO68tqYPnsItrrFlwqmbq2Af1Y4QLrG6W', NULL, 2, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', NULL, '2019-05-10 04:37:18', '2019-05-09 22:47:08'),
-(59, 'irshad@gmail.com', 'irshad@gmail.com', '$2y$10$YZGWCGb9OP/2ahOVTxZ1WOCbV2HCFME19YLHWMjeUNJ.AE0LZ8WYS', NULL, 2, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 'English', NULL, '2019-05-13 05:25:47', '2019-05-13 05:25:47');
+(59, 'irshad@gmail.com', 'irshad@gmail.com', '$2y$10$YZGWCGb9OP/2ahOVTxZ1WOCbV2HCFME19YLHWMjeUNJ.AE0LZ8WYS', NULL, 2, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 'English', NULL, '2019-05-13 05:25:47', '2019-05-13 05:25:47'),
+(61, 'shehzad@gmail.com', 'shehzad@gmail.com', '$2y$10$xq1v1G8myx8zB6bIx9uD.OhGjC9quiJQ/KcOQXPMuM32wiAMCoIWu', NULL, 2, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', NULL, '2019-05-14 05:44:21', '2019-05-14 00:38:33');
 
 -- --------------------------------------------------------
 
@@ -554,19 +552,19 @@ ALTER TABLE `approve_hostel_requests`
 -- AUTO_INCREMENT for table `hostels_registration-requests`
 --
 ALTER TABLE `hostels_registration-requests`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `hostel_images`
 --
 ALTER TABLE `hostel_images`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `hostel_profiles`
 --
 ALTER TABLE `hostel_profiles`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `mess-menu-timinigs`
@@ -620,13 +618,13 @@ ALTER TABLE `threads`
 -- AUTO_INCREMENT for table `update-hostels-requests`
 --
 ALTER TABLE `update-hostels-requests`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT for table `user_profiles`

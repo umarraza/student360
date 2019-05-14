@@ -51,7 +51,7 @@ class ReviewsController extends Controller
 
                 $rules = [
 
-                    'message'      =>  'required',
+                    'message'   =>  'required',
                     'hostelId'  =>  'required',   
                     'userId'    =>  'required',
 
@@ -214,27 +214,42 @@ class ReviewsController extends Controller
                'status' => false
             ];
             
-            $message = $request->get('message');
+            $rules = [
 
-            $reviews = Review::find($request->id)->update([
+            	'id' => 'required',
+
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
                 
-                'message' => $message,
-
-            ]);
-
-            if ($reviews) {
-
-                $response['data']['code']       =  200;
-                $response['data']['message']    =  'Review updated SuccessfullY';
-                $response['status']             =  true;
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors'] = $validator->messages();
 
             } else {
 
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'Request Unsuccessfull';
-                $response['status']             =  false;    
-            }
+                $message = $request->get('message');
 
+                $reviews = Review::find($request->id)->update([
+                    
+                    'message' => $message,
+
+                ]);
+
+                if ($reviews) {
+
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Review updated SuccessfullY';
+                    $response['status']             =  true;
+
+                } else {
+
+                    $response['data']['code']       =  400;
+                    $response['data']['message']    =  'Request Unsuccessfull';
+                    $response['status']             =  false;    
+                }
+            }
         }
         return $response;
     }
@@ -270,21 +285,36 @@ class ReviewsController extends Controller
                'status' => false
             ];
             
-            $reviews = Review::find($request->id)->delete();
+            $rules = [
 
-            if ($reviews) {
+            	'id' => 'required',
 
-                $response['data']['code']       =  200;
-                $response['data']['message']    =  'Review Deleted SuccessfullY';
-                $response['status']             =  true;
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors'] = $validator->messages();
 
             } else {
 
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'Request Unsuccessfull';
-                $response['status']             =  false;    
-            }
+                $reviews = Review::find($request->id)->delete();
 
+                if ($reviews) {
+
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Review Deleted SuccessfullY';
+                    $response['status']             =  true;
+
+                } else {
+
+                    $response['data']['code']       =  400;
+                    $response['data']['message']    =  'Request Unsuccessfull';
+                    $response['status']             =  false;    
+                }
+            }
         }
         return $response;
     }

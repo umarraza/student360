@@ -43,88 +43,55 @@ class SearchesController extends Controller
                 'status' => false
             ];
 
-           $location = $request->get('location');
-           $searchRadius = $request->get('searchRadius');
-           $hostelCategory = $request->get('hostelCategory');
+        $rules = [
 
-            if (isset($hostelCategory)) {
+            'location' => 'required',
+            // 'searchRadius' => 'required',
+            'hostelCategory' => 'required',
 
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
+        ];
 
-                    ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                    ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
+        $validator = Validator::make($request->all(), $rules);
 
-                    ->select(
-                        'hostel.id', 
-                        'hostel.hostelName', 
-                        'hostel.address', 
-                        'hostel.hostelCategory', 
-                        'rating.score', 
-                        'image.imageName', 
-                        'image.isThumbnail' )
-                    
-                    ->where('hostel.hostelCategory','REGEXP', $hostelCategory)
-                    ->where('image.isThumbnail','=', 1)
-                    
-                    ->orderBy('rating.score', 'desc')
-
-                ->get();
-
-            }
-
-            if (isset($location)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.address','REGEXP', $location)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-            }
+        if ($validator->fails()) {
             
-            if (isset($searchRadius)) {
+            $response['data']['message'] = 'Invalid input values.';
+            $response['data']['errors'] = $validator->messages();
 
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
+        } else {
 
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
+            $location = $request->get('location');
+            $searchRadius = $request->get('searchRadius');
+            $hostelCategory = $request->get('hostelCategory');
 
-                ->where('hostel.searchRadius','REGEXP', $searchRadius)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
+                if (isset($hostelCategory)) {
 
-            ->get();
+                    $hostelsResults = DB::table('hostel_profiles AS hostel')
 
-            }
+                        ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
+                        ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
 
-            if (isset($location, $hostelCategory)) {
+                        ->select(
+                            'hostel.id', 
+                            'hostel.hostelName', 
+                            'hostel.address', 
+                            'hostel.hostelCategory', 
+                            'rating.score', 
+                            'image.imageName', 
+                            'image.isThumbnail' )
+                        
+                        ->where('hostel.hostelCategory','REGEXP', $hostelCategory)
+                        ->where('image.isThumbnail','=', 1)
+                        
+                        ->orderBy('rating.score', 'desc')
 
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
+                    ->get();
+
+                }
+
+                if (isset($location)) {
+
+                    $hostelsResults = DB::table('hostel_profiles AS hostel')
 
                     ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
                     ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
@@ -139,29 +106,80 @@ class SearchesController extends Controller
                         'image.isThumbnail' )
 
                     ->where('hostel.address','REGEXP', $location)
-                    ->where('hostel.hostelCategory','REGEXP', $hostelCategory)
                     ->where('image.isThumbnail','=', 1)
                     
                     ->orderBy('rating.score', 'desc')
 
                 ->get();
 
-            }
+                }
+                
+                if (isset($searchRadius)) {
 
-                if(count($hostelsResults) > 0)
-                {
-                    $response['data']['code']       = 200;
-                    $response['status']             = true;
-                    $response['data']['result']     = $hostelsResults;
-                    $response['data']['message']    = 'Request Successfull';
-            
+                    $hostelsResults = DB::table('hostel_profiles AS hostel')
+
+                    ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
+                    ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
+                    
+                    ->select(
+                        'hostel.id', 
+                        'hostel.hostelName', 
+                        'hostel.address', 
+                        'hostel.hostelCategory', 
+                        'rating.score', 
+                        'image.imageName', 
+                        'image.isThumbnail' )
+
+                    ->where('hostel.searchRadius','REGEXP', $searchRadius)
+                    ->where('image.isThumbnail','=', 1)
+                    
+                    ->orderBy('rating.score', 'desc')
+
+                ->get();
+
                 }
-                else
-                {
-                    $response['data']['code']       = 200;
-                    $response['status']             = true;
-                    $response['data']['message']    = 'No Items matches your searches';
+
+                if (isset($location, $hostelCategory)) {
+
+                    $hostelsResults = DB::table('hostel_profiles AS hostel')
+
+                        ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
+                        ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
+                        
+                        ->select(
+                            'hostel.id', 
+                            'hostel.hostelName', 
+                            'hostel.address', 
+                            'hostel.hostelCategory', 
+                            'rating.score', 
+                            'image.imageName', 
+                            'image.isThumbnail' )
+
+                        ->where('hostel.address','REGEXP', $location)
+                        ->where('hostel.hostelCategory','REGEXP', $hostelCategory)
+                        ->where('image.isThumbnail','=', 1)
+                        
+                        ->orderBy('rating.score', 'desc')
+
+                    ->get();
+
                 }
+
+                    if(count($hostelsResults) > 0)
+                    {
+                        $response['data']['code']       = 200;
+                        $response['status']             = true;
+                        $response['data']['result']     = $hostelsResults;
+                        $response['data']['message']    = 'Request Successfull';
+                
+                    }
+                    else
+                    {
+                        $response['data']['code']       = 200;
+                        $response['status']             = true;
+                        $response['data']['message']    = 'No Items matches your searches';
+                    }
+            }
         return $response;
     }
 

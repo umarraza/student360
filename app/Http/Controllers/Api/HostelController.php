@@ -162,14 +162,9 @@ class HostelController extends Controller
                  * 
                  */
 
-                $day            =  $request->get('day');
-                $breakFastMeal  =  $request->get('breakFastMeal');
-                $LunchMeal      =  $request->get('LunchMeal');
-                $dinnerMeal     =  $request->get('dinnerMeal');
+                $messMenueforMon = MessMenu::create([
 
-                $messMenue = MessMenu::create([
-
-                    'day'            =>  'Set Day',
+                    'day'            =>  'Mon',
                     'breakFastMeal'  =>  'Set Break Fast Meal',
                     'LunchMeal'      =>  'Set lunch Meal',
                     'dinnerMeal'     =>  'Set Dinner Meal',
@@ -177,10 +172,62 @@ class HostelController extends Controller
 
                 ]);
 
-                $messMenue->save();
+                $messMenueforTue = MessMenu::create([
 
+                    'day'            =>  'Tue',
+                    'breakFastMeal'  =>  'Set Break Fast Meal',
+                    'LunchMeal'      =>  'Set lunch Meal',
+                    'dinnerMeal'     =>  'Set Dinner Meal',
+                    'hostelId'       =>  $hostelId,
 
-                $messMunuId = $messMenue->id;
+                ]);
+
+                $messMenueforWed = MessMenu::create([
+
+                    'day'            =>  'Wed',
+                    'breakFastMeal'  =>  'Set Break Fast Meal',
+                    'LunchMeal'      =>  'Set lunch Meal',
+                    'dinnerMeal'     =>  'Set Dinner Meal',
+                    'hostelId'       =>  $hostelId,
+
+                ]);
+
+                $messMenueforThu = MessMenu::create([
+
+                    'day'            =>  'Thu',
+                    'breakFastMeal'  =>  'Set Break Fast Meal',
+                    'LunchMeal'      =>  'Set lunch Meal',
+                    'dinnerMeal'     =>  'Set Dinner Meal',
+                    'hostelId'       =>  $hostelId,
+
+                ]);
+
+                $messMenueforFri = MessMenu::create([
+
+                    'day'            =>  'Fri',
+                    'breakFastMeal'  =>  'Set Break Fast Meal',
+                    'LunchMeal'      =>  'Set lunch Meal',
+                    'dinnerMeal'     =>  'Set Dinner Meal',
+                    'hostelId'       =>  $hostelId,
+
+                ]);
+
+                $messMenueforSat = MessMenu::create([
+
+                    'day'            =>  'Sat',
+                    'breakFastMeal'  =>  'Set Break Fast Meal',
+                    'LunchMeal'      =>  'Set lunch Meal',
+                    'dinnerMeal'     =>  'Set Dinner Meal',
+                    'hostelId'       =>  $hostelId,
+
+                ]);
+
+                $messMenueforMon->save();
+                $messMenueforTue->save();
+                $messMenueforWed->save();
+                $messMenueforThu->save();
+                $messMenueforFri->save();
+                $messMenueforSat->save();
 
                 /**
                  * 
@@ -194,18 +241,6 @@ class HostelController extends Controller
                  * 
                  */
 
-                $bkfastStartTime = $request->get('bkfastStartTime');
-                $bkfastEndTime   = $request->get('bkfastEndTime');
-                $lunchStartTime  = $request->get('lunchStartTime');
-                $lunchEndTime    = $request->get('lunchEndTime');
-                $dinnerStartTime = $request->get('dinnerStartTime');
-                $dinnerEndTime   = $request->get('dinnerEndTime');
-                $isSetBreakFast  = $request->get('isSetBreakFast');
-                $isSetLunch      = $request->get('isSetLunch');
-                $isSetDinner     = $request->get('isSetDinner');
-                $messMenuId      = $request->get('messMenuId');
-
-
                 $messMenuTiming = MessMenuTiming::create([
 
                     'bkfastStartTime'  =>  '07:00 AM ',
@@ -217,20 +252,18 @@ class HostelController extends Controller
                     'isSetBreakFast'   =>  0,
                     'isSetLunch'       =>  0,
                     'isSetDinner'      =>  0,
-                    'messMenuId'       =>  $messMunuId,
                     'hostelId'         =>  $hostelId,
 
                 ]);
 
             	if ($hostel->save() && $user->save() && $verifyRequest->save() && $messMenuTiming->save()) 
                 {
-                    $response['data']['code'] = 200;
-                    $response['status']  = true;
-                    $response['data']['result'] = $hostel;
-                    $response['data']['user'] = $user;
-                    $response['data']['messMenue'] = $messMenue;
+                    $response['data']['code']           = 200;
+                    $response['status']                 = true;
+                    $response['data']['result']         = $hostel;
+                    $response['data']['user']           = $user;
                     $response['data']['messMenuTiming'] = $messMenuTiming;
-                    $response['data']['message'] = 'Hostel created Successfully';
+                    $response['data']['message']        = 'Hostel created Successfully';
                 }
             }
         
@@ -289,60 +322,6 @@ class HostelController extends Controller
         return $response;
     }
 
-    /**
-     * UPDATE AVAILBILITY
-     *
-     * show if hostel is available to book for rooms or not
-     *
-     * @function
-     */
-
-    public function updateAvailbility(Request $request)
-    {
-        $user = JWTAuth::toUser($request->token);
-        $response = [
-                'data' => [
-                    'code'      => 400,
-                    'errors'    => '',
-                    'message'   => 'Invalid Token! User Not Found.',
-                ],
-                'status' => false
-            ];
-
-        if(!empty($user) && $user->isHostelAdmin())
-        {
-            $response = [
-                'data' => [
-                    'code' => 400,
-                    'message' => 'Something went wrong. Please try again later!',
-                ],
-               'status' => false
-            ];
-            
-            $updateAvailability =  Hostel::find($request->id)->update([
-                    
-                'isAvailable'  =>  1,
-
-            ]);
-
-
-            if ($updateRequest->save()) {
-
-                $response['data']['code']       =  200;
-                $response['data']['message']    =  'Request Successfull';
-                $response['status']             =  true;
-
-            } else {
-
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'Requst Unsuccessfull';
-                $response['status']             =  false;    
-            }
-
-
-        }
-        return $response;
-    }
 
     /**
      * REGISTERED HOSTELS
@@ -350,10 +329,10 @@ class HostelController extends Controller
      * Super admin and normal user both can see the list of 
      * all registered hostels
      *
-     * @function
+     * @return RegisteredHostels
      */
 
-    public function registeredHostels(Request $request)
+    public function listRegisteredHostels(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
         $response = [
@@ -394,6 +373,123 @@ class HostelController extends Controller
         return $response;
     }
     
+
+    public function updateHostel(Request $request)
+    {
+        $user = JWTAuth::toUser($request->token);
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isStudent())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            $rules = [
+
+                'hostelName'         =>   'required',
+                'hostelCategory'     =>   'required',   // Boys, Girls, Guest House
+                'numberOfBedRooms'   =>   'required',
+                'noOfBeds'         	 =>   'required',
+                'priceRange'         =>   'required',  // price can be a range or a single value. e.g 5000/month or 5000 to 15000/month
+                'address'		     =>   'required',  
+                'longitude'          =>   'required',
+                'latitude'           =>   'required',
+                // 'state'              =>   'required',    State & Postcode are optional
+                // 'postCode'           =>   'required',
+                'city'            	 =>   'required',
+                'country'            =>   'required',
+                'description'        =>   'required',
+                'contactName'        =>   'required',
+                'website'            =>   'required',
+                'phoneNumber'        =>   'required',
+                'features'           =>   'required',
+
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors'] = $validator->messages();
+
+            } else {
+
+                $hostelName = $request->get('hostelName');
+                $message = $request->get('message');
+                $message = $request->get('message');
+                $message = $request->get('message');
+                $message = $request->get('message');
+                $message = $request->get('message');
+                $message = $request->get('message');
+                $message = $request->get('message');
+                $message = $request->get('message');
+                $message = $request->get('message');
+                $message = $request->get('message');
+                $message = $request->get('message');
+                $message = $request->get('message');
+                $message = $request->get('message');
+                $message = $request->get('message');
+
+
+                $updateHostel = Hostel::find($request->id)->update([
+                    
+                    'message' => $message,
+                    'message' => $message,
+                    'message' => $message,
+                    'message' => $message,
+                    'message' => $message,
+                    'message' => $message,
+                    'message' => $message,
+                    'message' => $message,
+                    'message' => $message,
+                    'message' => $message,
+                    'message' => $message,
+                    'message' => $message,
+                    'message' => $message,
+                    'message' => $message,
+                    'message' => $message,
+                    'message' => $message,
+                    'message' => $message,
+                    'message' => $message,
+                    'message' => $message,
+
+
+                ]);
+
+                if ($reviews) {
+
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Review updated SuccessfullY';
+                    $response['status']             =  true;
+
+                } else {
+
+                    $response['data']['code']       =  400;
+                    $response['data']['message']    =  'Request Unsuccessfull';
+                    $response['status']             =  false;    
+                }
+            }
+        }
+        return $response;
+    }
+
+
+
+
+
     /**
      * HOSTEL DETAILS
      *
@@ -449,78 +545,13 @@ class HostelController extends Controller
                 if (!empty($hostel)) 
                 {
 
-                    $response['data']['code']       =  200;
-                    $response['status']             =  true;
-                    $response['data']['result']     =  $hostel;
-                    $response['data']['images']     =  $hostelImages;
-                    $response['data']['reviews']    =  $reviews;
-                    $response['data']['ratings']    =  $ratings;
-                    $response['data']['message']    =  'Request Successfull';
-
-                } else {
-
-                    $response['data']['code']       =  400;
-                    $response['status']             =  false;
-                    $response['data']['message']    =  'Hostel Not Found!';
-                
-                }
-            }
-        return $response;
-    }
-        /**
-     * HOSTEL DETAILS
-     *
-     * Super admin and normal user both can see the details
-     *
-     * @function
-     */
-
-    public function loggedInHostelDetails(Request $request)
-    {
-
-        $response = [
-                'data' => [
-                    'code'      => 400,
-                    'errors'    => '',
-                    'message'   => 'Invalid Token! User Not Found.',
-                ],
-                'status' => false
-            ];
-
-            $response = [
-                'data' => [
-                    'code' => 400,
-                    'message' => 'Something went wrong. Please try again later!',
-                ],
-               'status' => false
-            ];
-
-            $rules = [
-
-            	'id'     =>   'required',
-
-            ];
-
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                
-                $response['data']['message'] = 'Invalid input values.';
-                $response['data']['errors'] = $validator->messages();
-
-            }
-            else
-            {
-
-                $hostel = Hostel::where('userId', '=', $request->id)->first();
-
-            	if (!empty($hostel)) 
-                {
-
-                    $response['data']['code']       =  200;
-                    $response['status']             =  true;
-                    $response['data']['result']     =  $hostel;
-                    $response['data']['message']    =  'Request Successfull';
+                    $response['data']['code']                     =  200;
+                    $response['status']                           =  true;
+                    $response['data']['result']['hostelDetails']  =  $hostel;
+                    $response['data']['result']['images']         =  $hostelImages;
+                    $response['data']['result']['reviews']        =  $reviews;
+                    $response['data']['result']['ratings']        =  $ratings;
+                    $response['data']['result']['message']        =  'Request Successfull';
 
                 } else {
 

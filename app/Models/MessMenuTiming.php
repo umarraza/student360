@@ -22,7 +22,6 @@ class MessMenuTiming extends Model
         'isSetBreakFast',
         'isSetLunch',
         'isSetDinner',
-        'messMenuId',
         'hostelId',
 
     ];
@@ -49,7 +48,6 @@ class MessMenuTiming extends Model
                 'isSetBreakFast'   =>  $this->isSetBreakFast,
                 'isSetLunch'       =>  $this->isSetLunch,
                 'isSetDinner'      =>  $this->isSetDinner,
-                'messMenuId'       =>  $this->messMenuId,
                 'hostelId'         =>  $this->hostelId,
 
         ];

@@ -31,11 +31,8 @@ Route::post('/create-hostel', 'Api\HostelController@create');
 Route::post('/delete-hostel', 'Api\HostelController@delete');
 Route::get('/list-hostels', 'Api\HostelController@listHostels');
 Route::post('/view-hostel', 'Api\HostelController@hostelDetails');
-// Route::post('/show-hostel', 'Api\HostelController@hostelDetails');
-
-Route::get('/view-registered-hostels', 'Api\HostelController@registeredHostels');
 Route::post('/hostel-available', 'Api\HostelController@updateAvailbility');
-Route::post('/loggedIn-hostel-details', 'Api\HostelController@loggedInHostelDetails');
+Route::get('/view-registered-hostels', 'Api\HostelController@listRegisteredHostels');
 
 /*
 |--------------------------------------------------------------------------
@@ -94,7 +91,7 @@ Route::post('/delete-review','Api\ReviewsController@deleteReview');
 */
 
 Route::post('/update-mess-menu', 'Api\MessMenuController@updateMessMenu');
-Route::post('/list-mess-menu', 'Api\MessMenuController@listMessMenu');
+Route::post('/show-mess-menu', 'Api\MessMenuController@showMessMenu');
 
 /*
 |--------------------------------------------------------------------------
@@ -105,7 +102,6 @@ Route::post('/list-mess-menu', 'Api\MessMenuController@listMessMenu');
 */
 
 Route::post('/search-hostels','Api\SearchesController@searchHostels');
-Route::post('/search-by-prices','Api\SearchesController@searchByPrices');
 Route::post('/search-by-features','Api\SearchesController@searchByFeatures');
 
 /*
@@ -116,8 +112,9 @@ Route::post('/search-by-features','Api\SearchesController@searchByFeatures');
 |
 */
 
+Route::get('/list-images','Api\ImagesController@listImages');
 Route::post('/create-image','Api\ImagesController@createImage');
-Route::get('/list-image','Api\ImagesController@listImages');
+Route::post('/update-thumbnail-image','Api\ImagesController@updateThumbnailImage');
 
 /*
 |--------------------------------------------------------------------------
@@ -150,7 +147,7 @@ Route::post('/list-queries','Api\QueriesController@listQueries');
 */
 
 Route::get('/list-threads','Api\ThreadsController@listThreads');
-Route::post('/approve-hostel-request', 'Api\RequestsController@create');
+Route::post('/send-approve-hostel-request', 'Api\RequestsController@approveHostelRequest');
 
 /*
 |--------------------------------------------------------------------------
@@ -159,6 +156,6 @@ Route::post('/approve-hostel-request', 'Api\RequestsController@create');
 | All requests routes to super admin i.e request to approve, verify and 
 | update hostel have been define here.
 */
-Route::post('/update-hostel-request', 'Api\RequestsController@updateHostelRequest');
+Route::post('/update-hostel', 'Api\RequestsController@updateHostelRequest');
 
 Route::post('/create-rating', 'Api\RatingsController@store');

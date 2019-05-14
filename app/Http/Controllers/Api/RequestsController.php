@@ -16,6 +16,8 @@ use App\Models\Api\ApiHostel as Hostel;
 use App\Models\Api\ApiStudent as Student;
 use App\Models\Api\ApiReviews as Review;
 use App\Models\Api\ApiApproveHostelRequests as ApproveHostelRequest;
+use App\Models\Api\ApiUpdateHostelRequest as UpdateHostelRequest;
+
 
 
 class RequestsController extends Controller
@@ -102,7 +104,7 @@ class RequestsController extends Controller
 
     public function updateHostelRequest(Request $request)
     {
-
+        // return $request;
         $user = JWTAuth::toUser($request->token);
         $response = [
                 'data' => [
@@ -140,12 +142,9 @@ class RequestsController extends Controller
                     'country'            =>   'required',
                     'description'        =>   'required',
                     'contactName'        =>   'required',
-                    'contactEmail'       =>   'required',
                     'website'            =>   'required',
                     'phoneNumber'        =>   'required',
                     'features'           =>   'required',
-                    'status'             =>   'required',
-                    'hostelId'           =>   'required',
 
                 ];
 
@@ -177,16 +176,14 @@ class RequestsController extends Controller
                             'country'          =>   $request->get('country'),
                             'description'      =>   $request->get('description'),
                             'contactName'      =>   $request->get('contactName'),
-                            'contactEmail'     =>   $request->get('contactEmail'),
                             'website'          =>   $request->get('website'),
                             'phoneNumber'      =>   $request->get('phoneNumber'),
                             'features'         =>   $request->get('features'),
-                            'status'           =>   $request->get('status'),
-                            'hostelId'         =>   $request->get('hostelId'),
+                            'status'           =>   0,
+                            'hostelId'         =>   $request->get('id'),
                             'userId'           =>   $userId,
 
                         ]);
-
 
                     if ($updateHostel->save()) 
                     {

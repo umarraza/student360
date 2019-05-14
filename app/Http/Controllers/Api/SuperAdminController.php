@@ -351,7 +351,7 @@ class SuperAdminController extends Controller
             
             $rules = [
 
-            	'id'     =>   'required',
+            	'id' => 'required',
 
             ];
 
@@ -476,8 +476,28 @@ class SuperAdminController extends Controller
                'status' => false
             ];
             
-            $allUpdateRequests = UpdateHostelRequest::select('id','hostelName', 'hostelCategory', 'address', 'country', 'state', 'status','hostelId')
-                    ->where('status', '=', 0)->get();
+            $allUpdateRequests = UpdateHostelRequest::select(
+                
+                'id',
+                'hostelName',
+                'hostelCategory',
+                'numberOfBedRooms',
+                'noOfBeds',
+                'priceRange',
+                'address',
+                'longitude',
+                'latitude',
+                'state',
+                'postCode',
+                'city',
+                'country',
+                'description',
+                'contactName',
+                'website',
+                'phoneNumber',
+                'features',)
+
+                ->where('status', '=', 0)->get();
             
             if (!empty($allUpdateRequests)) {
 
@@ -492,7 +512,6 @@ class SuperAdminController extends Controller
                 $response['data']['message']    =  'No Hostels Found';
                 $response['status']             =  false;    
             }
-
         }
         return $response;
     }
@@ -529,73 +548,89 @@ class SuperAdminController extends Controller
                'status' => false
             ];
             
+            $rules = [
 
-            $approveUpdateRequest = UpdateHostelRequest::find($request->id)->update([
-                'status' => 1,
-            ]);
-            
-            $hostel = UpdateHostelRequest::find($request->id);
+            	'id' => 'required',
 
-            $hostelId         =   $hostel->hostelId;
-            $hostelName       =   $hostel->hostelName;
-            $hostelCategory   =   $hostel->hostelCategory;
-            $numberOfBedRooms =   $hostel->numberOfBedRooms;
-            $noOfBeds         =   $hostel->noOfBeds;
-            $priceRange       =   $hostel->priceRange;
-            $address          =   $hostel->address;
-            $longitude        =   $hostel->longitude;
-            $latitude         =   $hostel->latitude;
-            $state            =   $hostel->state;
-            $postCode         =   $hostel->postCode;
-            $city             =   $hostel->city;
-            $country          =   $hostel->country;
-            $description      =   $hostel->description;
-            $contactName      =   $hostel->contactName;
-            $contactEmail     =   $hostel->contactEmail;
-            $website          =   $hostel->website;
-            $phoneNumber      =   $hostel->phoneNumber;
-            $features         =   $hostel->features;
-            $userId           =   $hostel->userId;
-         
+            ];
 
-            $updateHostel = Hostel::find($hostelId)->update([
+            $validator = Validator::make($request->all(), $rules);
 
-                'hostelName'        =>   $hostelName,
-                'hostelCategory'    =>   $hostelCategory,
-                'numberOfBedRooms'  =>   $numberOfBedRooms,
-                'noOfBeds'          =>   $noOfBeds,
-                'priceRange'        =>   $priceRange,
-                'address'           =>   $address,
-                'longitude'         =>   $longitude,
-                'latitude'          =>   $latitude,
-                'state'             =>   $state,
-                'postCode'          =>   $postCode,
-                'city'              =>   $city,
-                'country'           =>   $country,
-                'description'       =>   $description,
-                'contactName'       =>   $contactName,
-                'contactEmail'      =>   $contactEmail,
-                'website'           =>   $website,
-                'phoneNumber'       =>   $phoneNumber,
-                'features'          =>   $features,
-
-            ]);
-
-                $user = User::where('id', '=', $userId)->update([
-                    'email' => $contactEmail,
-                ]);
-
-            if ($approveUpdateRequest) {
-
-                $response['data']['code']       =  200;
-                $response['data']['message']    =  'Hostel Updated successfully!';
-                $response['status']             =  true;
+            if ($validator->fails()) {
+                
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors'] = $validator->messages();
 
             } else {
 
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'No Hostels Found';
-                $response['status']             =  false;    
+                $approveUpdateRequest = UpdateHostelRequest::find($request->id)->update([
+                    'status' => 1,  // Chnage status to 1 to approve the update hostel request
+                ]);
+                
+                $hostel = UpdateHostelRequest::find($request->id);
+
+                $hostelId         =   $hostel->hostelId;
+                $hostelName       =   $hostel->hostelName;
+                $hostelCategory   =   $hostel->hostelCategory;
+                $numberOfBedRooms =   $hostel->numberOfBedRooms;
+                $noOfBeds         =   $hostel->noOfBeds;
+                $priceRange       =   $hostel->priceRange;
+                $address          =   $hostel->address;
+                $longitude        =   $hostel->longitude;
+                $latitude         =   $hostel->latitude;
+                $state            =   $hostel->state;
+                $postCode         =   $hostel->postCode;
+                $city             =   $hostel->city;
+                $country          =   $hostel->country;
+                $description      =   $hostel->description;
+                $contactName      =   $hostel->contactName;
+                $contactEmail     =   $hostel->contactEmail;
+                $website          =   $hostel->website;
+                $phoneNumber      =   $hostel->phoneNumber;
+                $features         =   $hostel->features;
+                $userId           =   $hostel->userId;
+            
+
+                $updateHostel = Hostel::find($hostelId)->update([
+
+                    'hostelName'        =>   $hostelName,
+                    'hostelCategory'    =>   $hostelCategory,
+                    'numberOfBedRooms'  =>   $numberOfBedRooms,
+                    'noOfBeds'          =>   $noOfBeds,
+                    'priceRange'        =>   $priceRange,
+                    'address'           =>   $address,
+                    'longitude'         =>   $longitude,
+                    'latitude'          =>   $latitude,
+                    'state'             =>   $state,
+                    'postCode'          =>   $postCode,
+                    'city'              =>   $city,
+                    'country'           =>   $country,
+                    'description'       =>   $description,
+                    'contactName'       =>   $contactName,
+                    'contactEmail'      =>   $contactEmail,
+                    'website'           =>   $website,
+                    'phoneNumber'       =>   $phoneNumber,
+                    'features'          =>   $features,
+
+                ]);
+
+                    // $user = User::where('id', '=', $userId)->update([
+                    //     'email' => $contactEmail,
+                    // ]);
+                
+
+                if ($approveUpdateRequest) {
+
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Hostel Updated successfully!';
+                    $response['status']             =  true;
+
+                } else {
+
+                    $response['data']['code']       =  400;
+                    $response['data']['message']    =  'No Hostels Found';
+                    $response['status']             =  false;    
+                }
             }
         }
         return $response;
