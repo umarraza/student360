@@ -29,6 +29,7 @@ class SuperAdminController extends Controller
      * @function
      * 
      */
+
     public function listapprovalRequests(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
@@ -51,13 +52,27 @@ class SuperAdminController extends Controller
                'status' => false
             ];
             
-            $requests = ApproveHostelRequest::select('approveStatus', 'hostelId')->where('approveStatus', '=', 0)->get();
+            // $hostels = Hostel::select('id', 'hostelName', 'hostelCategory', 'isApproved')->where('isApproved', '=', 0)->get();
+            $requests = ApproveHostelRequest::select('id', 'approveStatus', 'hostelId')->where('approveStatus', '=', 0)->get();
+
+            $hostelId = NULL;
+            $hostel = [];
+
+            foreach ($requests as $data){
+                
+                $hostelId = $data->hostelId;
+                $hostel[] = Hostel::select('id', 'hostelName', 'hostelCategory')->where('id', '=', $hostelId)->first();
+
+            }
+
+            // return $hostel;
 
             if (!empty($requests)) {
 
                 $response['data']['code']       =  200;
                 $response['data']['message']    =  'Request Successfull';
-                $response['data']['result']     =  $requests;
+                $response['data']['request']    =  $requests;
+                $response['data']['hostel']     =  $hostel;
                 $response['status']             =  true;
 
             } else {
@@ -125,21 +140,17 @@ class SuperAdminController extends Controller
                 $hostel = Hostel::where('id', '=', $hostelId)->first();
 
                 $approveRequest = ApproveHostelRequest::find($request->id)->update([
-
                     'approveStatus' => 1,
-
                 ]);
-
+               
                 $hostel = Hostel::where('id', '=', $hostelId)->update([
                     'isApproved' => 1,
                 ]);
                 
-
                 if ($approveRequest && $hostel) {
 
                     $response['data']['code']       =  200;
                     $response['data']['message']    =  'Hostel approved successfully!';
-                    $response['data']['result']     =  $approveRequest;
                     $response['status']             =  true;
 
                 } else {
@@ -167,6 +178,7 @@ class SuperAdminController extends Controller
     public function rejectHostelApprovel(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
+        
         $response = [
                 'data' => [
                     'code'      => 400,
@@ -201,9 +213,9 @@ class SuperAdminController extends Controller
 
             }else{
 
-                $rejectApprovalRequest = ApproveHostelRequest::find($request->id)->update([
+                $rejectApprovalRequest = Hostel::find($request->id)->update([
                     
-                    'approveStatus' => 2,  // Status = 2 means that the request to update hostel have been rejected by administrater
+                    'isApproved' => 2,  // Status = 2 means that the request to update hostel have been rejected by administrater
                 
                 ]);
                 
@@ -273,17 +285,9 @@ class SuperAdminController extends Controller
 
             } else {
 
-                $requestData = VerifyHostelRequest::find($request->id);
+                $hostelData = Hostel::where('id', '=', $request->id)->first();
 
-                $hostelId = $requestData->hostelId;
-
-                $verifyHostel = VerifyHostelRequest::find($request->id)->update([
-                    'verificationStatus' => 1,
-                ]);
-
-                $hostelData = Hostel::where('id', '=', $hostelId)->first();
-
-                $hostel = Hostel::where('id', '=', $hostelId)->update([
+                $hostel = Hostel::where('id', '=', $request->id)->update([
                     'isVerified' => 1,
                 ]);
 
@@ -296,8 +300,7 @@ class SuperAdminController extends Controller
                 ]);
 
 
-
-                if ($verifyHostel && $hostel && $user){
+                if ($hostel && $user){
 
                     $response['data']['code']       =  200;
                     $response['status']             =  true;
@@ -364,6 +367,15 @@ class SuperAdminController extends Controller
 
             } else {
 
+                $hostelData = Hostel::find($request->id);
+                $userId = $hostelData->userId;
+
+                $hostel = Hostel::where('id', '=', $request->id)->update([
+
+                    'isVerified' => 2,
+
+                    ]);
+                
                 $user = User::find($userId)->update([
 
                     'verified' => 2,  // Status = 2 means that the request to update hostel have been rejected by administrater
@@ -420,19 +432,66 @@ class SuperAdminController extends Controller
                 ],
                'status' => false
             ];
+            
+            $allHostels = Hostel::select('id','hostelName',  'website', 'hostelCategory')
+                ->where('isVerified', '=', 0)
+                ->get();
+
+            if (!empty($allHostels)) {
+
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Request Successfull';
+                $response['data']['result']     =  $allHostels;
+                $response['status']             =  true;
+
+            } else {
+
+                $response['data']['code']       =  400;
+                $response['data']['message']    =  'No Hostels Found';
+                $response['status']             =  false;    
+            }
+
+        }
+        return $response;
+    }
+
+    public function listHostelsVerifyRequests2(Request $request)
+    {
+        $user = JWTAuth::toUser($request->token);
+        
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isSuperAdmin())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
 
             $hostelData = [];
+            // $hostelData = array();
 
             $verificationRequests = VerifyHostelRequest::select('id','verificationStatus', 'hostelId')
                     ->where('verificationStatus', '=', 0)->get();
 
-
             foreach ($verificationRequests as $requestData){
 
-                $hostelData[] = Hostel::select('id', 'hostelName', 'isVerified')->where('id', '=', $requestData->hostelId)->first();
+                $hostelData[] = Hostel::select('id', 'hostelName', 'website', 'hostelCategory')->where('id', '=', $requestData->hostelId)->first();
                 $hostelData[] = $requestData;
 
             }
+
+            return $hostelData;
 
             if (!empty($hostelData)) {
 
@@ -457,9 +516,9 @@ class SuperAdminController extends Controller
      /**
      * ALL UPDATE HOSTELS REQUESTS LIST
      *
-     * Super admin can see a list of all hostels that send the request to update info
+     * Super admin can see a list of all hostels that sends the request to update info
      *
-     * @function
+     * @return Model
      * 
      */
 
@@ -526,10 +585,10 @@ class SuperAdminController extends Controller
         return $response;
     }
 
- /**
+    /**
      * APPROVE UPDATE REQUEST
      *
-     * Super admin can see a list of all hostels that send the request to update info
+     * Super admin can approve the hostel's update request.
      *
      * @function
      * 
@@ -640,7 +699,12 @@ class SuperAdminController extends Controller
         }
         return $response;
     }
-
+    /**
+     * 
+     * REJECT HOTSEL'S UPDATE REQUEST
+     * Super admin can reject the request to update the hostel info
+     * 
+     */
     public function rejectUpdateHostel(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
@@ -678,7 +742,7 @@ class SuperAdminController extends Controller
 
             } else {
 
-                $rejectUpdateRequest = UpdateHostelRequest::find($request->id)->update([
+                $rejectUpdateRequest = UpdateHostelRequest::where('hostelid', '=', $request->id)->update([
 
                     'status' => 2, // Status = 2 means that the request to update hostel have been rejected by administrater
 
@@ -688,16 +752,68 @@ class SuperAdminController extends Controller
 
                     $response['data']['code']       =  200;
                     $response['status']             =  true;
-                    $response['data']['message']    =  'Sorry! Request to update hostel have been rejected!';
+                    $response['data']['message']    =  'Request to update hostel have been rejected!';
 
                 }else{
 
                     $response['data']['code']       =  400;
                     $response['status']             =  false;
-                    $response['data']['message']    =  'Request Failed!';
+                    $response['data']['message']    =  'Request Unsuccessfull!';
 
                 }
             }
+        }
+        return $response;
+    }
+
+    /**
+     * ALL HOSTELS APPROVAL REQUESTS LIST
+     *
+     * Super admin can see a list of all hostels that send the request to aprove the hostel
+     *
+     * @function
+     * 
+     */
+
+    public function liststudents(Request $request)
+    {
+        $user = JWTAuth::toUser($request->token);
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isSuperAdmin())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            // $hostels = Hostel::select('id', 'hostelName', 'hostelCategory', 'isApproved')->where('isApproved', '=', 0)->get();
+            $students = Student::all()->get();
+
+            if (!empty($students)) {
+
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Request Successfull';
+                $response['data']['result']     =  $students;
+                $response['status']             =  true;
+
+            } else {
+
+                $response['data']['code']       =  400;
+                $response['data']['message']    =  'Request Unsuccessfull';
+                $response['status']             =  false;    
+            }
+
         }
         return $response;
     }

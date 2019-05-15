@@ -174,6 +174,57 @@ class StudentController extends Controller
         return $response;
     }
 
+    /**
+     * LIST OF ALL REGISTERED USERS/STUDENTS
+     *
+     * @function
+     */
+
+    public function listRegisteredStudents(Request $request)
+    {
+        $user = JWTAuth::toUser($request->token);
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isSuperAdmin())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            $allStudents = Student::select('id', 'fullName', 'phoneNumber', 'email')
+                ->where('isVerified', '=', 1)
+                ->get();
+
+            if (!empty($allStudents)) {
+
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Request Successfull';
+                $response['data']['result']     =  $allStudents;
+                $response['status']             =  true;
+
+            } else {
+
+                $response['data']['code']       =  400;
+                $response['data']['message']    =  'No Hostels Found';
+                $response['status']             =  false;    
+            }
+
+
+        }
+        return $response;
+    }
+
      /**
      * UPDATE USER/STUDENT
      *
@@ -203,50 +254,68 @@ class StudentController extends Controller
                'status' => false
             ];
             
-            $updateStudent = Student::find($request->id)->update([
+            $rules = [
 
-                'fullName'    =>  $request->get('fullName'),
-                'phoneNumber' =>  $request->get('phoneNumber'),
-                'email'       =>  $request->get('email'),
-                'city'        =>  $request->get('city'),
-                'country'     =>  $request->get('country'),
-                'occupation'  =>  $request->get('occupation'),
-                'institute'   =>  $request->get('institute'),
-                'dateOfBirth' =>  $request->get('dateOfBirth'),
-                'gender'      =>  $request->get('gender'),
-                'CNIC'        =>  $request->get('CNIC'),
+            	'id' => 'required',
 
-            ]);
+            ];
 
-                $student = Student::find($request->id);
+            $validator = Validator::make($request->all(), $rules);
 
-                if ($student->email != NULL && $student->phoneNumber != NULL && $student->city != NULL && $student->country != NULL && $student->occupation != NULL && $student->institute != NULL && $student->CNIC != NULL){
+            if ($validator->fails()) {
+                
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors'] = $validator->messages();
+            
+            }
+            else
+            {
 
-                  $student->isVerified = 1;
 
-                  $student->save();
-                    
-                }else{
+                $updateStudent = Student::find($request->id)->update([
 
-                    $student->isVerified = 0;
+                    'fullName'    =>  $request->get('fullName'),
+                    'phoneNumber' =>  $request->get('phoneNumber'),
+                    'email'       =>  $request->get('email'),
+                    'city'        =>  $request->get('city'),
+                    'country'     =>  $request->get('country'),
+                    'occupation'  =>  $request->get('occupation'),
+                    'institute'   =>  $request->get('institute'),
+                    'dateOfBirth' =>  $request->get('dateOfBirth'),
+                    'gender'      =>  $request->get('gender'),
+                    'CNIC'        =>  $request->get('CNIC'),
+
+                ]);
+
+                    $student = Student::find($request->id);
+
+                    if ($student->email != NULL && $student->phoneNumber != NULL && $student->city != NULL && $student->country != NULL && $student->occupation != NULL && $student->institute != NULL && $student->CNIC != NULL){
+
+                    $student->isVerified = 1;
 
                     $student->save();
+                        
+                    }else{
+
+                        $student->isVerified = 0;
+
+                        $student->save();
+                    }
+
+                if ($updateStudent) {
+
+                    $response['data']['code']       =  200;
+                    $response['data']['result']     =  $student;
+                    $response['data']['message']    =  'User updated successfully';
+                    $response['status']             =  true;
+
+                } else {
+
+                    $response['data']['code']       =  400;
+                    $response['data']['message']    =  'Request Unsuccessfull';
+                    $response['status']             =  false;    
                 }
-
-            if ($updateStudent) {
-
-                $response['data']['code']       =  200;
-                $response['data']['result']     =  $student;
-                $response['data']['message']    =  'User updated successfully';
-                $response['status']             =  true;
-
-            } else {
-
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'Request Unsuccessfull';
-                $response['status']             =  false;    
             }
-
 
         }
         return $response;

@@ -46,6 +46,8 @@ Route::post('/create-student', 'Api\StudentController@create');
 Route::get('/list-students', 'Api\StudentController@listStudents');
 Route::post('/student-details', 'Api\StudentController@studentDetails');
 Route::post('/update-student', 'Api\StudentController@updateStudent');
+Route::get('/view-registered-students', 'Api\StudentController@listRegisteredStudents');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -67,6 +69,8 @@ Route::get('/verify-hostel-requests', 'Api\SuperAdminController@listHostelsVerif
 Route::post('/reject-hostel-approval', 'Api\SuperAdminController@rejectHostelApprovel');
 Route::post('/reject-user-verification', 'Api\SuperAdminController@rejectUserVerification');
 Route::post('/reject-hostel-verification', 'Api\SuperAdminController@rejectHostelVerification');
+Route::post('/reject-hostel-update-request', 'Api\SuperAdminController@rejectUpdateHostel');
+
 
 /*
 |--------------------------------------------------------------------------

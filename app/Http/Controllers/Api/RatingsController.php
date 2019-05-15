@@ -16,7 +16,6 @@ use App\Models\Api\ApiHostel as Hostel;
 use App\Models\Api\ApiThreads as Threads;
 
 
-
 class RatingsController extends Controller
 {
     public function store(Hostel $hostel){

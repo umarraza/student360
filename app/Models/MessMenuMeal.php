@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MessMenu extends Model
+class MessMenuMeal extends Model
 {
-    protected $table = 'mess_menu';
+    protected $table = 'mess_menu-meal';
 
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';

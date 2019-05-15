@@ -3,10 +3,10 @@
 namespace App\Models\Api;
 
 
-use App\Models\MessMenu;
+use App\Models\MessMenuMeal;
 use Illuminate\Database\Eloquent\Model;
 
-class ApiMessMenu extends MessMenu
+class ApiMessMenuMeal extends MessMenuMeal
 {
     //
 }

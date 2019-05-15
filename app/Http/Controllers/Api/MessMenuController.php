@@ -13,7 +13,7 @@ use JWTAuthException;
 use JWTAuth;
 
 use App\Models\Api\ApiUser as User;
-use App\Models\Api\ApiMessMenu as MessMenu;
+use App\Models\Api\ApiMessMenuMeal as MessMenuMeal;
 use App\Models\Api\ApiMessMenuTiming as MessMenuTiming;
 use App\Models\Api\ApiUpdateRequests as UpdateRequests;
 
@@ -82,7 +82,7 @@ class MessMenuController extends Controller
                 $dinnerMeal   =  $request->get('dinnerMeal');
                 $breakFastMeal  =  $request->get('breakFastMeal');
 
-                $updateMessMenu =  MessMenu::find($request->id)->update([
+                $updateMessMenu =  MessMenuMeal::find($request->id)->update([
                         
                     'breakFastMeal' =>  $breakFastMeal,
                     'LunchMeal'     =>  $LunchMeal,
@@ -179,7 +179,7 @@ class MessMenuController extends Controller
 
                 $hostelId = $request->get('hostelId');
 
-                $messMenu = MessMenu::select(
+                $messMenu = MessMenuMeal::select(
                     
                     'id', 
                     'day', 
