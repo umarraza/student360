@@ -52,27 +52,27 @@ class SuperAdminController extends Controller
                'status' => false
             ];
             
-            // $hostels = Hostel::select('id', 'hostelName', 'hostelCategory', 'isApproved')->where('isApproved', '=', 0)->get();
-            $requests = ApproveHostelRequest::select('id', 'approveStatus', 'hostelId')->where('approveStatus', '=', 0)->get();
+            $hostels = Hostel::select('id', 'hostelName', 'hostelCategory', 'isApproved')->where('isApproved', '=', 0)->get();
+            // $requests = ApproveHostelRequest::select('id', 'approveStatus', 'hostelId')->where('approveStatus', '=', 0)->get();
 
-            $hostelId = NULL;
-            $hostel = [];
+            // $hostelId = NULL;
+            // $hostels = [];
 
-            foreach ($requests as $data){
-                
-                $hostelId = $data->hostelId;
-                $hostel[] = Hostel::select('id', 'hostelName', 'hostelCategory')->where('id', '=', $hostelId)->first();
+            // foreach ($requests as $data){
 
-            }
+            //     $hostelId = $data->hostelId;
+            //     $hostels[] = Hostel::select('id', 'hostelName', 'hostelCategory')->where('id', '=', $hostelId)->first();
+
+            // }
 
             // return $hostel;
 
-            if (!empty($requests)) {
+            if (!empty($hostels)) {
 
                 $response['data']['code']       =  200;
                 $response['data']['message']    =  'Request Successfull';
-                $response['data']['request']    =  $requests;
-                $response['data']['hostel']     =  $hostel;
+                // $response['data']['request']    =  $requests;
+                $response['data']['hostel']     =  $hostels;
                 $response['status']             =  true;
 
             } else {
@@ -134,20 +134,20 @@ class SuperAdminController extends Controller
 
             }else{
 
-                $requestData = ApproveHostelRequest::find($request->id);
-                $hostelId = $requestData->hostelId;
+                // $requestData = ApproveHostelRequest::find($request->id);
+                // $hostelId = $requestData->hostelId;
 
-                $hostel = Hostel::where('id', '=', $hostelId)->first();
+                // $hostel = Hostel::where('id', '=', $hostelId)->first();
 
-                $approveRequest = ApproveHostelRequest::find($request->id)->update([
-                    'approveStatus' => 1,
-                ]);
+                // $approveRequest = ApproveHostelRequest::find($request->id)->update([
+                //     'approveStatus' => 1,
+                // ]);
                
-                $hostel = Hostel::where('id', '=', $hostelId)->update([
+                $hostel = Hostel::where('id', '=', $request->id)->update([
                     'isApproved' => 1,
                 ]);
                 
-                if ($approveRequest && $hostel) {
+                if ($hostel) {
 
                     $response['data']['code']       =  200;
                     $response['data']['message']    =  'Hostel approved successfully!';
@@ -715,6 +715,7 @@ class SuperAdminController extends Controller
                     'errors'    => '',
                     'message'   => 'Invalid Token! User Not Found.',
                 ],
+                
                 'status' => false
             ];
 
