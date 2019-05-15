@@ -394,7 +394,7 @@ class SuperAdminController extends Controller
      * ALL HOSTELS VERIFICATION REQUESTS LIST
      * Super admin can see a list of all hostels that send the request to register the hostel
      * 
-     * @param VerifyHostelRequest $verificationStatus
+     * @param VerifyHostelRequest 
      * @return Model
      */
 
@@ -421,14 +421,24 @@ class SuperAdminController extends Controller
                'status' => false
             ];
 
+            $hostelData = [];
+
             $verificationRequests = VerifyHostelRequest::select('id','verificationStatus', 'hostelId')
                     ->where('verificationStatus', '=', 0)->get();
-            
-            if (!empty($verificationRequests)) {
+
+
+            foreach ($verificationRequests as $requestData){
+
+                $hostelData[] = Hostel::select('id', 'hostelName', 'isVerified')->where('id', '=', $requestData->hostelId)->first();
+                $hostelData[] = $requestData;
+
+            }
+
+            if (!empty($hostelData)) {
 
                 $response['data']['code']       =  200;
                 $response['data']['message']    =  'Request Successfull';
-                $response['data']['result']     =  $verificationRequests;
+                $response['data']['result']     =  $hostelData;
                 $response['status']             =  true;
 
             } else {
@@ -495,7 +505,7 @@ class SuperAdminController extends Controller
                 'contactName',
                 'website',
                 'phoneNumber',
-                'features',)
+                'features' )
 
                 ->where('status', '=', 0)->get();
             
@@ -614,11 +624,6 @@ class SuperAdminController extends Controller
 
                 ]);
 
-                    // $user = User::where('id', '=', $userId)->update([
-                    //     'email' => $contactEmail,
-                    // ]);
-                
-
                 if ($approveUpdateRequest) {
 
                     $response['data']['code']       =  200;
@@ -672,8 +677,6 @@ class SuperAdminController extends Controller
                 $response['data']['errors'] = $validator->messages();
 
             } else {
-
-                
 
                 $rejectUpdateRequest = UpdateHostelRequest::find($request->id)->update([
 
