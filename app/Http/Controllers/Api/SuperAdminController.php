@@ -66,7 +66,6 @@ class SuperAdminController extends Controller
 
             $requests = ApproveHostelRequest::select('id', 'approveStatus', 'hostelId')->where('approveStatus', '=', 0)->get();
 
-            $hostelId = NULL;
             $approvalRequests = [];
 
             foreach ($requests as $requestData){
