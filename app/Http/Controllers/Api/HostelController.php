@@ -181,7 +181,7 @@ class HostelController extends Controller
                     'lunchStartTime'   =>  '01:00 PM',
                     'lunchEndTime'     =>  '03:00 PM',
                     'dinnerStartTime'  =>  '07:00 PM',
-                    'dinnerEndTime'    =>  '07:10 PM',
+                    'dinnerEndTime'    =>  '10:00 PM',
                     'isSetBreakFast'   =>  0,
                     'isSetLunch'       =>  0,
                     'isSetDinner'      =>  0,

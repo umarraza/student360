@@ -49,30 +49,48 @@ class SuperAdminController extends Controller
                     'code' => 400,
                     'message' => 'Something went wrong. Please try again later!',
                 ],
-               'status' => false
+
+                'status' => false
             ];
             
-            $hostels = Hostel::select('id', 'hostelName', 'hostelCategory', 'isApproved')->where('isApproved', '=', 0)->get();
-            // $requests = ApproveHostelRequest::select('id', 'approveStatus', 'hostelId')->where('approveStatus', '=', 0)->get();
+            $requests = ApproveHostelRequest::select('id', 'approveStatus', 'hostelId')->where('approveStatus', '=', 0)->get();
 
-            // $hostelId = NULL;
-            // $hostels = [];
+            $hostelId = NULL;
+            $approvalRequests = [];
 
-            // foreach ($requests as $data){
 
-            //     $hostelId = $data->hostelId;
-            //     $hostels[] = Hostel::select('id', 'hostelName', 'hostelCategory')->where('id', '=', $hostelId)->first();
+            /** 
+             * 
+             *  Combining info of hostels and their approval requests in a single (object).
+             *  To show approval requests list to the hostel admin, we've to show thier
+             *  appropriate hostels to the superadmin also. Below logic aims to do
+             *  that job.
+             *   
+             */
+            
+            foreach ($requests as $requestData){
 
-            // }
+                $hostelId = $requestData->hostelId;
 
-            // return $hostel;
+                $hostel = Hostel::select('id', 'hostelName', 'hostelCategory', 'city')->where('id', '=', $hostelId)->first();
 
-            if (!empty($hostels)) {
+                $city = $hostel->city;
+                $hostelName = $hostel->hostelName;
+                $hostelCategory = $hostel->hostelCategory;
+
+                $requestData["city"] = $city;
+                $requestData["hostelName"] = $hostelName;
+                $requestData["hostelCategory"] = $hostelCategory;
+
+                $approvalRequests[] = $requestData;
+
+            }
+
+            if (!empty($approvalRequests)) {
 
                 $response['data']['code']       =  200;
                 $response['data']['message']    =  'Request Successfull';
-                // $response['data']['request']    =  $requests;
-                $response['data']['hostel']     =  $hostels;
+                $response['data']['hostel']     =  $approvalRequests;
                 $response['status']             =  true;
 
             } else {
