@@ -53,25 +53,27 @@ class SuperAdminController extends Controller
                 'status' => false
             ];
             
-            $requests = ApproveHostelRequest::select('id', 'approveStatus', 'hostelId')->where('approveStatus', '=', 0)->get();
-
-            $hostelId = NULL;
-            $approvalRequests = [];
-
-
             /** 
              * 
              *  Combining info of hostels and their approval requests in a single (object).
              *  To show approval requests list to the hostel admin, we've to show thier
              *  appropriate hostels to the superadmin also. Below logic aims to do
              *  that job.
-             *   
+             * 
+             *  @return approvalRequests
+             * 
              */
-            
+
+            $requests = ApproveHostelRequest::select('id', 'approveStatus', 'hostelId')->where('approveStatus', '=', 0)->get();
+
+            $hostelId = NULL;
+            $approvalRequests = [];
+
             foreach ($requests as $requestData){
 
                 $hostelId = $requestData->hostelId;
-
+        
+        
                 $hostel = Hostel::select('id', 'hostelName', 'hostelCategory', 'city')->where('id', '=', $hostelId)->first();
 
                 $city = $hostel->city;
