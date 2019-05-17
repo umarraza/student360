@@ -5,406 +5,126 @@ use App\Models\Institute;
 use App\Models\ParentStudent;
 use App\Models\MyParent;
 use App\Models\Student;
+use App\Models\DeviceToken;
+
 use Carbon\Carbon;
 
-function hex2rgb($hex) 
-{
-  $hex = str_replace("#", "", $hex);
+function findDeviceToken($userId, $title, $message){
 
-  if(strlen($hex) == 3) {
-     $r = hexdec(substr($hex,0,1).substr($hex,0,1));
-     $g = hexdec(substr($hex,1,1).substr($hex,1,1));
-     $b = hexdec(substr($hex,2,1).substr($hex,2,1));
-  } else {
-     $r = hexdec(substr($hex,0,2));
-     $g = hexdec(substr($hex,2,2));
-     $b = hexdec(substr($hex,4,2));
-  }
-  $rgb = array($r, $g, $b);
-  //return implode(",", $rgb); // returns the rgb values separated by commas
-  return $rgb; // returns an array with the rgb values
-}
+    $deviceTokens= DeviceToken::where('userId', '=', $userId)->get();
 
-function storeMedia($file_data) 
-{
-    try
-    {
-        @list($type, $file_data) = explode(';', $file_data);
-        @list(, $file_data) = explode(',', $file_data); 
-        @list(, $type) = explode('/', $type); 
-        
-        $file_name = 'media_'.time().'.'.$type; //generating unique file name;
-        
-        \Storage::disk('public')->put($file_name,base64_decode($file_data));
-    }
-    catch (\Exception $e) 
-    {
-        return false;
+    foreach ($deviceTokens as $value) {
+
+        sendPushNotification($title,$message,$value->deviceToken,$value->deviceType);
+
     }
 
-    return $file_name; 
 }
 
-// function postCommentNotify($postId,$commentorId,$comment) 
-// {
-//     try
-//     {
-//         $post           = UserPost::find($postId);
-
-//         $postOwner      = UserDetail::find($post->userDetailId);
-
-//         $postCommentor  = UserDetail::find($commentorId);
-
-//         $nameOfCommentor = $postCommentor->firstName." ".$postCommentor->lastName;
-        
-//         $title   = "Comment On Post";
-//         $message = $nameOfCommentor." commented on your post.";
-
-//         $postOwner->user->sendNotifications($title,$message);
-//     }
-//     catch (\Exception $e) 
-//     {
-//         return false;
-//     }
-
-//     return true; 
-// }
-
-// function storyCommentNotify($storyId,$commentorId,$comment) 
-// {
-//     try
-//     {
-//         $story           = UserStory::find($storyId);
-
-//         $storyOwner      = UserDetail::find($story->userDetailId);
-
-//         $storyCommentor  = UserDetail::find($commentorId);
-
-//         $nameOfCommentor = $storyCommentor->firstName." ".$storyCommentor->lastName;
-        
-//         $title   = "Comment On Story";
-//         $message = $nameOfCommentor." commented on your story.";
-
-//         $storyOwner->user->sendNotifications($title,$message);
-//     }
-//     catch (\Exception $e) 
-//     {
-//         return false;
-//     }
-
-//     return true;
-// }
-
-// function postLikeNotify($postId,$likerId) 
-// {
-//     try
-//     {
-//         $post           = UserPost::find($postId);
-
-//         $postOwner      = UserDetail::find($post->userDetailId);
-
-//         $postLiker      = UserDetail::find($likerId);
-
-//         $nameOfLiker    = $postLiker->firstName." ".$postLiker->lastName;
-        
-//         $title   = "Like On Post";
-//         $message = $nameOfLiker." likes your post.";
-
-//         $postOwner->user->sendNotifications($title,$message);
-//     }
-//     catch (\Exception $e) 
-//     {
-//         return false;
-//     }
-
-//     return true; 
-// }
-
-// function storyLikeNotify($storyId,$likerId) 
-// {
-//     try
-//     {
-//         $story           = UserStory::find($storyId);
-
-//         $storyOwner      = UserDetail::find($story->userDetailId);
-
-//         $storyLiker      = UserDetail::find($likerId);
-
-//         $nameOfLiker     = $storyLiker->firstName." ".$storyLiker->lastName;
-        
-//         $title   = "Like On Story";
-//         $message = $nameOfLiker." likes your story.";
-
-//         $storyOwner->user->sendNotifications($title,$message);
-//     }
-//     catch (\Exception $e) 
-//     {
-//         return false;
-//     }
-
-//     return true;
-// }
-
-// function receiveFriendRequestNotify($receiver,$sender) 
-// {
-//     try
-//     {
-//         $sender          = UserDetail::find($sender);
-//         $receiver        = UserDetail::find($receiver);
-
-//         $senderName      = $sender->firstName." ".$sender->lastName;
-        
-//         $title   = "New Friend Request";
-//         $message = $senderName." sent you the friend request.";
-
-//         $receiver->user->sendNotifications($title,$message);
-//     }
-//     catch (\Exception $e) 
-//     {
-//         return false;
-//     }
-
-//     return true;
-// } 
-
-
-// function approveFriendRequestNotify($receiver,$sender) 
-// {
-//     try
-//     {
-//         $sender          = UserDetail::find($sender);
-//         $receiver        = UserDetail::find($receiver);
-
-//         $senderName      = $sender->firstName." ".$sender->lastName;
-        
-//         $title   = "Friend Request Accepted";
-//         $message = $senderName." has accepted your friend request.";
-
-//         $receiver->user->sendNotifications($title,$message);
-//     }
-//     catch (\Exception $e) 
-//     {
-//         return false;
-//     }
-
-//     return true;
-// }
-
-// function newPostNotify($receiver,$sender) 
-// {
-//     try
-//     {
-//         $sender          = UserDetail::find($sender);
-//         $receiver        = UserDetail::find($receiver);
-
-//         $senderName      = $sender->firstName." ".$sender->lastName;
-        
-//         $title   = "Friend Request Accepted";
-//         $message = $senderName." has accepted your friend request.";
-
-//         $receiver->user->sendNotifications($title,$message);
-//     }
-//     catch (\Exception $e) 
-//     {
-//         return false;
-//     }
-
-//     return true;
-// }
-
-// function newStoryNotify($receiver,$sender) 
-// {
-//     try
-//     {
-//         $sender          = UserDetail::find($sender);
-//         $receiver        = UserDetail::find($receiver);
-
-//         $senderName      = $sender->firstName." ".$sender->lastName;
-        
-//         $title   = "Friend Request Accepted";
-//         $message = $senderName." has accepted your friend request.";
-
-//         $receiver->user->sendNotifications($title,$message);
-//     }
-//     catch (\Exception $e) 
-//     {
-//         return false;
-//     }
-
-//     return true;
-// } 
-
-// function newPostTagNotify($receiver,$sender) 
-// {
-//     try
-//     {
-//         $sender          = UserDetail::find($sender);
-//         $receiver        = UserDetail::find($receiver);
-
-//         $senderName      = $sender->firstName." ".$sender->lastName;
-        
-//         $title   = "Tagged in a post";
-//         $message = $senderName." has tagged you in a post.";
-
-//         $receiver->user->sendNotifications($title,$message);
-//     }
-//     catch (\Exception $e) 
-//     {
-//         return false;
-//     }
-
-//     return true;
-// }
-
-function makeArrayString($arrString)
+function sendPushNotification($title,$myMessage,$deviceToken,$deviceType)
 {
-    $removedInvertedCommas = str_replace("\"", "",$arrString);
-    $removedBraces = str_replace("[","",$removedInvertedCommas);
-    $removedBraces = str_replace("]","",$removedBraces);
-    
 
-    return $removedBraces;
-}
+    if($deviceType==0)
+    {
+        $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
+        // $token='dfoOGT_gOsk:APA91bGj-bbHMAMlkzQfdvxT3twzMlh_b8TmV06_Q7gY_pjJePY20r-hIQtxwdsr9xXf-vd8BJq2cT-1fKg9bbCwDhHHHz6197OPW7IDLuJ3nxsEDTHDZbxltvolKIJY6Bsfl0axkkqW';
+        
+        $notification = [
+            'title' => $title,
+            'body' => $myMessage,
+            'sound' => true,
+        ];
+        
+        $extraNotificationData = ["message" => $notification,"moredata" =>'dd'];
 
-function instituteSignup($id)
-{
-    try 
-    {
-        $user = User::find($id);
-        $email = $user->username;
-        $name  = $user->admin->firstName." ".$user->admin->lastName;
-        \Mail::send('Mails2.instituteSignup', [
-                    'name'    => $name,
-                ], function ($message) use ($email){
-                    $message->from('info@asuretots.com', 'The Asure Tots Team');
-                    $message->to($email)->subject('Successfull Signup');
-            });
-    } 
-    catch (Exception $e) 
-    {
-      
+        $fcmNotification = [
+            //'registration_ids' => $tokenList, //multple token array
+            'to' => $deviceToken, //single token
+            'data' => [
+                'notification' => $notification,
+                'message' => $myMessage,
+                ]
+        ];
+
+        $headers = [
+            'Authorization: key=AIzaSyAeEeJYYHN146_dNj7w04MSnWVQ4XoPm1U',
+            'Content-Type: application/json'
+        ];
+
+
+        // $headers = [
+        //     'Authorization: key=AIzaSyDkP9xXEnudfUBW1ekf_lUrrEu1rhJtcSs',
+        //     'Content-Type: application/json'
+        // ];
+
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL,$fcmUrl);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fcmNotification));
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        return true;
+        //return $result;
+        //dd($result);
     }
-    return true;
-}
-
-
-function parentSignup($id,$password,$instituteId)
-{
-    //try 
+    else
     {
-        $user = User::find($id);
-        $email = $user->username;
-        $name  = $user->parent->firstName." ".$user->parent->lastName;
+        // API access key from Google FCM App Console
+        //define( 'API_ACCESS_KEY', 'AIzaSyAeEeJYYHN146_dNj7w04MSnWVQ4XoPm1U' );
+        $apiKey = 'AIzaSyAeEeJYYHN146_dNj7w04MSnWVQ4XoPm1U';
+        // generated via the cordova phonegap-plugin-push using "senderID" (found in FCM App Console)
+        // this was generated from my phone and outputted via a console.log() in the function that calls the plugin
+        // my phone, using my FCM senderID, to generate the following registrationId 
+        $singleID = $deviceToken;//'dQnFThPOhEI:APA91bHiQAEIQXnjR45YjwQORfpaeoEwesXg2pzsBFBpFyI3WdczfDbBQgvI-XOKp0_c5BcwMuSkSxWrfEEIgFvO0yAc-aG8H02wpOvlfw9eodjncgSZLwWa3mu8sf9Nv031WsVezxlG' ; 
+        // echo $singleID;
+        // $registrationIDs = array(
+        //      '1d03463f5e1aecfcaf891bf251486f2bc5fd852da42b60575102e81b43db09e1', 
+        // ) ;
 
-        $institute = Institute::find($instituteId);
-        $schoolName  = $institute->name;
-        \Mail::send('Mails2.parentSignup', [
-                    'name'       => $name,
-                    'email'      => $email,
-                    'password'   => $password,
-                    'schoolName' => $schoolName,
-                ], function ($message) use ($email){
-                    $message->from('info@asuretots.com', 'The Asure Tots Team');
-                    $message->to($email)->subject('Wellcome');
-            });
-    } 
-    //catch (Exception $e) 
-    {
-      
+        // prep the bundle
+        // to see all the options for FCM to/notification payload: 
+        // https://firebase.google.com/docs/cloud-messaging/http-server-ref#notification-payload-support 
+
+        // 'vibrate' available in GCM, but not in FCM
+        $fcmMsg = array(
+            'body' => $myMessage,
+            'title' => $title,
+            'sound' => "default",
+                'color' => "#203E78" 
+        );
+        // I haven't figured 'color' out yet.  
+        // On one phone 'color' was the background color behind the actual app icon.  (ie Samsung Galaxy S5)
+        // On another phone, it was the color of the app icon. (ie: LG K20 Plush)
+
+        // 'to' => $singleID ;  // expecting a single ID
+        // 'registration_ids' => $registrationIDs ;  // expects an array of ids
+        // 'priority' => 'high' ; // options are normal and high, if not set, defaults to high.
+        $fcmFields = array(
+            'to' => $singleID,
+                'priority' => 'high',
+            'notification' => $fcmMsg
+        );
+
+        $headers = array(
+            'Authorization: key=' . $apiKey,
+            'Content-Type: application/json'
+        );
+         
+        $ch = curl_init();
+        curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );
+        curl_setopt( $ch,CURLOPT_POST, true );
+        curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
+        curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
+        curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
+        curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $fcmFields ) );
+        $result = curl_exec($ch );
+        curl_close( $ch );
+        //echo $result . "\n\n";
+        return true;
     }
-    return true;
-}
-
-
-function trainerSignup($id,$password)
-{
-    //try 
-    {
-        $user = User::find($id);
-        $email = $user->username;
-        $name  = $user->trainer->firstName." ".$user->trainer->lastName;
-
-        $institute = Institute::find($user->trainer->instituteId);
-        $schoolName  = $institute->name;
-        \Mail::send('Mails2.secondaryAdminSignup', [
-                    'name'       => $name,
-                    'email'      => $email,
-                    'password'   => $password,
-                    'schoolName' => $schoolName,
-                ], function ($message) use ($email){
-                    $message->from('info@asuretots.com', 'The Asure Tots Team');
-                    $message->to($email)->subject('Wellcome');
-            });
-    } 
-    //catch (Exception $e) 
-    {
-      
-    }
-    return true;
-}
-
-function secondaryAdminSignup($id,$password)
-{
-    //try 
-    {
-        $user = User::find($id);
-        $email = $user->username;
-        $name  = $user->admin->firstName." ".$user->admin->lastName;
-
-        $institute = Institute::find($user->admin->instituteId);
-        $schoolName  = $institute->name;
-        \Mail::send('Mails2.secondaryAdminSignup', [
-                    'name'       => $name,
-                    'email'      => $email,
-                    'password'   => $password,
-                    'schoolName' => $schoolName,
-                ], function ($message) use ($email){
-                    $message->from('info@asuretots.com', 'The Asure Tots Team');
-                    $message->to($email)->subject('Wellcome');
-            });
-    } 
-    //catch (Exception $e) 
-    {
-      
-    }
-    return true;
-}
-function markAttendence($studentId,$instituteId,$dateTime,$subject)
-{
-    //try 
-    {
-        $student       = Student::find($studentId);
-        $studentUser   = User::find($student->userId);
-
-        $parentStudent = ParentStudent::where('studentId',$student->id)->first();
-
-        $parent        = MyParent::find($parentStudent->parentId);
-        $parentUser    = User::find($parent->userId);
-
-        $email       = $parentUser->username;
-        $parentName  = $parent->firstName." ".$parent->lastName;
-        $studentName = $student->firstName." ".$student->lastName;
-
-        $institute = Institute::find($instituteId);
-        $schoolName  = $institute->name;
-
-        $scanDate = Carbon::parse($dateTime)->format('Y-m-d');
-        $scanTime = Carbon::parse($dateTime)->format('H:i:s');
-
-        \Mail::send('Mails2.scanQRcode', [
-                    'studentName'   => $studentName,
-                    'parentName'    => $parentName,
-                    'schoolName'    => $schoolName,
-                    'scanDate'      => $scanDate,
-                    'scanTime'      => $scanTime,
-                ], function ($message) use ($email,$subject){
-                    $message->from('info@asuretots.com', 'The Asure Tots Team');
-                    $message->to($email)->subject($subject);
-            });
-    } 
-    //catch (Exception $e) 
-    {
-      
-    }
-    return true;
 }

@@ -250,7 +250,6 @@ class HostelController extends Controller
                 $response['data']['message']    =  'No Hostels Found';
                 $response['status']             =  false;    
             }
-
         }
         return $response;
     }

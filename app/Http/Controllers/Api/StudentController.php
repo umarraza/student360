@@ -21,6 +21,8 @@ class StudentController extends Controller
 {
     public function create(Request $request)
     {
+        $user = JWTAuth::toUser($request->token);
+
         $response = [
                 'data' => [
                     'code'      => 400,
@@ -37,89 +39,94 @@ class StudentController extends Controller
                 ],
                'status' => false
             ];
-            $rules = [
 
-            	'fullName'       =>   'required',
-                'phoneNumber'    =>   'required',   
-                'username'       =>   'required|unique:users',
-                'password'       =>   'required',
-                'roleId'         =>   'required',
-
-
-            ];
-
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                
-                $response['data']['message'] = 'Invalid input values.';
-                $response['data']['errors'] = $validator->messages();
-            
-            }
-            else
+            if(!empty($user) && $user->isSuperAdmin())
             {
 
-                $username = $request->get('username');
-                $password = $request->get('password');
-                $roleId   = $request->get('roleId');
-                $email    = $request->get('email');
+                $rules = [
 
-                $user =  User::create([
+                    'fullName'       =>   'required',
+                    'phoneNumber'    =>   'required',   
+                    'username'       =>   'required|unique:users',
+                    'password'       =>   'required',
+                    'roleId'         =>   'required',
+
+
+                ];
+
+                $validator = Validator::make($request->all(), $rules);
+
+                if ($validator->fails()) {
                     
-                    'username'   =>  $username,
-                    'email'      =>  $email,
-                    'password'   =>  bcrypt($password),
-                    'roleId'     =>  $roleId,
-                    'verified'   =>  1,
-                    'language'   =>  "English",
-
-                ]); 
-
-                    $userId = $user->id;
-
-                    /* 
-                        Create a new ThreadModel instance.
-                        ---------------------
-                        Thread respresents the conversation between a registered user and super admin.
-                        Registered user can ask queries to super admin about anything regrading 
-                        hostels. All messages between a registered user and super admin will 
-                        form a conversation/thread. Thread is being created while 
-                        registering a user because...
-
-                    */ 
-
-                    $thread = Threads::create([
-                        'userId'  => $userId,
-                        'adminId' => 1,
-                    ]);
-
-                    $thread->save();
-
-                    $threadId = $thread->id;
-
-                    $updateThread = User::where('id', '=', $userId)->update([
-
-                        'threadId' => $threadId,
-
-                    ]);
-
-
-                $student = Student::create([
-
-                        'fullName'     =>   $request->get('fullName'),
-                        'phoneNumber'  =>   $request->get('phoneNumber'),
-                        'userId'       =>   $user->id,
-
-                    ]);
-
-
-            	if ($student->save() && $user->save()) 
+                    $response['data']['message'] = 'Invalid input values.';
+                    $response['data']['errors'] = $validator->messages();
+                
+                }
+                else
                 {
-                    $response['data']['code']       = 200;
-                    $response['status']             = true;
-                    $response['data']['result']     = $student;
-                    $response['user']               = $user;
-                    $response['data']['message']    = 'Student profile created Successfully';
+
+                    $username = $request->get('username');
+                    $password = $request->get('password');
+                    $roleId   = $request->get('roleId');
+                    $email    = $request->get('email');
+
+                    $user =  User::create([
+                        
+                        'username'   =>  $username,
+                        'email'      =>  $email,
+                        'password'   =>  bcrypt($password),
+                        'roleId'     =>  $roleId,
+                        'verified'   =>  1,
+                        'language'   =>  "English",
+
+                    ]); 
+
+                        $userId = $user->id;
+
+                        /* 
+                            Create a new ThreadModel instance.
+                            ---------------------
+                            Thread respresents the conversation between a registered user and super admin.
+                            Registered user can ask queries to super admin about anything regrading 
+                            hostels. All messages between a registered user and super admin will 
+                            form a conversation/thread. Thread is being created while 
+                            registering a user because...
+
+                        */ 
+
+                        $thread = Threads::create([
+                            'userId'  => $userId,
+                            'adminId' => 1,
+                        ]);
+
+                        $thread->save();
+
+                        $threadId = $thread->id;
+
+                        $updateThread = User::where('id', '=', $userId)->update([
+
+                            'threadId' => $threadId,
+
+                        ]);
+
+
+                    $student = Student::create([
+
+                            'fullName'     =>   $request->get('fullName'),
+                            'phoneNumber'  =>   $request->get('phoneNumber'),
+                            'userId'       =>   $user->id,
+
+                        ]);
+
+
+                    if ($student->save() && $user->save()) 
+                    {
+                        $response['data']['code']       = 200;
+                        $response['status']             = true;
+                        $response['data']['result']     = $student;
+                        $response['user']               = $user;
+                        $response['data']['message']    = 'Student profile created Successfully';
+                    }
                 }
             }
         return $response;
