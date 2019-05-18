@@ -435,9 +435,11 @@ class AuthController extends Controller
 
             JWTAuth::invalidate($request->token);
             
-            // if logout occur from mobile device then clear the device token.
-            // if($request->deviceType=="M")
+            //if logout occur from mobile device then clear the device token.
+            
+            // if($request->deviceType=="M"){
             //     $user->clearDeviceToken();
+            // }
 
             $response['data']['message'] = 'Logout successfully.';
             $response['data']['code'] = 200;
@@ -446,7 +448,8 @@ class AuthController extends Controller
         return $response;
     }
 
-    public function updateUserDevice(Request $request){
+    public function updateUserDevice(Request $request)
+    {
         // validation token.
         $user = JWTAuth::toUser($request->token);
         // generating default response if something gets wrong.
@@ -457,35 +460,45 @@ class AuthController extends Controller
                 ],
                 'status' => false
             ];
-        if(!empty($user)){
-
+        if(!empty($user))
+        {
+            // rules to check weather paramertes comes or not.
             $rules = [
                 'deviceToken' => 'required',
                 'deviceType' => 'required|Numeric|in:0,1'
             ];
-
+            // validating rules
             $validator = Validator::make($request->all(), $rules);
-            
             if ($validator->fails()) {
-            
                 $response['data']['message'] = 'Invalid input values.';
                 $response['data']['errors'] = $validator->messages();
-            
-            } else {
-
+            }else
+            {
+                // saving success response.
                 $response['status'] = true;
                 $response['data']['code'] = 200;
                 $response['data']['message'] = 'Request Successfull.';
                 $model = User::where('id','=',$user->id)->first();
-                
                 // updating token
-                
                 if(!empty($model)){
-                    
-                    $model->update([
-                        'deviceToken' => $request->deviceToken,
-                        'deviceType' => $request->deviceType
-                    ]);
+                    $checkToken  = DeviceToken::where('deviceToken','=',$request->deviceToken)->first();
+                    if(empty($checkToken))
+                    {
+                        $model = DeviceToken::create([
+                                'deviceToken' => $request->deviceToken,
+                                'deviceType' => $request->deviceType,
+                                'userId'    =>  $user->id
+                        ]);
+                        // updating token
+                        if($model)
+                        {
+                        }
+                        else
+                        {
+                            // in cans token update is unsuccessfull.
+                            $response['data']['message'] = 'Device token not saved successfully. Please try again.';
+                        }
+                    }
                 }
                 else
                 {

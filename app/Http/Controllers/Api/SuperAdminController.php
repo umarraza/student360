@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use App\helpers;
 
 use JWTAuthException;
 use JWTAuth;
@@ -71,7 +72,6 @@ class SuperAdminController extends Controller
             foreach ($requests as $requestData){
 
                 $hostelId = $requestData->hostelId;
-        
         
                 $hostel = Hostel::select('id', 'hostelName', 'hostelCategory', 'city')->where('id', '=', $hostelId)->first();
 
@@ -153,20 +153,27 @@ class SuperAdminController extends Controller
 
             }else{
 
-                // $requestData = ApproveHostelRequest::find($request->id);
-                // $hostelId = $requestData->hostelId;
+                $requestData = ApproveHostelRequest::find($request->id);
+                $hostelId = $requestData->hostelId;
 
-                // $hostel = Hostel::where('id', '=', $hostelId)->first();
+                $hostel = Hostel::where('id', '=', $hostelId)->first();
 
-                // $approveRequest = ApproveHostelRequest::find($request->id)->update([
-                //     'approveStatus' => 1,
-                // ]);
+
+                $approveRequest = ApproveHostelRequest::find($request->id)->update([
+                    'approveStatus' => 1,
+                ]);
                
-                $hostel = Hostel::where('id', '=', $request->id)->update([
+                $hostel = Hostel::where('id', '=', $hostelId)->update([
                     'isApproved' => 1,
                 ]);
                 
-                if ($hostel) {
+                // $title    =  "Approve Hotsle";
+                // $userId   =  $hostel->userId;
+                // $message  =  "Your request to approve hostel has been approved!";
+
+                // findDeviceToken($userId,$title,$message);
+                
+                if ($hostel && $approveRequest) {
 
                     $response['data']['code']       =  200;
                     $response['data']['message']    =  'Hostel approved successfully!';
@@ -232,13 +239,28 @@ class SuperAdminController extends Controller
 
             }else{
 
-                $rejectApprovalRequest = Hostel::find($request->id)->update([
-                    
-                    'isApproved' => 2,  // Status = 2 means that the request to update hostel have been rejected by administrater
-                
+                $rejectApprovalRequest = ApproveHostelRequest::find($request->id);
+               
+                $hostelId = $rejectApprovalRequest->hostelId;
+
+                $hostel = Hostel::where('id', '=', $hostelId)->first();
+
+                $rejectApprovalRequest = ApproveHostelRequest::find($request->id)->update([
+                    'approveStatus' => 2,
                 ]);
-                
-                if ($rejectApprovalRequest ){
+
+
+                $rejectHostel = Hostel::where('id', '=', $hostelId)->update([
+                    'isApproved' => 2,
+                ]);
+
+                // $userId = $hostel->userId;
+                // $title = "Approval Request Rejected!";
+                // $message = "Sorry! Your request to approve hostel have been rejected!";
+
+                // findDeviceToken($userId, $title, $message);
+
+                if ($rejectApprovalRequest && $hostel){
 
                     $response['data']['code']     = 200;
                     $response['status']           = true;
@@ -318,6 +340,10 @@ class SuperAdminController extends Controller
 
                 ]);
 
+                // $title = "Hostel Verified";
+                // $message = "Congratulations! Your request to registered a new hostel have been approved";
+
+                // findDeviceToken($title, $message, $userId);
 
                 if ($hostel && $user){
 
@@ -401,6 +427,10 @@ class SuperAdminController extends Controller
 
                 ]);
 
+                // $title = "Hostel Registration Rejected";
+                // $message = "Sorry! Your request to register a new hostel have been rejected.";
+
+                // findDeviceToken($title, $message, $userId);
 
                 if ($user){
 
@@ -498,7 +528,6 @@ class SuperAdminController extends Controller
             ];
 
             $hostelData = [];
-            // $hostelData = array();
 
             $verificationRequests = VerifyHostelRequest::select('id','verificationStatus', 'hostelId')
                     ->where('verificationStatus', '=', 0)->get();
@@ -702,6 +731,10 @@ class SuperAdminController extends Controller
 
                 ]);
 
+                // $title = "Hostel Updated";
+                // $message = "Your request to update hostel have been approved!";
+                // findDeviceToken($title, $message, $userId);
+
                 if ($approveUpdateRequest) {
 
                     $response['data']['code']       =  200;
@@ -762,11 +795,21 @@ class SuperAdminController extends Controller
 
             } else {
 
-                $rejectUpdateRequest = UpdateHostelRequest::where('hostelid', '=', $request->id)->update([
+                $requestData = UpdateHostelRequest::where('id', '=', $request->id)->first();
+                $hostelId = $requestData->hostelId;
+
+                $hostel = Hostel::where('id', '=', $hostelId)->first();
+                $userId = $hostel->userId;
+
+                $rejectUpdateRequest = UpdateHostelRequest::where('id', '=', $request->id)->update([
 
                     'status' => 2, // Status = 2 means that the request to update hostel have been rejected by administrater
 
                 ]);
+
+                // $title = "Hostel Updated";
+                // $message = "Your request to update hostel have been approved!";
+                // findDeviceToken($title, $message, $userId);
 
                 if ($rejectUpdateRequest){
 

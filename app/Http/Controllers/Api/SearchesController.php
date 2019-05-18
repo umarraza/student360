@@ -60,93 +60,24 @@ class SearchesController extends Controller
 
         } else {
 
-            $location = $request->get('location');
-            $searchRadius = $request->get('searchRadius');
-            $hostelCategory = $request->get('hostelCategory');
+            $latitude         =   $request->get('latitude');
+            $longitude        =   $request->get('longitude');
+            $location         =   $request->get('location');
+            $areaRadius       =   $request->get('areaRadius');
+            $hostelCategory   =   $request->get('hostelCategory');
 
-                if (isset($hostelCategory)) {
+                if (isset($location, $hostelCategory, $location)) {
 
                     $hostelsResults = DB::table('hostel_profiles AS hostel')
-
                         ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
                         ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
 
                         ->select(
-                            'hostel.id', 
-                            'hostel.hostelName', 
-                            'hostel.address', 
-                            'hostel.hostelCategory', 
-                            'rating.score', 
-                            'image.imageName', 
-                            'image.isThumbnail' )
-                        
-                        ->where('hostel.hostelCategory','REGEXP', $hostelCategory)
-                        ->where('image.isThumbnail','=', 1)
-                        
-                        ->orderBy('rating.score', 'desc')
-
-                    ->get();
-
-                }
-
-                if (isset($location)) {
-
-                    $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                    ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                    ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                    
-                    ->select(
-                        'hostel.id', 
-                        'hostel.hostelName', 
-                        'hostel.address', 
-                        'hostel.hostelCategory', 
-                        'rating.score', 
-                        'image.imageName', 
-                        'image.isThumbnail' )
-
-                    ->where('hostel.address','REGEXP', $location)
-                    ->where('image.isThumbnail','=', 1)
-                    
-                    ->orderBy('rating.score', 'desc')
-
-                ->get();
-
-                }
-                
-                if (isset($searchRadius)) {
-
-                    $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                    ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                    ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                    
-                    ->select(
-                        'hostel.id', 
-                        'hostel.hostelName', 
-                        'hostel.address', 
-                        'hostel.hostelCategory', 
-                        'rating.score', 
-                        'image.imageName', 
-                        'image.isThumbnail' )
-
-                    ->where('hostel.searchRadius','REGEXP', $searchRadius)
-                    ->where('image.isThumbnail','=', 1)
-                    
-                    ->orderBy('rating.score', 'desc')
-
-                ->get();
-
-                }
-
-                if (isset($location, $hostelCategory)) {
-
-                    $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                        ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                        ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                        
-                        ->select(
+                            DB::raw(
+                                    
+                            '( 6367 * acos( cos( radians('.$latitude.') ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians('.$longitude.') )
+                            + sin( radians('.$latitude.') ) * sin( radians( latitude ) ) ) ) AS distance'),
+                            
                             'hostel.id', 
                             'hostel.hostelName', 
                             'hostel.address', 
@@ -163,22 +94,31 @@ class SearchesController extends Controller
 
                     ->get();
 
-                }
+                    $arr = [];
 
-                    if(count($hostelsResults) > 0)
+                    foreach ($hostelsResults as $value) 
                     {
-                        $response['data']['code']       = 200;
-                        $response['status']             = true;
-                        $response['data']['result']     = $hostelsResults;
-                        $response['data']['message']    = 'Request Successfull';
-                
+                        if($value->distance < $areaRadius)
+                        {
+                            $arr[] = $value;
+                        }
                     }
-                    else
-                    {
-                        $response['data']['code']       = 200;
-                        $response['status']             = true;
-                        $response['data']['message']    = 'No Items matches your searches';
-                    }
+                }
+            
+                if(count($hostelsResults) > 0)
+                {
+                    $response['data']['code']       = 200;
+                    $response['status']             = true;
+                    $response['data']['result']     = $hostelsResults;
+                    $response['data']['message']    = 'Request Successfull';
+            
+                }
+                else
+                {
+                    $response['data']['code']       = 200;
+                    $response['status']             = true;
+                    $response['data']['message']    = 'No Items matches your searches';
+                }
             }
         return $response;
     }
@@ -195,951 +135,103 @@ class SearchesController extends Controller
     | 
     */
 
-public function searchByFeatures(Request $request)
-{
-    $response = [
-            'data' => [
-                'code'      => 400,
-                'errors'    => '',
-                'message'   => 'Something went wrong. Please try again later!',
-            ],
-            'status' => false
-        ];
+    public function searchByFeatures(Request $request)
+    {
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Something went wrong. Please try again later!',
+                ],
+                'status' => false
+            ];
 
 
-        $ac                     =   $request->get('ac');
-        $tv                     =   $request->get('tv');
-        $gym                    =   $request->get('gym');
-        $ups                    =   $request->get('ups');
-        $lawn                   =   $request->get('lawn');
-        $cctv                   =   $request->get('cctv');
-        $wifi                   =   $request->get('wifi');       
-        $geyser                 =   $request->get('geyser');
-        $score                  =   $request->get('ratings');
-        $laundry                =   $request->get('laundry');
-        $parking                =   $request->get('parking');
-        $kitchen                =   $request->get('kitchen');
-        $roomType               =   $request->get('roomType');
-        $messMenu               =   $request->get('messMenu');
-        $firstAid               =   $request->get('firstAid');
-        $location               =   $request->get('location');
-        $furnished              =   $request->get('furnished');
-        $studyRoom              =   $request->get('studyRoom');
-        $transport              =   $request->get('transport');
-        $priceRange             =   $request->get('priceRange');
-        $sportsArea             =   $request->get('sportsArea');
-        $groundFloor            =   $request->get('groundFloor');
-        $roomService            =   $request->get('roomService');
-        $petsAllowed            =   $request->get('petsAllowed');
-        $waterFilter            =   $request->get('waterFilter');
-        $notFurnished           =   $request->get('notFurnished');
-        $swimmingPool           =   $request->get('swimmingPool');
-        $searchRadius           =   $request->get('searchRadius');
-        $GuestsAllowed          =   $request->get('GuestsAllowed');
-        $medicalSupport         =   $request->get('medicalSupport');
-        $hostelCategory         =   $request->get('hostelCategory');
-        $attachedBathroom       =   $request->get('attachedBathroom'); 
-        $wheelChairAccessible   =   $request->get('wheelChairAccessible');
+            $array = [
+            
+                $ac                     =   $request->get('ac'),
+                $tv                     =   $request->get('tv'),
+                $gym                    =   $request->get('gym'),
+                $ups                    =   $request->get('ups'),
+                $lawn                   =   $request->get('lawn'),
+                $cctv                   =   $request->get('cctv'),
+                $wifi                   =   $request->get('wifi'),       
+                $geyser                 =   $request->get('geyser'),
+                $score                  =   $request->get('ratings'),
+                $laundry                =   $request->get('laundry'),
+                $parking                =   $request->get('parking'),
+                $kitchen                =   $request->get('kitchen'),
+                $roomType               =   $request->get('roomType'),
+                $messMenu               =   $request->get('messMenu'),
+                $firstAid               =   $request->get('firstAid'),
+                $furnished              =   $request->get('furnished'),
+                $studyRoom              =   $request->get('studyRoom'),
+                $transport              =   $request->get('transport'),
+                $priceRange             =   $request->get('priceRange'),
+                $sportsArea             =   $request->get('sportsArea'),
+                $groundFloor            =   $request->get('groundFloor'),
+                $roomService            =   $request->get('roomService'),
+                $petsAllowed            =   $request->get('petsAllowed'),
+                $waterFilter            =   $request->get('waterFilter'),
+                $notFurnished           =   $request->get('notFurnished'),
+                $swimmingPool           =   $request->get('swimmingPool'),
+                $searchRadius           =   $request->get('searchRadius'),
+                $GuestsAllowed          =   $request->get('GuestsAllowed'),
+                $medicalSupport         =   $request->get('medicalSupport'),
+                $attachedBathroom       =   $request->get('attachedBathroom'), 
+                $wheelChairAccessible   =   $request->get('wheelChairAccessible')
 
+            ];
 
+            $hostelsResults = [];
 
-        if (isset($hostelCategory)) {
+            $length = count($array);
+            
+            for ($i = 0; $i < $length; ++$i) {
 
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
+                if (isset($array[$i])) {
 
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.hostelCategory','REGEXP', $hostelCategory)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($location)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.address','REGEXP', $location)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-        
-        if (isset($searchRadius)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.searchRadius','REGEXP', $searchRadius)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($ac)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $ac)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($tv)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
+                    $hostelsResults[] = DB::table('hostel_profiles AS hostel')
 
                     ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
                     ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
                     
                     ->select(
+                        
                         'hostel.id', 
                         'hostel.hostelName', 
                         'hostel.address', 
-                        'hostel.hostelCategory', 
+                        'hostel.hostelCategory',
                         'hostel.features', 
                         'rating.score', 
                         'image.imageName', 
                         'image.isThumbnail' )
 
-                    ->where('hostel.features','REGEXP', $tv)
+                    ->where('hostel.features','REGEXP', $array[$i])
                     ->where('image.isThumbnail','=', 1)
                     
                     ->orderBy('rating.score', 'desc')
 
                 ->get();
 
-        }
-        
-        if (isset($gym)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $gym)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($ups)) {
-
-            $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $ups)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-        }
-
-        if (isset($lawn)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $lawn)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($cctv)) {
-
-            $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $cctv)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($wifi)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $wifi)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($geyser)) {
-
-            $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $geyser)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($laundry)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $laundry)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($parking)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $parking)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($kitchen)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $kitchen)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($messMenu)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $messMenu)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($firstAid)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $firstAid)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($furnished)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $furnished)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($studyRoom)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $studyRoom)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($transport)) {
-
-            $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $transport)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($sportsArea)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $sportsArea)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($groundFloor)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $groundFloor)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($roomService)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $roomService)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($petsAllowed)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $petsAllowed)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($waterFilter)) {
-
-            $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $waterFilter)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($notFurnished)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $notFurnished)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($swimmingPool)) {
-
-            $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $swimmingPool)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($GuestsAllowed)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $GuestsAllowed)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($medicalSupport)) {
-
-            $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $medicalSupport)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($attachedBathroom)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $attachedBathroom)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($wheelChairAccessible)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $wheelChairAccessible)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($priceRange)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.priceRange', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $priceRange)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('hostel.priceRange', 'asc')
-
-            ->get();
-
-        }
-
-        if (isset($score)) {
-
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $score)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($roomType)) {
-
-            
-                $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $roomType)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-        if (isset($distance)) {
-
-            $hostelsResults = DB::table('hostel_profiles AS hostel')
-
-                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
-                
-                ->select(
-                    'hostel.id', 
-                    'hostel.hostelName', 
-                    'hostel.address', 
-                    'hostel.hostelCategory', 
-                    'hostel.features', 
-                    'rating.score', 
-                    'image.imageName', 
-                    'image.isThumbnail' )
-
-                ->where('hostel.features','REGEXP', $distance)
-                ->where('image.isThumbnail','=', 1)
-                
-                ->orderBy('rating.score', 'desc')
-
-            ->get();
-
-        }
-
-            if(count($hostelsResults) > 0)
-            {
-                $response['data']['code']       = 200;
-                $response['status']             = true;
-                $response['data']['result']     = $hostelsResults;
-                $response['data']['message']    = 'Request Successfull';
-        
             }
-            else
-            {
-                $response['data']['code']       = 200;
-                $response['status']             = true;
-                $response['data']['message']    = 'No Items matches your searches';
-            }
+        }
+
+        if(count($hostelsResults) > 0)
+        {
+            $response['data']['code']       = 200;
+            $response['status']             = true;
+            $response['data']['result']     = $hostelsResults;
+            $response['data']['message']    = 'Request Successfull';
+    
+        }
+        else
+        {
+            $response['data']['code']       = 200;
+            $response['status']             = true;
+            $response['data']['message']    = 'No Items matches your searches';
+        }
+
         return $response;
     }
-
 }
