@@ -183,6 +183,7 @@ class SearchesController extends Controller
 
             ];
 
+            
             $hostelsResults = [];
 
             $length = count($array);
