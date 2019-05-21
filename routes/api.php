@@ -162,4 +162,4 @@ Route::post('/send-approve-hostel-request', 'Api\RequestsController@approveHoste
 */
 Route::post('/update-hostel', 'Api\RequestsController@updateHostelRequest');
 
-Route::post('/create-rating', 'Api\RatingsController@store');
+Route::post('/create-rating', 'Api\RatingsController@create');

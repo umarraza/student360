@@ -77,10 +77,12 @@ class MessMenuController extends Controller
 
             } else {
 
-                $hostelId  =  $request->get('hostelId');
                 $LunchMeal  =  $request->get('LunchMeal');
                 $dinnerMeal   =  $request->get('dinnerMeal');
                 $breakFastMeal  =  $request->get('breakFastMeal');
+
+                $messMenu =  MessMenuMeal::find($request->id)->first();
+                $hostelId = $messMenu->hostelId;
 
                 $updateMessMenu =  MessMenuMeal::find($request->id)->update([
                         

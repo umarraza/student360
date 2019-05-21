@@ -45,8 +45,8 @@ class SearchesController extends Controller
 
         $rules = [
 
-            'location' => 'required',
-            // 'searchRadius' => 'required',
+            'location' => 'required', //
+            'areaRadius' => 'required',
             'hostelCategory' => 'required',
 
         ];
@@ -60,13 +60,24 @@ class SearchesController extends Controller
 
         } else {
 
+            /**
+             * LOCATION:
+             * Location will be provided in case of "other location/address"
+             * rather than current location of user who is performing search.
+             * 
+             * LONGITUDE/LATITUDE
+             * Longitude & latitude will be provided in case of current 
+             * location of a user who is performing search.
+             */
+
+
             $latitude         =   $request->get('latitude');
             $longitude        =   $request->get('longitude');
             $location         =   $request->get('location');
             $areaRadius       =   $request->get('areaRadius');
             $hostelCategory   =   $request->get('hostelCategory');
 
-                if (isset($location, $hostelCategory, $location)) {
+                if (isset($location, $hostelCategory, $areaRadius)) {
 
                     $hostelsResults = DB::table('hostel_profiles AS hostel')
                         ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
@@ -95,7 +106,7 @@ class SearchesController extends Controller
                     ->get();
 
                     $arr = [];
-
+                    
                     foreach ($hostelsResults as $value) 
                     {
                         if($value->distance < $areaRadius)
@@ -105,11 +116,11 @@ class SearchesController extends Controller
                     }
                 }
             
-                if(count($hostelsResults) > 0)
+                if(count($arr) > 0)
                 {
                     $response['data']['code']       = 200;
                     $response['status']             = true;
-                    $response['data']['result']     = $hostelsResults;
+                    $response['data']['result']     = $arr;
                     $response['data']['message']    = 'Request Successfull';
             
                 }
@@ -213,7 +224,6 @@ class SearchesController extends Controller
                     ->orderBy('rating.score', 'desc')
 
                 ->get();
-
             }
         }
 

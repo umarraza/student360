@@ -14,15 +14,72 @@ use JWTAuth;
 use App\Models\Api\ApiUser as User;
 use App\Models\Api\ApiHostel as Hostel;
 use App\Models\Api\ApiThreads as Threads;
+use App\Models\Api\ApiRatings as Rating;
 
 
 class RatingsController extends Controller
 {
-    public function store(Hostel $hostel){
+    public function create(Request $request)
+    {
 
-        $hostel->addRating(request('score'));
+        $user = JWTAuth::toUser($request->token);
 
-        return "Rating created successfully";
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
 
+        if(!empty($user) && $user->isStudent()) { 
+
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+
+                $rules = [
+
+                    'score'   =>  'required',
+                    'userId'  =>  'required',   
+                    'hostelId' =>  'required',
+
+                ];
+
+                $validator = Validator::make($request->all(), $rules);
+
+                if ($validator->fails()) {
+                    
+                    $response['data']['message'] = 'Invalid input values.';
+                    $response['data']['errors'] = $validator->messages();
+                
+                }
+                else
+                {
+
+                    $rating = Rating::create([
+
+                            'score'    =>  $request->get('score'),
+                            'hostelId' =>  $request->get('hostelId'),
+                            'userId'   =>  $user->id,
+
+                        ]);
+
+
+                    if ($rating->save()) 
+                    {
+                        $response['data']['code']       = 200;
+                        $response['status']             = true;
+                        $response['result']             = $rating;
+                        $response['data']['message']    = 'Rating created Successfully';
+                    }
+                }
+            }
+        return $response;
     }
 }
