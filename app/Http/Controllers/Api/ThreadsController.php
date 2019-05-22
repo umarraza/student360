@@ -66,11 +66,11 @@ class ThreadsController extends Controller
 
             $data = [];
 
-            foreach ($threads as $thread){
+            foreach ($threads as $value){
 
                 foreach ($queries as $query){
 
-                    if ($thread->id == $query->threadId){
+                    if ($value->id == $query->threadId){
 
                         $data[] = $queriesResults = Queries::select('id', 'message', 'type', 'threadId')->where('threadId', '=', $query->threadId)->get();
                         break;                        

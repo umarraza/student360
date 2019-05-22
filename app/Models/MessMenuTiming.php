@@ -13,8 +13,8 @@ class MessMenuTiming extends Model
 
      protected $fillable = [
 
-        'bkfastStartTime',
-        'bkfastEndTime',
+        'brkfastStartTime',
+        'brkfastEndTime',
         'lunchStartTime',
         'lunchEndTime',
         'dinnerStartTime',
@@ -39,8 +39,8 @@ class MessMenuTiming extends Model
         return [
 
                 'id'               =>  $this->id,
-                'bkfastStartTime'  =>  $this->bkfastStartTime,
-                'bkfastEndTime'    =>  $this->bkfastEndTime,
+                'brkfastStartTime' =>  $this->brkfastStartTime,
+                'brkfastEndTime'   =>  $this->brkfastEndTime,
                 'lunchStartTime'   =>  $this->lunchStartTime,
                 'lunchEndTime'     =>  $this->lunchEndTime,
                 'dinnerStartTime'  =>  $this->dinnerStartTime,

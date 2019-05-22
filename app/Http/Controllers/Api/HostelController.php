@@ -165,10 +165,9 @@ class HostelController extends Controller
                 /**
                  * 
                  *  Create Mess Menu list timings and status if menu is available/set or not.
-                 *  We are creating mess menu while registering a user because we didn't 
+                 *  We are creating mess menu while registering a hostel admin because we didn't 
                  *  want to allow the option to crate mess menu for hostel admin. 
-                 *  Hostel admin cannot create mess menu again and again after
-                 *  registration.
+                 *  Hostel admin can just update mess manu.
                  * 
                  *  @return Model
                  * 
@@ -176,8 +175,8 @@ class HostelController extends Controller
 
                 $messMenuTiming = MessMenuTiming::create([
 
-                    'bkfastStartTime'  =>  '07:00 AM ',
-                    'bkfastEndTime'    =>  '10:00 AM',
+                    'brkfastStartTime'  =>  '07:00 AM ',
+                    'brkfastEndTime'    =>  '10:00 AM',
                     'lunchStartTime'   =>  '01:00 PM',
                     'lunchEndTime'     =>  '03:00 PM',
                     'dinnerStartTime'  =>  '07:00 PM',

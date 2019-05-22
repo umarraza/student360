@@ -69,9 +69,9 @@ class SuperAdminController extends Controller
 
             $approvalRequests = [];
 
-            foreach ($requests as $requestData){
+            foreach ($requests as $value){
 
-                $hostelId = $requestData->hostelId;
+                $hostelId = $value->hostelId;
         
                 $hostel = Hostel::select('id', 'hostelName', 'hostelCategory', 'city')->where('id', '=', $hostelId)->first();
 
@@ -79,11 +79,11 @@ class SuperAdminController extends Controller
                 $hostelName = $hostel->hostelName;
                 $hostelCategory = $hostel->hostelCategory;
 
-                $requestData["city"] = $city;
-                $requestData["hostelName"] = $hostelName;
-                $requestData["hostelCategory"] = $hostelCategory;
+                $value["city"] = $city;
+                $value["hostelName"] = $hostelName;
+                $value["hostelCategory"] = $hostelCategory;
 
-                $approvalRequests[] = $requestData;
+                $approvalRequests[] = $value;
 
             }
 
@@ -167,6 +167,8 @@ class SuperAdminController extends Controller
                     'isApproved' => 1,
                 ]);
                 
+                // PUSH NOTIFICATION
+
                 // $title    =  "Approve Hotsle";
                 // $userId   =  $hostel->userId;
                 // $message  =  "Your request to approve hostel has been approved!";
@@ -254,6 +256,8 @@ class SuperAdminController extends Controller
                     'isApproved' => 2,
                 ]);
 
+                // PUSH NOTIFICATION
+
                 // $userId = $hostel->userId;
                 // $title = "Approval Request Rejected!";
                 // $message = "Sorry! Your request to approve hostel have been rejected!";
@@ -339,6 +343,8 @@ class SuperAdminController extends Controller
                     'verified' => 1,
 
                 ]);
+
+                // PUSH NOTIFICATION
 
                 // $title = "Hostel Verified";
                 // $message = "Congratulations! Your request to registered a new hostel have been approved";
@@ -426,6 +432,8 @@ class SuperAdminController extends Controller
                     'verified' => 2,  // Status = 2 means that the request to update hostel have been rejected by administrater
 
                 ]);
+
+                // PUSH NOTIFICATION
 
                 // $title = "Hostel Registration Rejected";
                 // $message = "Sorry! Your request to register a new hostel have been rejected.";
@@ -532,10 +540,10 @@ class SuperAdminController extends Controller
             $verificationRequests = VerifyHostelRequest::select('id','verificationStatus', 'hostelId')
                     ->where('verificationStatus', '=', 0)->get();
 
-            foreach ($verificationRequests as $requestData){
+            foreach ($verificationRequests as $value){
 
-                $hostelData[] = Hostel::select('id', 'hostelName', 'website', 'hostelCategory')->where('id', '=', $requestData->hostelId)->first();
-                $hostelData[] = $requestData;
+                $hostelData[] = Hostel::select('id', 'hostelName', 'website', 'hostelCategory')->where('id', '=', $value->hostelId)->first();
+                $hostelData[] = $value;
 
             }
 
@@ -731,6 +739,8 @@ class SuperAdminController extends Controller
 
                 ]);
 
+                // PUSH NOTIFICATION
+
                 // $title = "Hostel Updated";
                 // $message = "Your request to update hostel have been approved!";
                 // findDeviceToken($title, $message, $userId);
@@ -806,6 +816,8 @@ class SuperAdminController extends Controller
                     'status' => 2, // Status = 2 means that the request to update hostel have been rejected by administrater
 
                 ]);
+
+                // PUSH NOTIFICATION
 
                 // $title = "Hostel Updated";
                 // $message = "Your request to update hostel have been approved!";

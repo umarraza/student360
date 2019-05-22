@@ -21,8 +21,6 @@ class StudentController extends Controller
 {
     public function create(Request $request)
     {
-        $user = JWTAuth::toUser($request->token);
-
         $response = [
                 'data' => [
                     'code'      => 400,
@@ -39,9 +37,6 @@ class StudentController extends Controller
                 ],
                'status' => false
             ];
-
-            if(!empty($user) && $user->isSuperAdmin())
-            {
 
                 $rules = [
 
@@ -128,7 +123,6 @@ class StudentController extends Controller
                         $response['data']['message']    = 'Student profile created Successfully';
                     }
                 }
-            }
         return $response;
     }
 
@@ -279,6 +273,10 @@ class StudentController extends Controller
             {
 
 
+           
+
+
+
                 $updateStudent = Student::find($request->id)->update([
 
                     'fullName'    =>  $request->get('fullName'),
@@ -294,20 +292,56 @@ class StudentController extends Controller
 
                 ]);
 
-                    $student = Student::find($request->id);
+                $student = Student::find($request->id);
 
-                    if ($student->email != NULL && $student->phoneNumber != NULL && $student->city != NULL && $student->country != NULL && $student->occupation != NULL && $student->institute != NULL && $student->CNIC != NULL){
+                $checkStatus = [
 
-                    $student->isVerified = 1;
+                    $email        =  $student->email,
+                    $phoneNumber  =  $student->phoneNumber,
+                    $city         =  $student->city,
+                    $country      =  $student->country,
+                    $occupation   =  $student->occupation,
+                    $institute    =  $student->institute,
+                    $dateOfBirth  =  $student->dateOfBirth,
+                    $gender       =  $student->gender,
+                    $CNIC         =  $student->CNIC
 
-                    $student->save();
+                ];
+
+                $length = count($checkStatus);
+
+                $status = FALSE;
+
+                for ($i=0; $i < $length; $i++) { 
+
+                    if (isset( $checkStatus[$i])) {
+
+                        $student->isVerified = 1;
+
+                        $student->save();
+
+                    } else {
                         
-                    }else{
-
                         $student->isVerified = 0;
 
                         $student->save();
                     }
+
+                }
+
+
+                    // if ($student->email != NULL && $student->phoneNumber != NULL && $student->city != NULL && $student->country != NULL && $student->occupation != NULL && $student->institute != NULL && $student->CNIC != NULL){
+
+                    // $student->isVerified = 1;
+
+                    // $student->save();
+                        
+                    // }else{
+
+                    //     $student->isVerified = 0;
+
+                    //     $student->save();
+                    // }
 
                 if ($updateStudent) {
 
