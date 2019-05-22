@@ -308,6 +308,8 @@ class StudentController extends Controller
 
                 ];
 
+                // https://stackoverflow.com/questions/6850452/check-if-multiple-values-are-all-false-or-all-true Visit this site
+
                 $length = count($checkStatus);
 
                 $status = FALSE;
