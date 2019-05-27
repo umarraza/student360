@@ -51,12 +51,11 @@ class MessMenuController extends Controller
 
             $rules = [
 
-            	'day'             => 'required',
             	'breakFastMeal'   => 'required',
             	'LunchMeal'       => 'required',
             	'dinnerMeal'      => 'required',
-            	'bkfastStartTime' => 'required',
-            	'bkfastEndTime'   => 'required',
+            	'brkfastStartTime' => 'required',
+            	'brkfastEndTime'   => 'required',
             	'lunchStartTime'  => 'required',
             	'lunchEndTime'    => 'required',
             	'dinnerStartTime' => 'required',
@@ -84,10 +83,10 @@ class MessMenuController extends Controller
                     $dinnerMeal   =  $request->get('dinnerMeal');
                     $breakFastMeal  =  $request->get('breakFastMeal');
     
-                    $messMenu =  MessMenuMeal::find($request->id)->first();
-                    $hostelId = $messMenu->hostelId;
-    
-                    $updateMessMenu =  MessMenuMeal::find($request->id)->update([
+                    $hostelId = $request->hostelId;
+                    $messMenu =  MessMenuMeal::where('hostelId', '=', $hostelId)->get();
+
+                    $updateMessMenu =  MessMenuMeal::where('hostelId', '=', $hostelId)->update([
                             
                         'breakFastMeal' =>  $breakFastMeal,
                         'LunchMeal'     =>  $LunchMeal,
@@ -98,17 +97,17 @@ class MessMenuController extends Controller
                     $isSetLunch        =   $request->get('isSetLunch');
                     $isSetDinner       =   $request->get('isSetDinner');
                     $lunchEndTime      =   $request->get('lunchEndTime');
-                    $bkfastEndTime     =   $request->get('bkfastEndTime');
+                    $brkfastEndTime     =   $request->get('brkfastEndTime');
+                    $brkfastStartTime   =   $request->get('brkfastStartTime');
                     $dinnerEndTime     =   $request->get('dinnerEndTime');
                     $isSetBreakFast    =   $request->get('isSetBreakFast');
                     $lunchStartTime    =   $request->get('lunchStartTime');
                     $dinnerStartTime   =   $request->get('dinnerStartTime');
-                    $bkfastStartTime   =   $request->get('bkfastStartTime');
     
                     $updateMenuTiming = MessMenuTiming::where('hostelId', '=', $hostelId)->update([
     
-                        'bkfastStartTime'  =>  $bkfastStartTime,
-                        'bkfastEndTime'    =>  $bkfastEndTime,
+                        'brkfastStartTime'  =>  $brkfastStartTime,
+                        'brkfastEndTime'    =>  $brkfastEndTime,
                         'lunchStartTime'   =>  $lunchStartTime,
                         'lunchEndTime'     =>  $lunchEndTime,
                         'dinnerStartTime'  =>  $dinnerStartTime,

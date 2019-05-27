@@ -28,7 +28,7 @@ class ImagesController extends Controller
      */
 
 
-    public function createImage(Request $request)
+    public function createHostelImages(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
             $response = [
@@ -230,7 +230,7 @@ class ImagesController extends Controller
                 'status' => false
             ];
 
-        if(!empty($user) && $user->isSuperAdmin())
+        if(!empty($user) && $user->isHostelAdmin())
         {
             $response = [
                 'data' => [
@@ -241,7 +241,6 @@ class ImagesController extends Controller
             ];
             
             /** 
-             * 
              *  SELECT * FROM Images WHERE hostel_id = '1' OR hostel_id = '2' OR hostel_id = '3'
              *  SELECT * FROM Images WHERE hostel_id IN ('1', '1', '3') -> whereIn() for Laravel
              *  SELECT * FROM Images WHERE hostel_id NOT IN ('1', '1', '3') -> whereNotIn() for Laravel
@@ -253,10 +252,14 @@ class ImagesController extends Controller
             try {
 
                 $images = Images::select('imageName', 'hostelId')
-                ->whereBetween('hostelId', [1,10])
-                ->orderBy('hostelId', 'asc')
-                ->limit(2)
+                ->where('hostelId', '=', $request->hostelId)
                 ->get();
+
+                // $images = Images::select('imageName', 'hostelId')
+                // ->whereBetween('hostelId', [1,4])
+                // ->orderBy('hostelId', 'asc')
+                // ->limit(4)
+                // ->get();
 
                 if (!empty($images)) {
 

@@ -99,8 +99,7 @@ class HostelController extends Controller
                 $email    = $request->get('contactEmail');
 
                 DB::beginTransaction();
-
-                try{
+                try {
 
                     $user =  User::create([
                         
@@ -112,23 +111,7 @@ class HostelController extends Controller
                         'language'   =>  "English",
                     ]);
 
-                        DB::commit();
-                        $response['data']['code']           = 200;
-                        $response['status']                 = true;
-                        $response['data']['user']           = $user;
-                        $response['data']['message']        = 'User created Successfully';
-
-                } catch (Exception $e) {
-
-                    DB::rollBack();
-
-                }
-
                 $userId = $user->id;
-
-                DB::beginTransaction();
-
-                try{
 
                     $hostel = Hostel::create([
 
@@ -155,30 +138,22 @@ class HostelController extends Controller
 
                         ]);
 
-                            DB::commit();
-
                             $response['data']['code']           = 200;
                             $response['status']                 = true;
                             $response['data']['user']           = $hostel;
                             $response['data']['message']        = 'Hostel created Successfully';
 
-                    } catch (Exception $e) {
-
-                        DB::rollBack();
-                    }
-
                 $hostelId  = $hostel->id;
 
                 /**
+                 *  MESS MENU MEAL
+                 * 
                  *  Hostel admin cannot create mess menu, so, by default a mess menu will be created 
                  *  when a new hostel will apply for registration. Set default Meals for hostels 
                  *  for Breakfast, Lunch & Dinner against new created hostel.
+                 * 
                  *  @return Model
                  */
-
-                DB::beginTransaction();
-
-                try{
 
                     for ($i = 0; $i < 6; ++$i){
                         
@@ -193,22 +168,12 @@ class HostelController extends Controller
                             'hostelId'       =>  $hostelId,
         
                         ]);
-
-                            DB::commit();
-                 
-                            $response['data']['code']           = 200;
-                            $response['status']                 = true;
-                            $response['data']['user']           = $messMenueMeal;
-                            $response['data']['message']        = 'Mess Menu Meal created Successfully';
                         
                     }
-                } catch (Exception $e) {
-
-                    DB::rollBack();
-
-                }
 
                 /**
+                 *  MESS MENU TIMMING
+                 * 
                  *  Create Mess Menu list timings and status if menu is available/set or not.
                  *  We are creating mess menu while registering a hostel admin because we didn't 
                  *  want to allow the option to crate mess menu for hostel admin. 
@@ -217,13 +182,9 @@ class HostelController extends Controller
                  *  @return Model
                  */
 
-                DB::beginTransaction();
-
-                try {
-
                     $messMenuTiming = MessMenuTiming::create([
 
-                        'brkfastStartTime'  =>  '07:00 AM ',
+                        'brkfastStartTime'  =>  '07:00 AM',
                         'brkfastEndTime'    =>  '10:00 AM',
                         'lunchStartTime'    =>  '01:00 PM',
                         'lunchEndTime'      =>  '03:00 PM',
@@ -236,21 +197,27 @@ class HostelController extends Controller
 
                     ]);
 
-                        DB::commit();
-                        $response['data']['code']          =  200;
-                        $response['status']                =  true;
-                        $response['data']['user']          =  $user;
-                        $response['data']['hostel']        =  $hostel;
-                        $response['data']['messMenuMeal']  =  $messMenueMeal;
-                        $response['data']['messMenuTime']  =  $messMenuTiming;
-                        $response['data']['message']       = 'Hostel created Successfully';
-                        
+                    DB::commit();
+
+                    $response['data']['code']          =  200;
+                    $response['status']                =  true;
+                    $response['data']['user']          =  $user;
+                    $response['data']['hostel']        =  $hostel;
+                    $response['data']['messMenuMeal']  =  $messMenueMeal;
+                    $response['data']['messMenuTime']  =  $messMenuTiming;
+                    $response['data']['message']       = 'Hostel created Successfully';
+
+
                 } catch (Exception $e) {
 
                     DB::rollBack();
+
+                    $response['data']['code']          =  400;
+                    $response['status']                =  false;
+                    $response['data']['message']       = 'Request Unsuccessfull';
+
                 }
             }
-        
         return $response;
     }
 

@@ -116,8 +116,8 @@ Route::post('/search-by-features','Api\SearchesController@searchByFeatures');
 |
 */
 
-Route::get('/list-images','Api\ImagesController@listImages');
-Route::post('/create-image','Api\ImagesController@createImage');
+Route::post('/list-images','Api\ImagesController@listImages');
+Route::post('/create-image','Api\ImagesController@createHostelImages');
 Route::post('/update-thumbnail-image','Api\ImagesController@updateThumbnailImage');
 
 /*
