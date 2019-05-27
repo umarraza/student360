@@ -65,62 +65,73 @@ class StudentController extends Controller
                     $roleId   = $request->get('roleId');
                     $email    = $request->get('email');
 
-                    $user =  User::create([
+                    DB::beginTransaction();
+
+                    try {
+
+                        $user =  User::create([
                         
-                        'username'   =>  $username,
-                        'email'      =>  $email,
-                        'password'   =>  bcrypt($password),
-                        'roleId'     =>  $roleId,
-                        'verified'   =>  1,
-                        'language'   =>  "English",
+                            'username'   =>  $username,
+                            'email'      =>  $email,
+                            'password'   =>  bcrypt($password),
+                            'roleId'     =>  $roleId,
+                            'verified'   =>  1,
+                            'language'   =>  "English",
+    
+                        ]); 
+    
+                            $userId = $user->id;
+    
+                            /* 
+                                Create a new ThreadModel instance.
+                                ---------------------
+                                Thread respresents the conversation between a registered user and super admin.
+                                Registered user can ask queries to super admin about anything regrading 
+                                hostels. All messages between a registered user and super admin will 
+                                form a conversation/thread. Thread is being created while 
+                                registering a user because...
+    
+                            */ 
+    
+                            $thread = Threads::create([
+                                'userId'  => $userId,
+                                'adminId' => 1,
+                            ]);
+    
+                            $thread->save();
+    
+                            $threadId = $thread->id;
+    
+                            $updateThread = User::where('id', '=', $userId)->update([
+    
+                                'threadId' => $threadId,
+    
+                            ]);
+    
+    
+                        $student = Student::create([
+    
+                                'fullName'     =>   $request->get('fullName'),
+                                'phoneNumber'  =>   $request->get('phoneNumber'),
+                                'userId'       =>   $user->id,
+    
+                            ]);
 
-                    ]); 
+                            DB::commit();
 
-                        $userId = $user->id;
+                            $response['data']['code']       = 200;
+                            $response['status']             = true;
+                            $response['data']['result']     = $student;
+                            $response['user']               = $user;
+                            $response['data']['message']    = 'Student profile created Successfully';
 
-                        /* 
-                            Create a new ThreadModel instance.
-                            ---------------------
-                            Thread respresents the conversation between a registered user and super admin.
-                            Registered user can ask queries to super admin about anything regrading 
-                            hostels. All messages between a registered user and super admin will 
-                            form a conversation/thread. Thread is being created while 
-                            registering a user because...
+                    } catch (Exception $e) {
 
-                        */ 
+                        DB::rollBack();
+                        $response['data']['code']       = 400;
+                        $response['status']             = false;
+                        $response['data']['message']    = 'Request Unsuccessfull';
 
-                        $thread = Threads::create([
-                            'userId'  => $userId,
-                            'adminId' => 1,
-                        ]);
-
-                        $thread->save();
-
-                        $threadId = $thread->id;
-
-                        $updateThread = User::where('id', '=', $userId)->update([
-
-                            'threadId' => $threadId,
-
-                        ]);
-
-
-                    $student = Student::create([
-
-                            'fullName'     =>   $request->get('fullName'),
-                            'phoneNumber'  =>   $request->get('phoneNumber'),
-                            'userId'       =>   $user->id,
-
-                        ]);
-
-
-                    if ($student->save() && $user->save()) 
-                    {
-                        $response['data']['code']       = 200;
-                        $response['status']             = true;
-                        $response['data']['result']     = $student;
-                        $response['user']               = $user;
-                        $response['data']['message']    = 'Student profile created Successfully';
                     }
                 }
         return $response;
@@ -154,23 +165,27 @@ class StudentController extends Controller
                'status' => false
             ];
             
-            $allStudents = Student::select('id', 'fullName', 'phoneNumber', 'email', 'isVerified')->get();
+            DB::beginTransaction();
+            try {
 
-            if (!empty($allStudents)) {
+                $allStudents = Student::select('id', 'fullName', 'phoneNumber', 'email', 'isVerified')->get();
 
-                $response['data']['code']       =  200;
-                $response['data']['message']    =  'Request Successfull';
-                $response['data']['result']     =  $allStudents;
-                $response['status']             =  true;
+                if (!empty($allStudents)) {
 
-            } else {
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Request Successfull';
+                    $response['data']['result']     =  $allStudents;
+                    $response['status']             =  true;
+    
+                }
 
+            } catch (Exception $e) {
+
+                DB::rollBack();
                 $response['data']['code']       =  400;
                 $response['data']['message']    =  'No Hostels Found';
-                $response['status']             =  false;    
-            }
-
-
+                $response['status']             =  false;
+            } 
         }
         return $response;
     }
@@ -203,25 +218,25 @@ class StudentController extends Controller
                'status' => false
             ];
             
-            $allStudents = Student::select('id', 'fullName', 'phoneNumber', 'email')
+            DB::beginTransaction();
+            try {
+
+                $allStudents = Student::select('id', 'fullName', 'phoneNumber', 'email')
                 ->where('isVerified', '=', 1)
                 ->get();
-
-            if (!empty($allStudents)) {
 
                 $response['data']['code']       =  200;
                 $response['data']['message']    =  'Request Successfull';
                 $response['data']['result']     =  $allStudents;
                 $response['status']             =  true;
 
-            } else {
+            } catch (Exception $e) {
 
+                DB::rollBack();
                 $response['data']['code']       =  400;
-                $response['data']['message']    =  'No Hostels Found';
-                $response['status']             =  false;    
+                $response['data']['message']    =  'Request Unsuccessfull';
+                $response['status']             =  false;
             }
-
-
         }
         return $response;
     }
@@ -272,94 +287,85 @@ class StudentController extends Controller
             else
             {
 
+                DB::beginTransaction();
+                try {
 
-           
+                    $updateStudent = Student::find($request->id)->update([
 
+                        'fullName'    =>  $request->get('fullName'),
+                        'phoneNumber' =>  $request->get('phoneNumber'),
+                        'email'       =>  $request->get('email'),
+                        'city'        =>  $request->get('city'),
+                        'country'     =>  $request->get('country'),
+                        'occupation'  =>  $request->get('occupation'),
+                        'institute'   =>  $request->get('institute'),
+                        'dateOfBirth' =>  $request->get('dateOfBirth'),
+                        'gender'      =>  $request->get('gender'),
+                        'CNIC'        =>  $request->get('CNIC'),
+    
+                    ]);
+    
+                    $student = Student::find($request->id);
+    
+                        $email        =  $student->email;
+                        $phoneNumber  =  $student->phoneNumber;
+                        $city         =  $student->city;
+                        $country      =  $student->country;
+                        $occupation   =  $student->occupation;
+                        $institute    =  $student->institute;
+                        $dateOfBirth  =  $student->dateOfBirth;
+                        $gender       =  $student->gender;
+                        $CNIC         =  $student->CNIC;
+    
+                    // https://stackoverflow.com/questions/6850452/check-if-multiple-values-are-all-false-or-all-true Visit this site
+    
+                        if (isset($email, $phoneNumber, $city, $country, $occupation, $institute, $dateOfBirth, $gender, $CNIC)) {
+    
+                            $student->isVerified = 1;
+    
+                            $student->save();
+    
+                        } else {
+                            
+                            $student->isVerified = 0;
+    
+                            $student->save();
+                        }
 
+                        if ($updateStudent) {
 
-                $updateStudent = Student::find($request->id)->update([
+                            DB::commit();
 
-                    'fullName'    =>  $request->get('fullName'),
-                    'phoneNumber' =>  $request->get('phoneNumber'),
-                    'email'       =>  $request->get('email'),
-                    'city'        =>  $request->get('city'),
-                    'country'     =>  $request->get('country'),
-                    'occupation'  =>  $request->get('occupation'),
-                    'institute'   =>  $request->get('institute'),
-                    'dateOfBirth' =>  $request->get('dateOfBirth'),
-                    'gender'      =>  $request->get('gender'),
-                    'CNIC'        =>  $request->get('CNIC'),
-
-                ]);
-
-                $student = Student::find($request->id);
-
-                $checkStatus = [
-
-                    $email        =  $student->email,
-                    $phoneNumber  =  $student->phoneNumber,
-                    $city         =  $student->city,
-                    $country      =  $student->country,
-                    $occupation   =  $student->occupation,
-                    $institute    =  $student->institute,
-                    $dateOfBirth  =  $student->dateOfBirth,
-                    $gender       =  $student->gender,
-                    $CNIC         =  $student->CNIC
-
-                ];
-
-                // https://stackoverflow.com/questions/6850452/check-if-multiple-values-are-all-false-or-all-true Visit this site
-
-                $length = count($checkStatus);
-
-                $status = FALSE;
-
-                for ($i=0; $i < $length; $i++) { 
-
-                    if (isset( $checkStatus[$i])) {
-
-                        $student->isVerified = 1;
-
-                        $student->save();
-
-                    } else {
-                        
-                        $student->isVerified = 0;
-
-                        $student->save();
-                    }
-
-                }
+                            $response['data']['code']       =  200;
+                            $response['data']['result']     =  $student;
+                            $response['data']['message']    =  'User updated successfully';
+                            $response['status']             =  true;
+        
+                        }
 
 
-                    // if ($student->email != NULL && $student->phoneNumber != NULL && $student->city != NULL && $student->country != NULL && $student->occupation != NULL && $student->institute != NULL && $student->CNIC != NULL){
+                        // if ($student->email != NULL && $student->phoneNumber != NULL && $student->city != NULL && $student->country != NULL && $student->occupation != NULL && $student->institute != NULL && $student->CNIC != NULL){
+    
+                        // $student->isVerified = 1;
+    
+                        // $student->save();
+                            
+                        // }else{
+    
+                        //     $student->isVerified = 0;
+    
+                        //     $student->save();
+                        // }
+    
 
-                    // $student->isVerified = 1;
+                } catch (Exception $e) {
 
-                    // $student->save();
-                        
-                    // }else{
-
-                    //     $student->isVerified = 0;
-
-                    //     $student->save();
-                    // }
-
-                if ($updateStudent) {
-
-                    $response['data']['code']       =  200;
-                    $response['data']['result']     =  $student;
-                    $response['data']['message']    =  'User updated successfully';
-                    $response['status']             =  true;
-
-                } else {
-
+                    DB::rollBack();
                     $response['data']['code']       =  400;
                     $response['data']['message']    =  'Request Unsuccessfull';
-                    $response['status']             =  false;    
+                    $response['status']             =  false;
                 }
             }
-
         }
         return $response;
     }
@@ -404,24 +410,27 @@ class StudentController extends Controller
             else
             {
 
-                $student = Student::find($request->id);
+                DB::beginTransaction();
+                try {
 
-            	if (!empty($student)) 
-                {
-                    $response['data']['code']       = 200;
-                    $response['status']             = true;
-                    $response['data']['result']     = $student;
-                    $response['data']['message']    = 'Request Successfull';
+                    $student = Student::find($request->id);
+                    
+                    if (!empty($student)) 
+                    {
+                        $response['data']['code']       = 200;
+                        $response['status']             = true;
+                        $response['data']['result']     = $student;
+                        $response['data']['message']    = 'Request Successfull';
+    
+                    }
 
-                } else {
-
+                } catch (Exception $e) {
+                    DB::rollBack();
                     $response['data']['code']       = 400;
                     $response['status']             = false;
-                    $response['data']['message']    = 'Srudent not found';
-
+                    $response['data']['message']    = 'Student not found';
                 }
             }
-        
         return $response;
     }
 }

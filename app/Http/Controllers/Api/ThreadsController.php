@@ -64,34 +64,41 @@ class ThreadsController extends Controller
                 to super admin.
             */
 
-            $data = [];
+            DB::beginTransaction();
+            try {
 
-            foreach ($threads as $value){
+                $data = [];
 
-                foreach ($queries as $query){
-
-                    if ($value->id == $query->threadId){
-
-                        $data[] = $queriesResults = Queries::select('id', 'message', 'type', 'threadId')->where('threadId', '=', $query->threadId)->get();
-                        break;                        
+                foreach ($threads as $value){
+    
+                    foreach ($queries as $query){
+    
+                        if ($value->id == $query->threadId){
+    
+                            $data[] = $queriesResults = Queries::select('id', 'message', 'type', 'threadId')->where('threadId', '=', $query->threadId)->get();
+                            break;                        
+                        }
                     }
                 }
-            }
+    
+                if (!empty($data)) {
 
-            if (!empty($data)) {
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Request Successfull';
+                    $response['data']['result']     =  $data;
+                    $response['status']             =  true;
+    
+                }
 
-                $response['data']['code']       =  200;
-                $response['data']['message']    =  'Request Successfull';
-                $response['data']['result']     =  $data;
-                $response['status']             =  true;
+            } catch (Exception $e) {
 
-            } else {
-
+                DB::rollBack();
                 $response['data']['code']       =  400;
                 $response['data']['message']    =  'Request Unsuccessfull';
-                $response['status']             =  false;    
+                $response['status']             =  false;
+                
+  
             }
-
         }
         return $response;
     }

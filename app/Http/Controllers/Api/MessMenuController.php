@@ -77,56 +77,64 @@ class MessMenuController extends Controller
 
             } else {
 
-                $LunchMeal  =  $request->get('LunchMeal');
-                $dinnerMeal   =  $request->get('dinnerMeal');
-                $breakFastMeal  =  $request->get('breakFastMeal');
+                DB::beginTransaction();
+                try {
 
-                $messMenu =  MessMenuMeal::find($request->id)->first();
-                $hostelId = $messMenu->hostelId;
+                    $LunchMeal  =  $request->get('LunchMeal');
+                    $dinnerMeal   =  $request->get('dinnerMeal');
+                    $breakFastMeal  =  $request->get('breakFastMeal');
+    
+                    $messMenu =  MessMenuMeal::find($request->id)->first();
+                    $hostelId = $messMenu->hostelId;
+    
+                    $updateMessMenu =  MessMenuMeal::find($request->id)->update([
+                            
+                        'breakFastMeal' =>  $breakFastMeal,
+                        'LunchMeal'     =>  $LunchMeal,
+                        'dinnerMeal'    =>  $dinnerMeal,
+    
+                    ]);
+    
+                    $isSetLunch        =   $request->get('isSetLunch');
+                    $isSetDinner       =   $request->get('isSetDinner');
+                    $lunchEndTime      =   $request->get('lunchEndTime');
+                    $bkfastEndTime     =   $request->get('bkfastEndTime');
+                    $dinnerEndTime     =   $request->get('dinnerEndTime');
+                    $isSetBreakFast    =   $request->get('isSetBreakFast');
+                    $lunchStartTime    =   $request->get('lunchStartTime');
+                    $dinnerStartTime   =   $request->get('dinnerStartTime');
+                    $bkfastStartTime   =   $request->get('bkfastStartTime');
+    
+                    $updateMenuTiming = MessMenuTiming::where('hostelId', '=', $hostelId)->update([
+    
+                        'bkfastStartTime'  =>  $bkfastStartTime,
+                        'bkfastEndTime'    =>  $bkfastEndTime,
+                        'lunchStartTime'   =>  $lunchStartTime,
+                        'lunchEndTime'     =>  $lunchEndTime,
+                        'dinnerStartTime'  =>  $dinnerStartTime,
+                        'dinnerEndTime'    =>  $dinnerEndTime,
+                        'isSetBreakFast'   =>  $isSetBreakFast,
+                        'isSetLunch'       =>  $isSetLunch,
+                        'isSetDinner'      =>  $isSetDinner,
+    
+                    ]);
 
-                $updateMessMenu =  MessMenuMeal::find($request->id)->update([
-                        
-                    'breakFastMeal' =>  $breakFastMeal,
-                    'LunchMeal'     =>  $LunchMeal,
-                    'dinnerMeal'    =>  $dinnerMeal,
+                    if ($updateMessMenu && $updateMenuTiming) {
 
-                ]);
+                        DB::commit();
 
-                $isSetLunch        =   $request->get('isSetLunch');
-                $isSetDinner       =   $request->get('isSetDinner');
-                $lunchEndTime      =   $request->get('lunchEndTime');
-                $bkfastEndTime     =   $request->get('bkfastEndTime');
-                $dinnerEndTime     =   $request->get('dinnerEndTime');
-                $isSetBreakFast    =   $request->get('isSetBreakFast');
-                $lunchStartTime    =   $request->get('lunchStartTime');
-                $dinnerStartTime   =   $request->get('dinnerStartTime');
-                $bkfastStartTime   =   $request->get('bkfastStartTime');
+                        $response['data']['code']       =  200;
+                        $response['data']['message']    =  'Request Successfull';
+                        $response['status']             =  true;
+    
+                    }
 
-                $updateMenuTiming = MessMenuTiming::where('hostelId', '=', $hostelId)->update([
+                } catch (Exception $e) {
 
-                    'bkfastStartTime'  =>  $bkfastStartTime,
-                    'bkfastEndTime'    =>  $bkfastEndTime,
-                    'lunchStartTime'   =>  $lunchStartTime,
-                    'lunchEndTime'     =>  $lunchEndTime,
-                    'dinnerStartTime'  =>  $dinnerStartTime,
-                    'dinnerEndTime'    =>  $dinnerEndTime,
-                    'isSetBreakFast'   =>  $isSetBreakFast,
-                    'isSetLunch'       =>  $isSetLunch,
-                    'isSetDinner'      =>  $isSetDinner,
-
-                ]);
-
-                if ($updateMessMenu && $updateMenuTiming) {
-
-                    $response['data']['code']       =  200;
-                    $response['data']['message']    =  'Request Successfull';
-                    $response['status']             =  true;
-
-                } else {
-
+                    DB::rollBaack();
                     $response['data']['code']       =  400;
                     $response['data']['message']    =  'Requst Unsuccessfull';
-                    $response['status']             =  false;    
+                    $response['status']             =  false;
                 }
             }
         }
@@ -138,8 +146,7 @@ class MessMenuController extends Controller
      *
      * List of Mess Menu to show
      *
-     * @function
-     * 
+     * @return function
      */
 
     public function showMessMenu(Request $request)
@@ -181,54 +188,58 @@ class MessMenuController extends Controller
 
                 $hostelId = $request->get('hostelId');
 
-                $messMenu = MessMenuMeal::select(
+                DB::beginTransaction();
+                try {
+
+                    $messMenu = MessMenuMeal::select(
                     
-                    'id', 
-                    'day', 
-                    'breakFastMeal', 
-                    'LunchMeal', 
-                    'dinnerMeal', 
-                    'hostelId')
+                        'id', 
+                        'day', 
+                        'breakFastMeal', 
+                        'LunchMeal', 
+                        'dinnerMeal', 
+                        'hostelId')
+                        
+                        ->where('hostelId', '=', $hostelId)
+                        ->get();
+    
+                    $messMenuTiming = MessMenuTiming::select(
+                        
+                        'id', 
+                        'bkfastStartTime', 
+                        'bkfastEndTime', 
+                        'lunchStartTime', 
+                        'lunchEndTime', 
+                        'dinnerStartTime', 
+                        'dinnerEndTime' , 
+                        'isSetBreakFast' , 
+                        'isSetLunch', 
+                        'isSetDinner', 
+                        'hostelId')
+                        
+                        ->where('hostelId', '=', $hostelId)
+                        ->first();
+
+                        if (!empty($messMenu && $messMenuTiming)) {
+
+                            $response['data']['code']            =  200;
+                            $response['data']['message']         =  'Request Successfull';
+                            $response['data']['result']          =  $messMenu;
+                            $response['data']['messMenuTiming']  =  $messMenuTiming;
+                            $response['status']                  =  true;
+        
+                        }
+
+                }catch (Exception $e) {
                     
-                    ->where('hostelId', '=', $hostelId)
-                    ->get();
-
-                $messMenuTiming = MessMenuTiming::select(
-                    
-                    'id', 
-                    'bkfastStartTime', 
-                    'bkfastEndTime', 
-                    'lunchStartTime', 
-                    'lunchEndTime', 
-                    'dinnerStartTime', 
-                    'dinnerEndTime' , 
-                    'isSetBreakFast' , 
-                    'isSetLunch', 
-                    'isSetDinner', 
-                    'hostelId')
-                    
-                    ->where('hostelId', '=', $hostelId)
-                    ->first();
-                
-                // If there are thousands of hostels, getting the list with all parameters will put load to server as well as network. ask musab if we can select just few fields. 
-
-                if (!empty($messMenu && $messMenuTiming)) {
-
-                    $response['data']['code']            =  200;
-                    $response['data']['message']         =  'Request Successfull';
-                    $response['data']['result']          =  $messMenu;
-                    $response['data']['messMenuTiming']  =  $messMenuTiming;
-                    $response['status']                  =  true;
-
-                } else {
-
+                    DB::rollBack();
                     $response['data']['code']       =  400;
                     $response['data']['message']    =  'No Hostels Found';
-                    $response['status']             =  false;    
+                    $response['status']             =  false;   
+
                 }
             }
         }
         return $response;
     }
-
 }

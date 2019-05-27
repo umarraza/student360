@@ -151,7 +151,6 @@ Route::post('/list-queries','Api\QueriesController@listQueries');
 */
 
 Route::get('/list-threads','Api\ThreadsController@listThreads');
-Route::post('/send-approve-hostel-request', 'Api\RequestsController@approveHostelRequest');
 
 /*
 |--------------------------------------------------------------------------
@@ -161,5 +160,6 @@ Route::post('/send-approve-hostel-request', 'Api\RequestsController@approveHoste
 | update hostel have been define here.
 */
 Route::post('/update-hostel', 'Api\RequestsController@updateHostelRequest');
+Route::post('/send-approve-hostel-request', 'Api\RequestsController@approveHostelRequest');
 
 Route::post('/create-rating', 'Api\RatingsController@create');

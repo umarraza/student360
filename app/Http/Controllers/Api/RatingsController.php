@@ -62,7 +62,10 @@ class RatingsController extends Controller
                 else
                 {
 
-                    $rating = Rating::create([
+                    DB::beginTransaction();
+                    try {
+
+                        $rating = Rating::create([
 
                             'score'    =>  $request->get('score'),
                             'hostelId' =>  $request->get('hostelId'),
@@ -70,13 +73,20 @@ class RatingsController extends Controller
 
                         ]);
 
+                            DB::commit();
+                            
+                            $response['data']['code']       = 200;
+                            $response['status']             = true;
+                            $response['result']             = $rating;
+                            $response['data']['message']    = 'Rating created Successfully';
 
-                    if ($rating->save()) 
-                    {
-                        $response['data']['code']       = 200;
-                        $response['status']             = true;
-                        $response['result']             = $rating;
-                        $response['data']['message']    = 'Rating created Successfully';
+                    } catch (Exception $e) {
+                        
+                        DB::rollBack();
+
+                        $response['data']['code']       = 400;
+                        $response['status']             = false;
+                        $response['data']['message']    = 'Request Unsuccessfull';
                     }
                 }
             }

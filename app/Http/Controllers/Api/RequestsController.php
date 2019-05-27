@@ -72,20 +72,29 @@ class RequestsController extends Controller
                 else
                 {
 
-                    $request = ApproveHostelRequest::create([
+                    DB::beginTransaction();
+                    try {
+
+                        $request = ApproveHostelRequest::create([
 
                             'approveStatus'  =>  0,
                             'hostelId'  =>  $request->get('hostelId'),
 
                         ]);
+                        
+                        DB::commit();
 
-
-                    if ($request->save()) 
-                    {
                         $response['data']['code']       = 200;
                         $response['status']             = true;
                         $response['data']['result']     = $request;
                         $response['data']['message']    = 'Request to approve hostel created successfully!';
+
+                    } catch (Exception $e) {
+
+                        DB::rollBack();
+                        $response['data']['code']       = 400;
+                        $response['status']             = false;
+                        $response['data']['message']    = 'Request Unsuccessfull';
                     }
                 }
             }
@@ -158,9 +167,12 @@ class RequestsController extends Controller
                 else
                 {
 
-                $userId = $user->id;
-                   
-                    $updateHostel = UpdateHostelRequest::create([
+                    DB::beginTransaction();
+                    try {
+
+                        $userId = $user->id;
+
+                        $updateHostel = UpdateHostelRequest::create([
 
                             'hostelName'       =>   $request->get('hostelName'),
                             'hostelCategory'   =>   $request->get('hostelCategory'), //Boys, Girls, Guest House
@@ -185,12 +197,19 @@ class RequestsController extends Controller
 
                         ]);
 
-                    if ($updateHostel->save()) 
-                    {
+                        DB::commit();
+
                         $response['data']['code']       = 200;
                         $response['status']             = true;
                         $response['data']['result']     = $updateHostel;
                         $response['data']['message']    = 'Update request for hostel created Successfully';
+
+                    } catch (Exception $e) {
+
+                        DB::rollBack();
+                        $response['data']['code']       = 400;
+                        $response['status']             = false;
+                        $response['data']['message']    = 'Request Unsuccessfull';
                     }
                 }
             }

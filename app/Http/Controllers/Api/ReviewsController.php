@@ -68,21 +68,31 @@ class ReviewsController extends Controller
                 else
                 {
 
-                    $review = Review::create([
+                    DB::beginTransaction();
+                    try {
+
+                        $review = Review::create([
 
                             'message'   =>  $request->get('message'),
                             'hostelId'  =>  $request->get('hostelId'),
                             'userId'    =>  $user->id,
 
                         ]);
+                        
+                        DB::commit();
 
-
-                    if ($review->save()) 
-                    {
                         $response['data']['code']       = 200;
                         $response['status']             = true;
                         $response['result']             = $review;
                         $response['data']['message']    = 'Review created Successfully';
+
+                    } catch (Exception $e) {
+
+                        DB::rollBack();
+                        
+                        $response['data']['code']       = 400;
+                        $response['status']             = false;
+                        $response['data']['message']    = 'Request Unsuccessfull';
                     }
                 }
             }
@@ -118,22 +128,27 @@ class ReviewsController extends Controller
                'status' => false
             ];
             
-            $reviews = Review::all();
+            DB::beginTransaction();
+            try {
 
-            if (!empty($reviews)) {
+                $reviews = Review::all();
+                
+                if (!empty($reviews)) {
 
-                $response['data']['code']       =  200;
-                $response['data']['message']    =  'Request Successfull';
-                $response['data']['result']     =  $reviews;
-                $response['status']             =  true;
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Request Successfull';
+                    $response['data']['result']     =  $reviews;
+                    $response['status']             =  true;
+    
+                }
 
-            } else {
+            } catch (Exception $e) {
 
+                DB::rollBack();
                 $response['data']['code']       =  400;
                 $response['data']['message']    =  'Request Unsuccessfull';
                 $response['status']             =  false;    
             }
-
         }
         return $response;
     }
@@ -165,6 +180,9 @@ class ReviewsController extends Controller
                'status' => false
             ];
             
+            DB::beginTransaction();
+            try {
+
             $reviews = Review::where('hostelId', '=', $request->id)->get();
 
             if (!empty($reviews)) {
@@ -174,13 +192,15 @@ class ReviewsController extends Controller
                 $response['data']['result']     =  $reviews;
                 $response['status']             =  true;
 
-            } else {
+            }
 
+            } catch ( Exception $e) {
+
+                DB::rollBack();
                 $response['data']['code']       =  400;
                 $response['data']['message']    =  'Request Unsuccessfull';
                 $response['status']             =  false;    
             }
-
         }
         return $response;
     }
@@ -231,23 +251,30 @@ class ReviewsController extends Controller
 
                 $message = $request->get('message');
 
-                $reviews = Review::find($request->id)->update([
+                DB::beginTransaction();
+                try {
+
+                    $reviews = Review::find($request->id)->update([
                     
-                    'message' => $message,
+                        'message' => $message,
+    
+                    ]);
 
-                ]);
+                    if ($reviews) {
 
-                if ($reviews) {
+                        DB::commit();
+                        $response['data']['code']       =  200;
+                        $response['data']['message']    =  'Review updated SuccessfullY';
+                        $response['status']             =  true;
+    
+                    }
 
-                    $response['data']['code']       =  200;
-                    $response['data']['message']    =  'Review updated SuccessfullY';
-                    $response['status']             =  true;
+                } catch (Exception $e) {
 
-                } else {
-
+                    DB::rollBack();
                     $response['data']['code']       =  400;
                     $response['data']['message']    =  'Request Unsuccessfull';
-                    $response['status']             =  false;    
+                    $response['status']             =  false;
                 }
             }
         }
@@ -300,16 +327,20 @@ class ReviewsController extends Controller
 
             } else {
 
+                DB::beginTransaction();
+                try{
+
                 $reviews = Review::find($request->id)->delete();
+                
+                DB::commit();
 
-                if ($reviews) {
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Review Deleted SuccessfullY';
+                $response['status']             =  true;
 
-                    $response['data']['code']       =  200;
-                    $response['data']['message']    =  'Review Deleted SuccessfullY';
-                    $response['status']             =  true;
+                } catch (Exception $e) {
 
-                } else {
-
+                    DB::rollBack();
                     $response['data']['code']       =  400;
                     $response['data']['message']    =  'Request Unsuccessfull';
                     $response['status']             =  false;    
@@ -318,6 +349,4 @@ class ReviewsController extends Controller
         }
         return $response;
     }
-
-    
 }

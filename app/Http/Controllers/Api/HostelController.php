@@ -101,6 +101,7 @@ class HostelController extends Controller
                 DB::beginTransaction();
 
                 try{
+
                     $user =  User::create([
                         
                         'username'   =>  $username,
@@ -111,19 +112,12 @@ class HostelController extends Controller
                         'language'   =>  "English",
                     ]);
 
-                    if ($user->save()) {
-
                         DB::commit();
                         $response['data']['code']           = 200;
                         $response['status']                 = true;
                         $response['data']['user']           = $user;
                         $response['data']['message']        = 'User created Successfully';
 
-                    } else {
-
-                        DB::rollBack();
-
-                    }
                 } catch (Exception $e) {
 
                     DB::rollBack();
@@ -161,8 +155,6 @@ class HostelController extends Controller
 
                         ]);
 
-                        if ($hostel->save()) {
-                            
                             DB::commit();
 
                             $response['data']['code']           = 200;
@@ -170,10 +162,6 @@ class HostelController extends Controller
                             $response['data']['user']           = $hostel;
                             $response['data']['message']        = 'Hostel created Successfully';
 
-                        } else {
-                            
-                            DB::rollBack();
-                        }
                     } catch (Exception $e) {
 
                         DB::rollBack();
@@ -206,17 +194,13 @@ class HostelController extends Controller
         
                         ]);
 
-                        if ($messMenueMeal->save()) {
-
                             DB::commit();
+                 
                             $response['data']['code']           = 200;
                             $response['status']                 = true;
                             $response['data']['user']           = $messMenueMeal;
                             $response['data']['message']        = 'Mess Menu Meal created Successfully';
                         
-                        }else{
-                            DB::rollback();
-                        }
                     }
                 } catch (Exception $e) {
 
@@ -225,14 +209,12 @@ class HostelController extends Controller
                 }
 
                 /**
-                 * 
                  *  Create Mess Menu list timings and status if menu is available/set or not.
                  *  We are creating mess menu while registering a hostel admin because we didn't 
                  *  want to allow the option to crate mess menu for hostel admin. 
                  *  Hostel admin can just update mess manu.
                  * 
                  *  @return Model
-                 * 
                  */
 
                 DB::beginTransaction();
@@ -254,8 +236,6 @@ class HostelController extends Controller
 
                     ]);
 
-                    if ($messMenuTiming->save()) {
-
                         DB::commit();
                         $response['data']['code']          =  200;
                         $response['status']                =  true;
@@ -265,11 +245,6 @@ class HostelController extends Controller
                         $response['data']['messMenuTime']  =  $messMenuTiming;
                         $response['data']['message']       = 'Hostel created Successfully';
                         
-                    } else {
-
-                        DB::rollBack();
-                    }
-
                 } catch (Exception $e) {
 
                     DB::rollBack();
@@ -530,16 +505,21 @@ class HostelController extends Controller
 
                 $user = User::find($userId);
 
-                $messMenuMeal = MessMenuMeal::where('hostelId', '=', $hostelId)->get();
                 $messMenuTiming = MessMenuTiming::where('hostelId', '=', $hostelId)->first();
+                DB::beginTransaction();
 
+                $messMenuMeal = MessMenuMeal::where('hostelId', '=', $hostelId)->get();
                 foreach ($messMenuMeal as $value) {
-                   
-                   $value->delete();
-                
+                    
+                    if ($value->delete()){
+                        return "Deleted";
+                    }else{
+                        return "Not Deleted";
+                    }
                 }
-
-                $array = [$user, $hostel, $messMenuTiming];
+            
+                die();
+                $array = [$user, $messMenuTiming, $hostel];
                 
                 DB::beginTransaction();
 
@@ -547,6 +527,7 @@ class HostelController extends Controller
 
                     for ($i=0; $i < count($array); $i++) { 
 
+                        DB::beginTransaction();
                         if ($array[$i]->delete()) {
                         
                             DB::commit();

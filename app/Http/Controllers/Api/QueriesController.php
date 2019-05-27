@@ -70,7 +70,10 @@ class QueriesController extends Controller
                 else
                 {
 
-                    $query = Queries::create([
+                    DB::beginTransaction();
+                    try {
+
+                        $query = Queries::create([
 
                             'message'   =>   $request->get('message'),
                             'type'      =>   $request->get('type'),
@@ -78,13 +81,19 @@ class QueriesController extends Controller
 
                         ]);
 
+                        DB::commit();
 
-                    if ($query->save()) 
-                    {
                         $response['data']['code']       = 200;
                         $response['status']             = true;
                         $response['result']             = $query;
                         $response['data']['message']    = 'Query created Successfully!';
+
+                    } catch (Exception $e) {
+
+                        DB::rollBack();
+                        $response['data']['code']       = 400;
+                        $response['status']             = false;
+                        $response['data']['message']    = 'Request Unsuccessfull';
                     }
                 }
             }
@@ -114,21 +123,25 @@ class QueriesController extends Controller
                'status' => false
             ];
             
-            $query = Queries::find($request->id)->delete();
+            DB::beginTransaction();
+            try {
 
-            if ($query) {
+                $query = Queries::find($request->id)->delete();
 
+                DB::commit();
+                
                 $response['data']['code']       =  200;
                 $response['data']['message']    =  'Query Deleted SuccessfullY';
                 $response['status']             =  true;
 
-            } else {
+            } catch (Exception $e) {
+
+                DB::rollBack();
 
                 $response['data']['code']       =  400;
                 $response['data']['message']    =  'Request Unsuccessfull';
-                $response['status']             =  false;    
+                $response['status']             =  false;
             }
-
         }
         return $response;
     }
@@ -183,24 +196,32 @@ class QueriesController extends Controller
             } else {
 
                 $threadId = $request->get('threadId');
-                $queries = Queries::select('id', 'message', 'type', 'threadId')->where('threadId', '=', $threadId)->get();
 
-                if (!empty($queries)) {
+                DB::beginTransaction();
+                try {
 
-                    $response['data']['code']       =  200;
-                    $response['data']['message']    =  'Request Successfull';
-                    $response['data']['result']     =  $queries;
-                    $response['status']             =  true;
+                    $queries = Queries::select('id', 'message', 'type', 'threadId')->where('threadId', '=', $threadId)->get();
 
-                } else {
+                    if (!empty($queries)) {
+
+                        $response['data']['code']       =  200;
+                        $response['data']['message']    =  'Request Successfull';
+                        $response['data']['result']     =  $queries;
+                        $response['status']             =  true;
+    
+                    }
+
+                } catch (Exception $e) {
+
+                    DB::rollBack();
 
                     $response['data']['code']       =  400;
                     $response['data']['message']    =  'Request Unsuccessfull';
-                    $response['status']             =  false;    
+                    $response['status']             =  false;
+
                 }
             }
         }
         return $response;
     }
-
 }

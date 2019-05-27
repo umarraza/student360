@@ -55,52 +55,55 @@ class SuperAdminController extends Controller
             ];
             
             /** 
-             * 
              *  Combining info of hostels and their approval requests in a single (object).
              *  To show approval requests list to the hostel admin, we've to show thier
              *  appropriate hostels to the superadmin also. Below logic aims to do
              *  that job.
              * 
              *  @return approvalRequests
-             * 
              */
 
-            $requests = ApproveHostelRequest::select('id', 'approveStatus', 'hostelId')->where('approveStatus', '=', 0)->get();
+            DB::beginTransaction();
+            try{
 
-            $approvalRequests = [];
+                $requests = ApproveHostelRequest::select('id', 'approveStatus', 'hostelId')->where('approveStatus', '=', 0)->get();
 
-            foreach ($requests as $value){
+                $approvalRequests = [];
 
-                $hostelId = $value->hostelId;
-        
-                $hostel = Hostel::select('id', 'hostelName', 'hostelCategory', 'city')->where('id', '=', $hostelId)->first();
+                foreach ($requests as $value){
 
-                $city = $hostel->city;
-                $hostelName = $hostel->hostelName;
-                $hostelCategory = $hostel->hostelCategory;
+                    $hostelId = $value->hostelId;
+            
+                    $hostel = Hostel::select('id', 'hostelName', 'hostelCategory', 'city')->where('id', '=', $hostelId)->first();
 
-                $value["city"] = $city;
-                $value["hostelName"] = $hostelName;
-                $value["hostelCategory"] = $hostelCategory;
+                    $city = $hostel->city;
+                    $hostelName = $hostel->hostelName;
+                    $hostelCategory = $hostel->hostelCategory;
 
-                $approvalRequests[] = $value;
+                    $value["city"] = $city;
+                    $value["hostelName"] = $hostelName;
+                    $value["hostelCategory"] = $hostelCategory;
 
-            }
+                    $approvalRequests[] = $value;
 
-            if (!empty($approvalRequests)) {
+                }
 
-                $response['data']['code']       =  200;
-                $response['data']['message']    =  'Request Successfull';
-                $response['data']['hostel']     =  $approvalRequests;
-                $response['status']             =  true;
+                if (!empty($requests)) {
 
-            } else {
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Request Successfull';
+                    $response['data']['hostel']     =  $approvalRequests;
+                    $response['status']             =  true;
 
+                }
+
+            } catch (Exception $e) {
+
+                DB::rollBack();
                 $response['data']['code']       =  400;
                 $response['data']['message']    =  'Request Unsuccessfull';
-                $response['status']             =  false;    
+                $response['status']             =  false;
             }
-
         }
         return $response;
     }
@@ -153,40 +156,47 @@ class SuperAdminController extends Controller
 
             }else{
 
-                $requestData = ApproveHostelRequest::find($request->id);
-                $hostelId = $requestData->hostelId;
 
-                $hostel = Hostel::where('id', '=', $hostelId)->first();
+                DB::beginTransaction();
 
+                try{
 
-                $approveRequest = ApproveHostelRequest::find($request->id)->update([
-                    'approveStatus' => 1,
-                ]);
-               
-                $hostel = Hostel::where('id', '=', $hostelId)->update([
-                    'isApproved' => 1,
-                ]);
-                
-                // PUSH NOTIFICATION
+                    $requestData = ApproveHostelRequest::find($request->id);
+                    $hostelId = $requestData->hostelId;
 
-                // $title    =  "Approve Hotsle";
-                // $userId   =  $hostel->userId;
-                // $message  =  "Your request to approve hostel has been approved!";
+                    $approveRequest = ApproveHostelRequest::find($request->id)->update([
+                        'approveStatus' => 1,
+                    ]);
+                    
+                    $hostel = Hostel::where('id', '=', $hostelId)->update([
+                        'isApproved' => 1,
+                    ]);
 
-                // findDeviceToken($userId,$title,$message);
-                
-                if ($hostel && $approveRequest) {
+                    if ($hostel && $approveRequest) {
 
-                    $response['data']['code']       =  200;
-                    $response['data']['message']    =  'Hostel approved successfully!';
-                    $response['status']             =  true;
+                        DB::commit();
 
-                } else {
+                        $response['data']['code']       =  200;
+                        $response['data']['message']    =  'Hostel approved successfully!';
+                        $response['status']             =  true;
+    
+                    }
 
+                    // PUSH NOTIFICATION
+
+                    // $title    =  "Approve Hotsle";
+                    // $userId   =  $hostel->userId;
+                    // $message  =  "Your request to approve hostel has been approved!";
+
+                    // findDeviceToken($userId,$title,$message);
+
+                } catch (Exception $e) {
+
+                    DB::rollBack();
                     $response['data']['code']       =  400;
                     $response['data']['message']    =  'Request Unsuccessfull';
-                    $response['status']             =  false;    
-                }
+                    $response['status']             =  false;
+                } 
             }
         }
         return $response;
@@ -241,41 +251,49 @@ class SuperAdminController extends Controller
 
             }else{
 
-                $rejectApprovalRequest = ApproveHostelRequest::find($request->id);
-               
-                $hostelId = $rejectApprovalRequest->hostelId;
+                DB::beginTransaction();
 
-                $hostel = Hostel::where('id', '=', $hostelId)->first();
+                try{
 
-                $rejectApprovalRequest = ApproveHostelRequest::find($request->id)->update([
-                    'approveStatus' => 2,
-                ]);
+                    $rejectApprovalRequest = ApproveHostelRequest::find($request->id);
+                
+                    $hostelId = $rejectApprovalRequest->hostelId;
+
+                    $hostel = Hostel::where('id', '=', $hostelId)->first();
+
+                    $rejectApprovalRequest = ApproveHostelRequest::find($request->id)->update([
+                        'approveStatus' => 2,
+                    ]);
 
 
-                $rejectHostel = Hostel::where('id', '=', $hostelId)->update([
-                    'isApproved' => 2,
-                ]);
+                    $rejectHostel = Hostel::where('id', '=', $hostelId)->update([
+                        'isApproved' => 2,
+                    ]);
 
-                // PUSH NOTIFICATION
+                    if ($rejectApprovalRequest && $hostel){
+                        
+                        DB::commit();
+                        $response['data']['code']     = 200;
+                        $response['status']           = true;
+                        $response['data']['message']  = 'Sorry! Request to approve the hostel have been rejected!';
+    
+                    }
+                    
 
-                // $userId = $hostel->userId;
-                // $title = "Approval Request Rejected!";
-                // $message = "Sorry! Your request to approve hostel have been rejected!";
+                    // PUSH NOTIFICATION
 
-                // findDeviceToken($userId, $title, $message);
+                    // $userId = $hostel->userId;
+                    // $title = "Approval Request Rejected!";
+                    // $message = "Sorry! Your request to approve hostel have been rejected!";
 
-                if ($rejectApprovalRequest && $hostel){
+                    // findDeviceToken($userId, $title, $message);
 
-                    $response['data']['code']     = 200;
-                    $response['status']           = true;
-                    $response['data']['message']  = 'Sorry! Request to approve the hostel have been rejected!';
+                } catch (Exception $e) {
 
-                }else{
-
-                    $response['data']['code']     = 400;    
-                    $response['status']           = false;
-                    $response['data']['message']  = 'Request failed!';
-
+                    DB::rollBack();
+                    $response['data']['code']       =  400;
+                    $response['data']['message']    =  'Request Unsuccessfull';
+                    $response['status']             =  false;
                 }
             }
         }
@@ -330,40 +348,47 @@ class SuperAdminController extends Controller
 
             } else {
 
-                $hostelData = Hostel::where('id', '=', $request->id)->first();
+                DB::beginTransaction();
 
-                $hostel = Hostel::where('id', '=', $request->id)->update([
-                    'isVerified' => 1,
-                ]);
+                try {
 
-                $userId = $hostelData->userId;
+                    $hostelData = Hostel::where('id', '=', $request->id)->first();
 
-                $user = User::find($userId)->update([
+                    $hostel = Hostel::where('id', '=', $request->id)->update([
+                        'isVerified' => 1,
+                    ]);
 
-                    'verified' => 1,
+                    $userId = $hostelData->userId;
 
-                ]);
+                    $user = User::find($userId)->update([
 
-                // PUSH NOTIFICATION
+                        'verified' => 1,
 
-                // $title = "Hostel Verified";
-                // $message = "Congratulations! Your request to registered a new hostel have been approved";
+                    ]);
 
-                // findDeviceToken($title, $message, $userId);
+                    if ($hostel && $user){
+                       
+                        DB::commit();
+                        $response['data']['code']       =  200;
+                        $response['status']             =  true;
+                        $response['data']['result']     =  $hostel;
+                        $response['data']['message']    =  'Hostel Verified Successfully';
+    
+                    }
 
-                if ($hostel && $user){
+                    // PUSH NOTIFICATION
 
-                    $response['data']['code']       =  200;
-                    $response['status']             =  true;
-                    $response['data']['result']     =  $hostel;
-                    $response['data']['message']    =  'Hostel Verified Successfully';
+                    // $title = "Hostel Verified";
+                    // $message = "Congratulations! Your request to registered a new hostel have been approved";
 
-                }else{
+                    // findDeviceToken($title, $message, $userId);
 
+                } catch (Exception $e) {
+
+                    DB::rollBack();
                     $response['data']['code']       =  400;
+                    $response['data']['message']    =  'Request Unsuccessfull';
                     $response['status']             =  false;
-                    $response['data']['message']    =  'Request to verify hostel failed!';
-
                 }
             }
         }
@@ -418,40 +443,46 @@ class SuperAdminController extends Controller
 
             } else {
 
-                $hostelData = Hostel::find($request->id);
-                $userId = $hostelData->userId;
+                DB::beginTransaction();
+                try {
 
-                $hostel = Hostel::where('id', '=', $request->id)->update([
+                    $hostelData = Hostel::find($request->id);
+                    $userId = $hostelData->userId;
 
-                    'isVerified' => 2,
+                    $hostel = Hostel::where('id', '=', $request->id)->update([
+
+                        'isVerified' => 2,
+
+                        ]);
+                    
+                    $user = User::find($userId)->update([
+
+                        'verified' => 2,  // Status = 2 means that the request to update hostel have been rejected by administrater
 
                     ]);
-                
-                $user = User::find($userId)->update([
 
-                    'verified' => 2,  // Status = 2 means that the request to update hostel have been rejected by administrater
+                    // PUSH NOTIFICATION
 
-                ]);
+                    // $title = "Hostel Registration Rejected";
+                    // $message = "Sorry! Your request to register a new hostel have been rejected.";
 
-                // PUSH NOTIFICATION
+                    // findDeviceToken($title, $message, $userId);
 
-                // $title = "Hostel Registration Rejected";
-                // $message = "Sorry! Your request to register a new hostel have been rejected.";
+                    if ($user){
 
-                // findDeviceToken($title, $message, $userId);
+                        DB::commit();
+                        $response['data']['code']       =  200;
+                        $response['status']             =  true;
+                        $response['data']['message']    =  'Sorry! Request to verify the hostel have been rejected!';
+    
+                    }
 
-                if ($user){
+                } catch (Exception $e){
 
-                    $response['data']['code']       =  200;
-                    $response['status']             =  true;
-                    $response['data']['message']    =  'Sorry! Request to verify the hostel have been rejected!';
-
-                }else{
-
+                    DB::rollBack();
                     $response['data']['code']       =  400;
+                    $response['data']['message']    =  'Request Unsuccessfull';
                     $response['status']             =  false;
-                    $response['data']['message']    =  'Request Failed';
-
                 }
             }
         }
@@ -490,24 +521,26 @@ class SuperAdminController extends Controller
                'status' => false
             ];
             
-            $allHostels = Hostel::select('id','hostelName',  'website', 'hostelCategory')
+            DB::beginTransaction();
+            
+            try{
+
+                $allHostels = Hostel::select('id','hostelName',  'website', 'hostelCategory')
                 ->where('isVerified', '=', 0)
                 ->get();
-
-            if (!empty($allHostels)) {
 
                 $response['data']['code']       =  200;
                 $response['data']['message']    =  'Request Successfull';
                 $response['data']['result']     =  $allHostels;
                 $response['status']             =  true;
 
-            } else {
-
+            } catch (Exception $e) {
+                
+                DB::rollBack();
                 $response['data']['code']       =  400;
-                $response['data']['message']    =  'No Hostels Found';
-                $response['status']             =  false;    
+                $response['data']['message']    =  'Request Unsuccessfull';
+                $response['status']             =  false;
             }
-
         }
         return $response;
     }
@@ -535,47 +568,47 @@ class SuperAdminController extends Controller
                'status' => false
             ];
 
-            $hostelData = [];
+            DB::beginTransaction();
 
-            $verificationRequests = VerifyHostelRequest::select('id','verificationStatus', 'hostelId')
-                    ->where('verificationStatus', '=', 0)->get();
+            try {
+                
+                $hostelData = [];
 
-            foreach ($verificationRequests as $value){
+                $verificationRequests = VerifyHostelRequest::select('id','verificationStatus', 'hostelId')
+                        ->where('verificationStatus', '=', 0)->get();
+    
+                foreach ($verificationRequests as $value){
+    
+                    $hostelData[] = Hostel::select('id', 'hostelName', 'website', 'hostelCategory')->where('id', '=', $value->hostelId)->first();
+                    $hostelData[] = $value;
+    
+                }
 
-                $hostelData[] = Hostel::select('id', 'hostelName', 'website', 'hostelCategory')->where('id', '=', $value->hostelId)->first();
-                $hostelData[] = $value;
+                if (!empty($hostelData)) {
 
-            }
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Request Successfull';
+                    $response['data']['result']     =  $hostelData;
+                    $response['status']             =  true;
+    
+                }
 
-            return $hostelData;
+            } catch (Exception $e) {
 
-            if (!empty($hostelData)) {
-
-                $response['data']['code']       =  200;
-                $response['data']['message']    =  'Request Successfull';
-                $response['data']['result']     =  $hostelData;
-                $response['status']             =  true;
-
-            } else {
-
+                DB::rollBack();
                 $response['data']['code']       =  400;
                 $response['data']['message']    =  'Request Unsuccessfull';
-                $response['status']             =  false;    
+                $response['status']             =  false;
             }
-
         }
         return $response;
     }
 
-
- 
      /**
      * ALL UPDATE HOSTELS REQUESTS LIST
-     *
      * Super admin can see a list of all hostels that sends the request to update info
      *
      * @return Model
-     * 
      */
 
     public function listHostelsUpdateRequests(Request $request)
@@ -601,38 +634,45 @@ class SuperAdminController extends Controller
                'status' => false
             ];
             
-            $allUpdateRequests = UpdateHostelRequest::select(
+            DB::beginTransaction();
+
+            try{ 
                 
-                'id',
-                'hostelName',
-                'hostelCategory',
-                'numberOfBedRooms',
-                'noOfBeds',
-                'priceRange',
-                'address',
-                'longitude',
-                'latitude',
-                'state',
-                'postCode',
-                'city',
-                'country',
-                'description',
-                'contactName',
-                'website',
-                'phoneNumber',
-                'features' )
+                $allUpdateRequests = UpdateHostelRequest::select(
+                
+                    'id',
+                    'hostelName',
+                    'hostelCategory',
+                    'numberOfBedRooms',
+                    'noOfBeds',
+                    'priceRange',
+                    'address',
+                    'longitude',
+                    'latitude',
+                    'state',
+                    'postCode',
+                    'city',
+                    'country',
+                    'description',
+                    'contactName',
+                    'website',
+                    'phoneNumber',
+                    'features' )
+    
+                    ->where('status', '=', 0)->get();
 
-                ->where('status', '=', 0)->get();
-            
-            if (!empty($allUpdateRequests)) {
+                    if (!empty($allUpdateRequests)) {
 
-                $response['data']['code']       =  200;
-                $response['data']['message']    =  'Request Successfull';
-                $response['data']['result']     =  $allUpdateRequests;
-                $response['status']             =  true;
+                        $response['data']['code']       =  200;
+                        $response['data']['message']    =  'Request Successfull';
+                        $response['data']['result']     =  $allUpdateRequests;
+                        $response['status']             =  true;
+        
+                    }
 
-            } else {
+            } catch (Exception $e){
 
+                DB::rollBack();
                 $response['data']['code']       =  400;
                 $response['data']['message']    =  'No Hostels Found';
                 $response['status']             =  false;    
@@ -688,73 +728,82 @@ class SuperAdminController extends Controller
 
             } else {
 
-                $approveUpdateRequest = UpdateHostelRequest::find($request->id)->update([
-                    'status' => 1,  // Chnage status to 1 to approve the update hostel request
-                ]);
+                DB::beginTransaction();
+                try {
+
+                    $approveUpdateRequest = UpdateHostelRequest::find($request->id)->update([
+                        'status' => 1,  // Chnage status to 1 to approve the update hostel request
+                    ]);
+                    
+                    $hostel = UpdateHostelRequest::find($request->id);
+    
+                    $hostelId         =   $hostel->hostelId;
+                    $hostelName       =   $hostel->hostelName;
+                    $hostelCategory   =   $hostel->hostelCategory;
+                    $numberOfBedRooms =   $hostel->numberOfBedRooms;
+                    $noOfBeds         =   $hostel->noOfBeds;
+                    $priceRange       =   $hostel->priceRange;
+                    $address          =   $hostel->address;
+                    $longitude        =   $hostel->longitude;
+                    $latitude         =   $hostel->latitude;
+                    $state            =   $hostel->state;
+                    $postCode         =   $hostel->postCode;
+                    $city             =   $hostel->city;
+                    $country          =   $hostel->country;
+                    $description      =   $hostel->description;
+                    $contactName      =   $hostel->contactName;
+                    $contactEmail     =   $hostel->contactEmail;
+                    $website          =   $hostel->website;
+                    $phoneNumber      =   $hostel->phoneNumber;
+                    $features         =   $hostel->features;
+                    $userId           =   $hostel->userId;
                 
-                $hostel = UpdateHostelRequest::find($request->id);
+    
+                    $updateHostel = Hostel::find($hostelId)->update([
+    
+                        'hostelName'        =>   $hostelName,
+                        'hostelCategory'    =>   $hostelCategory,
+                        'numberOfBedRooms'  =>   $numberOfBedRooms,
+                        'noOfBeds'          =>   $noOfBeds,
+                        'priceRange'        =>   $priceRange,
+                        'address'           =>   $address,
+                        'longitude'         =>   $longitude,
+                        'latitude'          =>   $latitude,
+                        'state'             =>   $state,
+                        'postCode'          =>   $postCode,
+                        'city'              =>   $city,
+                        'country'           =>   $country,
+                        'description'       =>   $description,
+                        'contactName'       =>   $contactName,
+                        'contactEmail'      =>   $contactEmail,
+                        'website'           =>   $website,
+                        'phoneNumber'       =>   $phoneNumber,
+                        'features'          =>   $features,
+    
+                    ]);
+    
+                    // PUSH NOTIFICATION
+    
+                    // $title = "Hostel Updated";
+                    // $message = "Your request to update hostel have been approved!";
+                    // findDeviceToken($title, $message, $userId);
 
-                $hostelId         =   $hostel->hostelId;
-                $hostelName       =   $hostel->hostelName;
-                $hostelCategory   =   $hostel->hostelCategory;
-                $numberOfBedRooms =   $hostel->numberOfBedRooms;
-                $noOfBeds         =   $hostel->noOfBeds;
-                $priceRange       =   $hostel->priceRange;
-                $address          =   $hostel->address;
-                $longitude        =   $hostel->longitude;
-                $latitude         =   $hostel->latitude;
-                $state            =   $hostel->state;
-                $postCode         =   $hostel->postCode;
-                $city             =   $hostel->city;
-                $country          =   $hostel->country;
-                $description      =   $hostel->description;
-                $contactName      =   $hostel->contactName;
-                $contactEmail     =   $hostel->contactEmail;
-                $website          =   $hostel->website;
-                $phoneNumber      =   $hostel->phoneNumber;
-                $features         =   $hostel->features;
-                $userId           =   $hostel->userId;
-            
+                    if ($updateHostel) {
+                        
+                        DB::commit();
+                        $response['data']['code']       =  200;
+                        $response['data']['message']    =  'Hostel Updated successfully!';
+                        $response['status']             =  true;
+    
+                    }
 
-                $updateHostel = Hostel::find($hostelId)->update([
 
-                    'hostelName'        =>   $hostelName,
-                    'hostelCategory'    =>   $hostelCategory,
-                    'numberOfBedRooms'  =>   $numberOfBedRooms,
-                    'noOfBeds'          =>   $noOfBeds,
-                    'priceRange'        =>   $priceRange,
-                    'address'           =>   $address,
-                    'longitude'         =>   $longitude,
-                    'latitude'          =>   $latitude,
-                    'state'             =>   $state,
-                    'postCode'          =>   $postCode,
-                    'city'              =>   $city,
-                    'country'           =>   $country,
-                    'description'       =>   $description,
-                    'contactName'       =>   $contactName,
-                    'contactEmail'      =>   $contactEmail,
-                    'website'           =>   $website,
-                    'phoneNumber'       =>   $phoneNumber,
-                    'features'          =>   $features,
+                } catch (Exception $e) {
 
-                ]);
-
-                // PUSH NOTIFICATION
-
-                // $title = "Hostel Updated";
-                // $message = "Your request to update hostel have been approved!";
-                // findDeviceToken($title, $message, $userId);
-
-                if ($approveUpdateRequest) {
-
-                    $response['data']['code']       =  200;
-                    $response['data']['message']    =  'Hostel Updated successfully!';
-                    $response['status']             =  true;
-
-                } else {
+                    DB::rollBack();
 
                     $response['data']['code']       =  400;
-                    $response['data']['message']    =  'No Hostels Found';
+                    $response['data']['message']    =  'Hostel not updated';
                     $response['status']             =  false;    
                 }
             }
@@ -805,36 +854,44 @@ class SuperAdminController extends Controller
 
             } else {
 
-                $requestData = UpdateHostelRequest::where('id', '=', $request->id)->first();
-                $hostelId = $requestData->hostelId;
+                DB::beginTransaction();
+                try {
 
-                $hostel = Hostel::where('id', '=', $hostelId)->first();
-                $userId = $hostel->userId;
+                    $requestData = UpdateHostelRequest::where('id', '=', $request->id)->first();
+                    $hostelId = $requestData->hostelId;
 
-                $rejectUpdateRequest = UpdateHostelRequest::where('id', '=', $request->id)->update([
+                    $hostel = Hostel::where('id', '=', $hostelId)->first();
+                    $userId = $hostel->userId;
 
-                    'status' => 2, // Status = 2 means that the request to update hostel have been rejected by administrater
+                    $rejectUpdateRequest = UpdateHostelRequest::where('id', '=', $request->id)->update([
 
-                ]);
+                        'status' => 2, // Status = 2 means that the request to update hostel have been rejected by administrater
 
-                // PUSH NOTIFICATION
+                    ]);
 
-                // $title = "Hostel Updated";
-                // $message = "Your request to update hostel have been approved!";
-                // findDeviceToken($title, $message, $userId);
+                    // PUSH NOTIFICATION
 
-                if ($rejectUpdateRequest){
+                    // $title = "Hostel Updated";
+                    // $message = "Your request to update hostel have been approved!";
+                    // findDeviceToken($title, $message, $userId);
 
-                    $response['data']['code']       =  200;
-                    $response['status']             =  true;
-                    $response['data']['message']    =  'Request to update hostel have been rejected!';
+                    if ($rejectUpdateRequest){
+                        
+                        DB::commit();
 
-                }else{
+                        $response['data']['code']       =  200;
+                        $response['status']             =  true;
+                        $response['data']['message']    =  'Request to update hostel have been rejected!';
+    
+                    }
 
+
+                } catch (Exception $e) {
+
+                    DB::rollBack();
                     $response['data']['code']       =  400;
                     $response['status']             =  false;
                     $response['data']['message']    =  'Request Unsuccessfull!';
-
                 }
             }
         }
@@ -872,23 +929,28 @@ class SuperAdminController extends Controller
                'status' => false
             ];
             
-            // $hostels = Hostel::select('id', 'hostelName', 'hostelCategory', 'isApproved')->where('isApproved', '=', 0)->get();
-            $students = Student::all()->get();
+            DB::beginTransaction();
+            try {
 
-            if (!empty($students)) {
+                // $hostels = Hostel::select('id', 'hostelName', 'hostelCategory', 'isApproved')->where('isApproved', '=', 0)->get();
+                $students = Student::all()->get();
 
-                $response['data']['code']       =  200;
-                $response['data']['message']    =  'Request Successfull';
-                $response['data']['result']     =  $students;
-                $response['status']             =  true;
+                if (!empty($students)) {
 
-            } else {
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Request Successfull';
+                    $response['data']['result']     =  $students;
+                    $response['status']             =  true;
+    
+                }
 
+            } catch (Exception $e) {
+
+                DB::rollBack();
                 $response['data']['code']       =  400;
                 $response['data']['message']    =  'Request Unsuccessfull';
                 $response['status']             =  false;    
             }
-
         }
         return $response;
     }

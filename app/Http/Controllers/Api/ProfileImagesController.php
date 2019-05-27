@@ -68,29 +68,33 @@ class ProfileImagesController extends Controller
 
                     \Storage::disk('public')->put($file_name,base64_decode($file_data));
 
-                    $image = ProfileImages::create([
+                    DB::beginTransaction();
+                    
+                    try {
+
+                        $image = ProfileImages::create([
 
                             'imageName' => $file_name,
                             'userId' => $userId,
     
                             ]);
-                            
-                    if ($image->save())
-                    {
-                            
-                        $response['data']['message'] = 'Image created Successfully';
-                        $response['data']['code'] = 200;
-                        $response['data']['result'] = $image;
-                        $response['status'] = true;
-                    }
-                    else
-                    {
 
-                        $response['data']['message'] = 'Request to create image falied!';
+                            DB::commit();
+
+                            $response['data']['message'] = 'Image created Successfully';
+                            $response['data']['code'] = 200;
+                            $response['data']['result'] = $image;
+                            $response['status'] = true;
+
+                    } catch (Exception $e) {
+
+                        DB::rollBack();
+                        
+                        $response['data']['message'] = 'Request Unsuccessfull';
                         $response['data']['code'] = 400;
-                        $response['status'] = false;
+                        $response['status'] = true;
+
                     }
-                 
                 }
                 else
                 {

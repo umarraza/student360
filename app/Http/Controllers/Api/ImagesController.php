@@ -79,7 +79,10 @@ class ImagesController extends Controller
                     
                     \Storage::disk('public')->put($file_name,base64_decode($file_data));
 
-                    $image = Images::create([
+                    DB::beginTransaction();
+                    try {
+
+                        $image = Images::create([
 
                             'imageName'  => $file_name,
                             'isThumbnail'=> $request->get('isThumbnail'),
@@ -87,24 +90,20 @@ class ImagesController extends Controller
     
                         ]);
 
-
-                    if ($image->save())
-                    {
-                            
+                        DB::commit();
                         $response['data']['message'] = 'Image created Successfully';
                         $response['data']['code'] = 200;
                         $response['data']['result'] = $image;
                         $response['status'] = true;
 
-                    }
-                    else
-                    {
+                    } catch (Exception $e) {
 
+                        DB::rollBack();
                         $response['data']['message'] = 'Request to create image falied!';
                         $response['data']['code'] = 400;
                         $response['status'] = false;
+
                     }
-                 
                 }
                 else
                 {
@@ -181,7 +180,10 @@ class ImagesController extends Controller
                     
                     \Storage::disk('public')->put($file_name,base64_decode($file_data));
 
-                    $image = Images::find($request->id)->update([
+                    DB::beginTransaction();
+                    try {
+
+                        $image = Images::find($request->id)->update([
 
                             'imageName'  => $file_name,
                             'isThumbnail'=> $request->get('isThumbnail'),
@@ -189,28 +191,24 @@ class ImagesController extends Controller
     
                         ]);
 
+                        DB::commit();
 
-                    if ($image->save())
-                    {
-                            
                         $response['data']['message'] = 'Image Updated Successfully';
                         $response['data']['code'] = 200;
                         $response['data']['result'] = $image;
                         $response['status'] = true;
 
-                    }
-                    else
-                    {
 
+                    } catch (Exception $e) {
+
+                        DB::rollBack();
                         $response['data']['message'] = 'Request to create image falied!';
                         $response['data']['code'] = 400;
                         $response['status'] = false;
                     }
-                 
                 }
                 else
                 {
-
                     $response['data']['message'] = 'File Required';
                     $response['data']['code'] = 400;
                     $response['status'] = false;
@@ -251,31 +249,33 @@ class ImagesController extends Controller
              */
 
 
-            $images = Images::select('imageName', 'hostelId')
+            DB::beginTransaction();
+            try {
+
+                $images = Images::select('imageName', 'hostelId')
                 ->whereBetween('hostelId', [1,10])
                 ->orderBy('hostelId', 'asc')
                 ->limit(2)
                 ->get();
 
+                if (!empty($images)) {
 
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Request Successfull';
+                    $response['data']['result']     =  $images;
+                    $response['status']             =  true;
+    
+                }
 
+            } catch (Exception $e) {
 
-            if (!empty($images)) {
-
-                $response['data']['code']       =  200;
-                $response['data']['message']    =  'Request Successfull';
-                $response['data']['result']     =  $images;
-                $response['status']             =  true;
-
-            } else {
-
+                DB::rollBack();
                 $response['data']['code']       =  400;
                 $response['data']['message']    =  'No Hostels Found';
-                $response['status']             =  false;    
-            }
+                $response['status']             =  false;
 
+            }
         }
         return $response;
     }
-
 }
