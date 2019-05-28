@@ -47,6 +47,7 @@ Route::get('/list-students', 'Api\StudentController@listStudents');
 Route::post('/student-details', 'Api\StudentController@studentDetails');
 Route::post('/update-student', 'Api\StudentController@updateStudent');
 Route::get('/view-registered-students', 'Api\StudentController@listRegisteredStudents');
+Route::get('/all-hostels', 'Api\StudentController@allHostels');
 
 
 /*

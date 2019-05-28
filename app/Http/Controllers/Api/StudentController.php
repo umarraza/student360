@@ -17,7 +17,6 @@ use App\Models\Api\ApiStudent as Student;
 use App\Models\Api\ApiThreads as Threads;
 use Exception;
 
-
 class StudentController extends Controller
 {
     public function create(Request $request)
@@ -44,10 +43,9 @@ class StudentController extends Controller
                     'fullName'       =>   'required',
                     'phoneNumber'    =>   'required',   
                     'username'       =>   'required|unique:users',
+                    'email'          =>   'required|unique:users',
                     'password'       =>   'required',
                     'roleId'         =>   'required',
-
-
                 ];
 
                 $validator = Validator::make($request->all(), $rules);
@@ -273,7 +271,10 @@ class StudentController extends Controller
             
             $rules = [
 
-            	'id' => 'required',
+            	'id'         =>   'required',
+                'username'   =>   'required',
+                'email'      =>   'required',
+                'userId'     =>   'required',
 
             ];
 
@@ -288,26 +289,53 @@ class StudentController extends Controller
             else
             {
 
-                DB::beginTransaction();
-                try {
+                if($user->username != $request->username && $user->email != $request->email)
+                {
+                    return "Hi";
+                    $checkUserName = User::where('username',$request->username)->first();
+                    $checkEmail = User::where('email',$request->email)->first();
 
-                    $updateStudent = Student::find($request->id)->update([
+                    if(!empty($checkUserName) && !empty($checkEmail))
+                    {
+                        $response = [
+                            
+                            'data' => [
+                                'code' => 400,
+                                'message' => 'Username and Email Already Exist!',
+                            ],
+                            'status' => false
+                        ];
 
-                        'fullName'    =>  $request->get('fullName'),
-                        'phoneNumber' =>  $request->get('phoneNumber'),
-                        'email'       =>  $request->get('email'),
-                        'city'        =>  $request->get('city'),
-                        'country'     =>  $request->get('country'),
-                        'occupation'  =>  $request->get('occupation'),
-                        'institute'   =>  $request->get('institute'),
-                        'dateOfBirth' =>  $request->get('dateOfBirth'),
-                        'gender'      =>  $request->get('gender'),
-                        'CNIC'        =>  $request->get('CNIC'),
-    
-                    ]);
-    
-                    $student = Student::find($request->id);
-    
+                        return $response;
+                    }
+
+                    DB::beginTransaction();
+                    try {
+
+                        $userUpdate = User::where('id',$user->id)->update([
+                                 
+                            'username'  =>  $request->get('username'),
+                            'email'     =>  $request->get('email'),
+                            
+                        ]);
+
+                        $updateStudent = Student::find($request->id)->update([
+
+                            'fullName'    =>  $request->get('fullName'),
+                            'phoneNumber' =>  $request->get('phoneNumber'),
+                            'email'       =>  $request->get('email'),
+                            'city'        =>  $request->get('city'),
+                            'country'     =>  $request->get('country'),
+                            'occupation'  =>  $request->get('occupation'),
+                            'institute'   =>  $request->get('institute'),
+                            'dateOfBirth' =>  $request->get('dateOfBirth'),
+                            'gender'      =>  $request->get('gender'),
+                            'CNIC'        =>  $request->get('CNIC'),
+        
+                        ]);
+        
+                        $student = Student::find($request->id);
+        
                         $email        =  $student->email;
                         $phoneNumber  =  $student->phoneNumber;
                         $city         =  $student->city;
@@ -317,8 +345,9 @@ class StudentController extends Controller
                         $dateOfBirth  =  $student->dateOfBirth;
                         $gender       =  $student->gender;
                         $CNIC         =  $student->CNIC;
-    
-                    // https://stackoverflow.com/questions/6850452/check-if-multiple-values-are-all-false-or-all-true Visit this site
+        
+
+                        // https://stackoverflow.com/questions/6850452/check-if-multiple-values-are-all-false-or-all-true Visit this site
     
                         if (isset($email, $phoneNumber, $city, $country, $occupation, $institute, $dateOfBirth, $gender, $CNIC)) {
     
@@ -335,8 +364,6 @@ class StudentController extends Controller
 
                         if ($updateStudent) {
 
-                            DB::commit();
-
                             $response['data']['code']       =  200;
                             $response['data']['result']     =  $student;
                             $response['data']['message']    =  'User updated successfully';
@@ -344,6 +371,7 @@ class StudentController extends Controller
         
                         }
 
+                        DB::commit();
 
                         // if ($student->email != NULL && $student->phoneNumber != NULL && $student->city != NULL && $student->country != NULL && $student->occupation != NULL && $student->institute != NULL && $student->CNIC != NULL){
     
@@ -357,14 +385,14 @@ class StudentController extends Controller
     
                         //     $student->save();
                         // }
-    
 
-                } catch (Exception $e) {
+                    } catch (Exception $e) {
 
-                    DB::rollBack();
-                    $response['data']['code']       =  400;
-                    $response['data']['message']    =  'Request Unsuccessfull';
-                    $response['status']             =  false;
+                        DB::rollBack();
+                        $response['data']['code']       =  400;
+                        $response['data']['message']    =  'Request Unsuccessfull';
+                        $response['status']             =  false;
+                    }
                 }
             }
         }
@@ -411,11 +439,14 @@ class StudentController extends Controller
             else
             {
 
-                DB::beginTransaction();
                 try {
 
                     $student = Student::find($request->id);
-                    
+                    $user = User::find($student->userId);
+                    $username = $user->username;
+
+                    $student['username'] = $username;
+
                     if (!empty($student)) 
                     {
                         $response['data']['code']       = 200;
@@ -426,11 +457,51 @@ class StudentController extends Controller
                     }
 
                 } catch (Exception $e) {
-                    DB::rollBack();
-                    $response['data']['code']       = 400;
-                    $response['status']             = false;
-                    $response['data']['message']    = 'Student not found';
+ 
                 }
+            }
+        return $response;
+    }
+
+    public function allHostels(Request $request)
+    {
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            try {
+
+                $allHostels = Hostel::all();
+
+                if (!empty($allHostels)) {
+                    
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Request Successfull';
+                    $response['data']['result']     =  $allHostels;
+                    $response['status']             =  true;
+
+                } else {
+
+                    $response['data']['code']       =  400;
+                    $response['data']['message']    =  'No Hostels Found';
+                    $response['status']             =  false;    
+                }
+
+            } catch (Exception $e) {
+
             }
         return $response;
     }

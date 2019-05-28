@@ -29,15 +29,14 @@ class HostelController extends Controller
 
      /**
      * CREATE HOSTEL
-     *
      * Hostel Admin can register a new hostel.
      *
-     * @function
-     * 
+     * @return function
      */
 
     public function create(Request $request)
     {
+        // return $request;
         $response = [
                 'data' => [
                     'code'      => 400,
@@ -373,7 +372,7 @@ class HostelController extends Controller
 
             $rules = [
 
-            	'id'     =>   'required',
+            	'id'  =>  'required',
 
             ];
 
@@ -426,14 +425,14 @@ class HostelController extends Controller
 
     /**
      * DELETE HOSTEL
-     *
      * Super admin or Hostel admin can delete the hostel
      *
-     * @function
+     * @return function
      */
 
     public function delete(Request $request)
     {
+        $user = JWTAuth::toUser($request->token);
         $response = [
                 'data' => [
                     'code'      => 400,
@@ -443,6 +442,8 @@ class HostelController extends Controller
                 'status' => false
             ];
 
+        if(!empty($user) && $user->isHostelAdmin())
+        {
             $response = [
                 'data' => [
                     'code' => 400,
@@ -466,58 +467,33 @@ class HostelController extends Controller
             
             }else{
 
-                $hostel = Hostel::find($request->id);
-                $userId = $hostel->userId;
-                $hostelId = $hostel->id;
-
-                $user = User::find($userId);
-
-                $messMenuTiming = MessMenuTiming::where('hostelId', '=', $hostelId)->first();
                 DB::beginTransaction();
+                try {
 
-                $messMenuMeal = MessMenuMeal::where('hostelId', '=', $hostelId)->get();
-                foreach ($messMenuMeal as $value) {
+                    $hostel = Hostel::find($request->id);
+                    $userId = $hostel->userId;
+                    $hostelId = $hostel->id;
+
+
+                    $messMenuMeal = MessMenuMeal::where('hostelId', '=', $hostelId)->delete();
+
+                    $messMenuTiming = MessMenuTiming::where('hostelId', '=', $hostelId)->delete();
+
+                    $user = User::find($userId)->delete();
                     
-                    if ($value->delete()){
-                        return "Deleted";
-                    }else{
-                        return "Not Deleted";
-                    }
-                }
-            
-                die();
-                $array = [$user, $messMenuTiming, $hostel];
-                
-                DB::beginTransaction();
+                    $hostel->delete();                    
 
-                try{
+                    DB::commit();
 
-                    for ($i=0; $i < count($array); $i++) { 
+                    $response['data']['code']       = 200;
+                    $response['status']             = true;
+                    $response['data']['message']    = 'Hostel Deleted Successfully';
 
-                        DB::beginTransaction();
-                        if ($array[$i]->delete()) {
-                        
-                            DB::commit();
-                            $response['data']['code']       = 200;
-                            $response['status']             = true;
-                            $response['data']['message']    = 'Hostel Deleted Successfully';
-    
-                        } else {
-    
-                            DB::rollBack();
-                            $response['data']['code']       = 400;
-                            $response['status']             = false;
-                            $response['data']['message']    = 'Hostel Not Deleted!';
-                        
-                        }
-                    }
-
-                } catch (Exception $e){
-    
+                } catch (Exception $e) {
                     DB::rollBack();
                 }
             }
-        
+        }
         return $response;
     }
 }

@@ -190,7 +190,6 @@ class AuthController extends Controller
                         $response['data']['code']     =  400;
                         $response['data']['message']  =  "Request Unsuccessfull!!";
                         $response['status']= true;    
-
                     }
                     else
                     {

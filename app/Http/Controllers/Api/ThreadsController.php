@@ -66,6 +66,7 @@ class ThreadsController extends Controller
             */
 
             DB::beginTransaction();
+            
             try {
 
                 $data = [];
