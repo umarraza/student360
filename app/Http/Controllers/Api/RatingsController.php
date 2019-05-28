@@ -15,6 +15,7 @@ use App\Models\Api\ApiUser as User;
 use App\Models\Api\ApiHostel as Hostel;
 use App\Models\Api\ApiThreads as Threads;
 use App\Models\Api\ApiRatings as Rating;
+use Exception;
 
 
 class RatingsController extends Controller

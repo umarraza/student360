@@ -15,6 +15,7 @@ use App\Models\Api\ApiUser as User;
 use App\Models\Api\ApiHostel as Hostel;
 use App\Models\Api\ApiStudent as Student;
 use App\Models\Api\ApiThreads as Threads;
+use Exception;
 
 
 class StudentController extends Controller

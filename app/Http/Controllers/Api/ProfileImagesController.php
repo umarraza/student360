@@ -14,6 +14,7 @@ use JWTAuth;
 use App\Models\Api\ApiUser as User;
 use App\Models\Api\ApiHostel as Hostel;
 use App\Models\Api\ApiProfileImages as ProfileImages;
+use Exception;
 
 
 class ProfileImagesController extends Controller

@@ -17,6 +17,7 @@ use App\Models\Api\ApiStudent as Student;
 use App\Models\Api\ApiReviews as Review;
 use App\Models\Api\ApiApproveHostelRequests as ApproveHostelRequest;
 use App\Models\Api\ApiUpdateHostelRequest as UpdateHostelRequest;
+use Exception;
 
 
 
