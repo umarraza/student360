@@ -15,6 +15,11 @@ use App\Models\Api\ApiUser as User;
 use App\Models\Api\ApiHostel as Hostel;
 use App\Models\Api\ApiStudent as Student;
 use App\Models\Api\ApiThreads as Threads;
+use App\Models\Api\ApiRatings as Rating;
+use App\Models\Api\ApiImages as Image;
+use App\Models\Api\ApiReviews as Review;
+
+
 use Exception;
 
 class StudentController extends Controller
@@ -248,6 +253,7 @@ class StudentController extends Controller
 
     public function updateStudent(Request $request)
     {
+        // return $request;
         $user = JWTAuth::toUser($request->token);
 
         $response = [
@@ -274,7 +280,6 @@ class StudentController extends Controller
             	'id'         =>   'required',
                 'username'   =>   'required',
                 'email'      =>   'required',
-                'userId'     =>   'required',
 
             ];
 
@@ -291,7 +296,6 @@ class StudentController extends Controller
 
                 if($user->username != $request->username && $user->email != $request->email)
                 {
-                    return "Hi";
                     $checkUserName = User::where('username',$request->username)->first();
                     $checkEmail = User::where('email',$request->email)->first();
 
@@ -484,13 +488,68 @@ class StudentController extends Controller
             
             try {
 
-                $allHostels = Hostel::all();
+                $hostels = DB::table('hostel_profiles AS hostel')
+                ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
+                // ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
 
-                if (!empty($allHostels)) {
+                ->select(
+                    
+                    'hostel.id', 
+                    'hostel.hostelName',
+                    'hostel.hostelCategory', 
+                    'hostel.numberOfBedRooms', 
+                    'hostel.noOfBeds', 
+                    'hostel.priceRange', 
+                    'hostel.address', 
+                    'hostel.longitude', 
+                    'hostel.latitude', 
+                    'hostel.state', 
+                    'hostel.city', 
+                    'hostel.country', 
+                    'hostel.description', 
+                    'hostel.contactName', 
+                    'hostel.contactEmail', 
+                    'hostel.website', 
+                    'hostel.phoneNumber', 
+                    'hostel.features', 
+                    'hostel.userId', 
+                    // 'rating.score', 
+                    // 'rating.userId', 
+                    // 'rating.hostelId',
+                    'image.imageName', 
+
+                    )
+                ->where('image.isThumbnail','=', 1)
+                // ->orderBy('rating.score', 'desc')
+
+                ->get();
+
+                foreach($hostels as $hostel) {
+
+                    $images = Image::where('hostelId', '=', $hostel->id)
+                        ->select('id', 'imageName')
+                        ->where('isThumbnail', '=', 0)
+                    ->get();
+
+                    $reviews = Review::where('hostelId', '=', $hostel->id)
+                        ->select('id', 'body')
+                    ->get();
+
+                    $avgRating = Rating::where('hostelId', '=', $hostel->id)
+
+                    ->avg('score');
+                    
+                    $hostel->avgRating = $avgRating;
+                    $hostel->images = $images;
+                    $hostel->rewies = $reviews;
+
+                }
+
+                if (!empty($hostels)) {
                     
                     $response['data']['code']       =  200;
                     $response['data']['message']    =  'Request Successfull';
-                    $response['data']['result']     =  $allHostels;
+                    $response['data']['result']     =  $hostels;
                     $response['status']             =  true;
 
                 } else {

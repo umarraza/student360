@@ -52,7 +52,7 @@ class ReviewsController extends Controller
 
                 $rules = [
 
-                    'message'   =>  'required',
+                    'body'   =>  'required',
                     'hostelId'  =>  'required',   
                     'userId'    =>  'required',
 
@@ -74,7 +74,7 @@ class ReviewsController extends Controller
 
                         $review = Review::create([
 
-                            'message'   =>  $request->get('message'),
+                            'body'   =>  $request->get('body'),
                             'hostelId'  =>  $request->get('hostelId'),
                             'userId'    =>  $user->id,
 
@@ -171,8 +171,39 @@ class ReviewsController extends Controller
                 'status' => false
             ];
 
-        if(!empty($user) && $user->isHostelAdmin())
+        if(!empty($user) && $user->isStudent())
         {
+            $response = [
+                'data' => [ 
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            DB::beginTransaction();
+            try {
+
+            $reviews = Review::where('hostelId', '=', $request->id)->get();
+
+            if (!empty($reviews)) {
+
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Request Successfull';
+                $response['data']['result']     =  $reviews;
+                $response['status']             =  true;
+
+            }
+
+            } catch ( Exception $e) {
+
+                DB::rollBack();
+                $response['data']['code']       =  400;
+                $response['data']['message']    =  'Request Unsuccessfull';
+                $response['status']             =  false;    
+            }
+        } elseif (!empty($user) && $user->isHostelAdmin()) {
+            
             $response = [
                 'data' => [
                     'code' => 400,
@@ -202,6 +233,7 @@ class ReviewsController extends Controller
                 $response['data']['message']    =  'Request Unsuccessfull';
                 $response['status']             =  false;    
             }
+
         }
         return $response;
     }
@@ -250,14 +282,14 @@ class ReviewsController extends Controller
 
             } else {
 
-                $message = $request->get('message');
+                $body = $request->get('body');
 
                 DB::beginTransaction();
                 try {
 
                     $reviews = Review::find($request->id)->update([
                     
-                        'message' => $message,
+                        'body' => $body,
     
                     ]);
 

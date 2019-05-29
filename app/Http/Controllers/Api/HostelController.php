@@ -17,6 +17,7 @@ use App\Models\Api\ApiHostel as Hostel;
 use App\Models\Api\ApiReviews as Review;
 use App\Models\Api\ApiRatings as Rating;
 use App\Models\Api\ApiThreads as Threads;
+use App\Models\Api\ApiStudent as Student;
 use App\Models\Api\ApiMessMenuMeal as MessMenuMeal;
 use App\Models\Api\ApiMessMenuTiming as MessMenuTiming;
 use App\Models\Api\ApiUpdateHostelRequest as UpdateHostelRequest;
@@ -344,12 +345,11 @@ class HostelController extends Controller
     
 
     /**
-     * HOSTEL DETAILS
-     *
-     * Super admin registered/unregistered users both can see the details
-     *
-     * @return SingleHostelDetails
-     */
+    *  HOSTEL DETAILS
+    *  Super admin registered/unregistered users both can see the details
+    *
+    *  @return SingleHostelDetails
+    */
 
     public function hostelDetails(Request $request)
     {
@@ -387,24 +387,73 @@ class HostelController extends Controller
             else
             {
 
-                DB::beginTransaction();
+                // DB::beginTransaction();
 
-                try {
+                // try {
 
-                    $hostel = Hostel::find($request->id);
+                    $hostel = DB::table('hostel_profiles AS hostel')
+                    ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
+    
+                    ->select(
+                        
+                        'hostel.id', 
+                        'hostel.hostelName',
+                        'hostel.hostelCategory', 
+                        'hostel.numberOfBedRooms', 
+                        'hostel.noOfBeds', 
+                        'hostel.priceRange', 
+                        'hostel.address', 
+                        'hostel.longitude', 
+                        'hostel.latitude', 
+                        'hostel.state',  
+                        'hostel.postCode',
+                        'hostel.city', 
+                        'hostel.country', 
+                        'hostel.description', 
+                        'hostel.contactName', 
+                        'hostel.contactEmail', 
+                        'hostel.website', 
+                        'hostel.phoneNumber', 
+                        'hostel.features', 
+                        'hostel.userId', 
+                        'image.imageName',
+    
+                        )
 
-                    $hostelImages   =  Image::where('hostelId', '=', $request->id)->get();
-                    $reviews        =  Review::where('hostelId', '=', $request->id)->get();
-                    $ratings        =  Rating::where('hostelId', '=', $request->id)->get();
+                    ->where('image.isThumbnail','=', 1)
+                    ->where('hostel.id', '=', $request->id)
+    
+                    ->first();
+
+                    $images = Image::where('hostelId', '=', $request->id)
+                        ->select('id', 'imageName')
+                        ->where('isThumbnail', '=', 0)
+                    ->get();
+
+                    $reviews = Review::where('hostelId', '=', $request->id)
+                        ->select('id', 'body', 'userId')
+                    ->get();
+
+                    foreach ($reviews as $review) {
+
+                        $userId = $review->userId;
+                        $student = Student::where('userId', '=', $userId)->first();
+                        $studentName = $student->fullName;
+                        $review['studentName'] = $studentName;
+                    }
+
+                    $avgRating = Rating::where('hostelId', '=', $hostel->id)
+                    ->avg('score');
+
+                    $hostel->avgRating = $avgRating;
+                    $hostel->otherImages = $images;
+                    $hostel->reviews = $reviews;
 
                     if (!empty($hostel)) 
                     {
                         $response['data']['code']                     =  200;
                         $response['status']                           =  true;
                         $response['data']['result']['hostelDetails']  =  $hostel;
-                        $response['data']['result']['images']         =  $hostelImages;
-                        $response['data']['result']['reviews']        =  $reviews;
-                        $response['data']['result']['ratings']        =  $ratings;
                         $response['data']['message']                  =  'Request Successfull';
 
                     } else {
@@ -414,14 +463,137 @@ class HostelController extends Controller
                         $response['data']['message']    =  'Hostel Not Found!';
                     
                     }
-                } catch (Exception $e) {
+                // } catch (Exception $e) {
 
-                    DB::rollBack();
-                }
+                //     DB::rollBack();
+                // }
             }
         return $response;
     }
 
+    public function hostelDetails2(Request $request)
+    {
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+
+            $rules = [
+
+            	'id'  =>  'required',
+
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors'] = $validator->messages();
+
+            }
+            else
+            {
+
+                DB::beginTransaction();
+
+                // try {
+
+                    $hostel = DB::table('hostel_profiles AS hostel')
+                    ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
+    
+                    ->select(
+                        
+                        'hostel.id', 
+                        'hostel.hostelName',
+                        'hostel.hostelCategory', 
+                        'hostel.numberOfBedRooms', 
+                        'hostel.noOfBeds', 
+                        'hostel.priceRange', 
+                        'hostel.address', 
+                        'hostel.longitude', 
+                        'hostel.latitude', 
+                        'hostel.state', 
+                        'hostel.postCode',
+                        'hostel.city', 
+                        'hostel.country', 
+                        'hostel.description', 
+                        'hostel.contactName', 
+                        'hostel.contactEmail', 
+                        'hostel.website', 
+                        'hostel.phoneNumber', 
+                        'hostel.features', 
+                        'hostel.userId', 
+                        'image.imageName',
+    
+                        )
+
+                    ->where('image.isThumbnail','=', 1)
+                    ->where('hostel.id', '=', $request->id)
+
+                    ->first();
+
+
+                    $images = Image::where('hostelId', '=', $request->id)
+                        ->select('id', 'imageName')
+                        ->where('isThumbnail', '=', 0)
+                    ->get();
+                    
+                    
+                    $reviews = Review::where('hostelId', '=', $request->id)
+                        ->select('id', 'body', 'userId')
+                    ->get();
+
+                        foreach ($reviews as $review) {
+
+                            $userId = $review->userId;
+                            $student = Student::where('userId', '=', $userId)->first();
+                            $studentName = $student->fullName;
+                            $review['studentName'] = $studentName;
+                        }
+
+                    $avgRating = Rating::where('hostelId', '=', $request->id)
+                    ->avg('score');
+
+                    // return $avgRating;
+
+                    $hostel->avgRating = $avgRating;
+                    $hostel->otherImages = $images;
+                    $hostel->reviews = $reviews;
+
+                    if (!empty($hostel)) 
+                    {
+                        $response['data']['code']                     =  200;
+                        $response['status']                           =  true;
+                        $response['data']['result']['hostelDetails']  =  $hostel;
+                        $response['data']['message']                  =  'Request Successfull';
+
+                    } else {
+
+                        $response['data']['code']       =  400;
+                        $response['status']             =  false;
+                        $response['data']['message']    =  'Hostel Not Found!';
+                    
+                    }
+                // } catch (Exception $e) {
+
+                //     DB::rollBack();
+                // }
+            }
+        return $response;
+    }
 
     /**
      * DELETE HOSTEL

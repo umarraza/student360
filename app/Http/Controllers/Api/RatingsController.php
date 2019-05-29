@@ -46,8 +46,8 @@ class RatingsController extends Controller
 
                 $rules = [
 
-                    'score'   =>  'required',
-                    'userId'  =>  'required',   
+                    'score'    =>  'required',
+                    'userId'   =>  'required',
                     'hostelId' =>  'required',
 
                 ];
@@ -65,6 +65,8 @@ class RatingsController extends Controller
 
                     DB::beginTransaction();
                     try {
+
+                        // $checkStatus = Rating::where('userId', '=', $request->userId)->exists();
 
                         $rating = Rating::create([
 

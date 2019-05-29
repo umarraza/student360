@@ -31,6 +31,8 @@ Route::post('/create-hostel', 'Api\HostelController@create');
 Route::post('/delete-hostel', 'Api\HostelController@delete');
 Route::get('/list-hostels', 'Api\HostelController@listHostels');
 Route::post('/view-hostel', 'Api\HostelController@hostelDetails');
+Route::post('/hostel-details', 'Api\HostelController@hostelDetails2');
+
 Route::post('/hostel-available', 'Api\HostelController@updateAvailbility');
 Route::get('/view-registered-hostels', 'Api\HostelController@listRegisteredHostels');
 
@@ -83,7 +85,7 @@ Route::post('/reject-hostel-update-request', 'Api\SuperAdminController@rejectUpd
 
 Route::post('/create-review','Api\ReviewsController@create');
 Route::get('/list-reviews','Api\ReviewsController@listReviews');
-Route::get('/list-hostel-reviews','Api\ReviewsController@listHostelReviews');
+Route::post('/list-hostel-reviews','Api\ReviewsController@listHostelReviews');
 Route::post('/update-review','Api\ReviewsController@updateReview');
 Route::post('/delete-review','Api\ReviewsController@deleteReview');
 
