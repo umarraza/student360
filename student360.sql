@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 29, 2019 at 01:11 PM
+-- Generation Time: May 30, 2019 at 12:57 PM
 -- Server version: 10.1.38-MariaDB
 -- PHP Version: 7.3.2
 
@@ -92,7 +92,8 @@ INSERT INTO `hostel_images` (`id`, `imageName`, `isThumbnail`, `hostelId`, `crea
 (5, 'image_1558948413.png', 1, 5, '2019-05-27 04:13:33', '2019-05-27 04:13:33'),
 (6, 'image_1559109628.jpeg', 0, 5, '2019-05-29 01:00:28', '2019-05-29 01:00:28'),
 (7, 'image_1559121500.jpeg', 0, 8, '2019-05-29 04:18:20', '2019-05-29 04:18:20'),
-(8, 'image_1559121536.jpeg', 0, 8, '2019-05-29 04:18:56', '2019-05-29 04:18:56');
+(8, 'image_1559121536.jpeg', 0, 8, '2019-05-29 04:18:56', '2019-05-29 04:18:56'),
+(11, 'image_1559204104.jpeg', 1, 9, '2019-05-30 03:15:04', '2019-05-30 03:15:04');
 
 -- --------------------------------------------------------
 
@@ -135,7 +136,7 @@ INSERT INTO `hostel_profiles` (`id`, `hostelName`, `hostelCategory`, `numberOfBe
 (5, 'prime', 'boys', 10, 20, '15000-20000', '280-B/2 Johar town, Lahore', '31.520370', '74.358747', 'punjab', 54000, 'lahore', 'pakistan', 'average Hostel', 'anas', 'anas@gmail.com', 'anas.com', '03009444444', 0, 1, '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\",\"Parking area\",\"Board Games\",\"Mess\"]', 25, '2019-05-28 00:44:12', '2019-05-28 00:45:53'),
 (7, '6 Star Hostel', 'Girls', 25, 15, '5000', 'Haji Sadiq Rd, Block B2 Block B 2 Phase 1 Johar Town, Lahore, Punjab 54600, Pakistan', '74.358747', '31.520370', 'Sindh', 212121, 'Karachi', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border.', 'Shehzad Numan', 'shehzad@gmail.com', 'www.maironahotel.com', '03218840489', 0, 0, '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\",\"Parking area\",\"Board Games\",\"Mess\",\"TV\",\"Ceiling Fan\",\"Childrens play area\",\"Common Room\",\"Currency Exchange\",\"Direct Dial Telephone\",\"Kitchen\",\"Elevator\",\"Free Internet Access\",\"Free Parking\",\"Free WiFi\",\"Fridge/Freezer\",\"Fusball\",\"Games Room\",\"Gym\",\"Housekeeping\",\"Internet Access\",\"Iron/ironing Board\",\"Laundry Facilities\",\"Lockers\",\"Luggage Storage\",\"Microwave\",\"Outdoor Swimming Pool\",\"Outdoor Terrace\",\"Pool Table\",\"Reception (limited hours)\",\"Swimming Pool\",\"Tea & Coffee Making Facilities\",\"Vending Machines\",\"Wake-up calls\",\"Washing Machine\",\"Wheelchair Accessible\",\"Video games\",\"Transport\",\"CCTV\",\"Sports area\",\"Lawn\",\"Attached bathrooms\",\"Room service\",\"Pets allowed\",\"Guests allowed\",\"Water filter\",\"First aid\",\"Furnished\",\"Not furnished\",\"UPS\",\"Geyser\",\"Study room\",\"Medical support\",\"Ground Floor\",\"Professional cook\",\"Carpeted rooms\",\"Cupboards\",\"Daily news paper\",\"Electricity 24/7\",\"3-time meal\",\"Non- Smoking\",\"seprate\"]', 31, '2019-05-28 05:06:30', '2019-05-28 05:06:30'),
 (8, 'Continental Guest House', 'Guest House', 50, 50, '5000', 'Haji Sadiq Rd, Block B2 Block B 2 Phase 1 Johar Town, Lahore, Punjab 54600, Pakistan', '74.358747', '31.520370', 'Punjab', 212121, 'Islamabad', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border.', 'Malik Javed', 'javed@gmail.com', 'www.maironahotel.com', '03218840489', 0, 0, '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\",\"Parking area\",\"Board Games\",\"Mess\",\"TV\",\"Ceiling Fan\",\"Childrens play area\",\"Common Room\"]', 32, '2019-05-29 04:04:19', '2019-05-29 04:04:19'),
-(9, 'Five Star Hostel', 'Boys', 50, 50, '5000', 'Haji Sadiq Rd, Block B2 Block B 2 Phase 1 Johar Town, Lahore, Punjab 54600, Pakistan', '74.358747', '31.520370', 'Punjab', 212121, 'Islamabad', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border.', 'Ahtisham', 'ahtisham@gmail.com', 'www.maironahotel.com', '03218840489', 0, 0, '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\",\"Parking area\",\"Board Games\",\"Mess\",\"TV\",\"Ceiling Fan\",\"Childrens play area\",\"Common Room\"]', 33, '2019-05-29 05:50:55', '2019-05-29 05:50:55');
+(9, 'Five Star Hostel', 'Boys', 50, 50, '5000', 'Haji Sadiq Rd, Block B2 Block B 2 Phase 1 Johar Town, Lahore, Punjab 54600, Pakistan', '74.358747', '31.520370', 'Punjab', 212121, 'Islamabad', 'Pakistan', 'Mairona Hotels Gulberg is located in Lahore, 28 km from Wagah Border.', 'Ahtisham', 'ahtisham@gmail.com', 'www.maironahotel.com', '03218840489', 0, 1, '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\",\"Parking area\",\"Board Games\",\"Mess\",\"TV\",\"Ceiling Fan\",\"Childrens play area\",\"Common Room\"]', 33, '2019-05-29 05:50:55', '2019-05-29 05:50:55');
 
 -- --------------------------------------------------------
 
@@ -236,7 +237,9 @@ CREATE TABLE `profile_pictures` (
 
 INSERT INTO `profile_pictures` (`id`, `imageName`, `userId`, `createdAt`, `updatedAt`) VALUES
 (1, 'image_1558942983.png', 20, '2019-05-27 02:43:03', '2019-05-27 02:43:03'),
-(2, 'image_1558947817.png', 20, '2019-05-27 04:03:37', '2019-05-27 04:03:37');
+(2, 'image_1558947817.png', 20, '2019-05-27 04:03:37', '2019-05-27 04:03:37'),
+(3, 'image_1559192625.jpeg', 28, '2019-05-30 00:03:45', '2019-05-30 00:03:45'),
+(4, 'image_1559192684.jpeg', 29, '2019-05-30 00:04:44', '2019-05-30 00:04:44');
 
 -- --------------------------------------------------------
 
@@ -249,6 +252,7 @@ CREATE TABLE `queries` (
   `message` varchar(500) NOT NULL,
   `type` varchar(20) NOT NULL,
   `threadId` int(11) NOT NULL,
+  `hostelId` int(10) DEFAULT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -257,10 +261,11 @@ CREATE TABLE `queries` (
 -- Dumping data for table `queries`
 --
 
-INSERT INTO `queries` (`id`, `message`, `type`, `threadId`, `createdAt`, `updatedAt`) VALUES
-(1, 'What are the prices of mess menu?', 'U', 1, '2019-05-27 02:26:01', '2019-05-27 02:26:01'),
-(2, 'some other', 'U', 1, '2019-05-27 02:26:12', '2019-05-27 02:26:12'),
-(3, 'some other', 'U', 1, '2019-05-27 02:26:27', '2019-05-27 02:26:27');
+INSERT INTO `queries` (`id`, `message`, `type`, `threadId`, `hostelId`, `createdAt`, `updatedAt`) VALUES
+(1, 'What are the prices of mess menu?', 'U', 4, 5, '2019-05-27 02:26:01', '2019-05-27 02:26:01'),
+(2, 'some other', 'U', 5, 7, '2019-05-27 02:26:12', '2019-05-27 02:26:12'),
+(3, 'Prices are different for different hostel\'s mess menu.', 'A', 4, 5, '2019-05-27 02:26:27', '2019-05-27 02:26:27'),
+(4, 'Is wifi service available of this hostel?', 'U', 6, 9, '2019-05-30 04:21:29', '2019-05-30 04:21:29');
 
 -- --------------------------------------------------------
 
@@ -287,7 +292,13 @@ INSERT INTO `ratings` (`id`, `score`, `userId`, `hostelId`, `createdAt`, `update
 (3, 2, 29, 8, '2019-05-29 08:18:07', '2019-05-29 08:18:07'),
 (4, 3, 28, 7, '2019-05-29 03:54:50', '2019-05-29 03:54:50'),
 (5, 4, 28, 5, '2019-05-29 04:13:18', '2019-05-29 04:13:18'),
-(6, 2, 28, 8, '2019-05-29 04:14:02', '2019-05-29 04:14:02');
+(6, 2, 28, 8, '2019-05-29 04:14:02', '2019-05-29 04:14:02'),
+(9, 3, 28, 9, '2019-05-30 03:10:54', '2019-05-30 03:10:54'),
+(10, 2, 29, 8, '2019-05-30 05:34:55', '2019-05-30 05:34:55'),
+(11, 5, 29, 9, '2019-05-30 05:38:19', '2019-05-30 05:38:19'),
+(12, 1, 29, 9, '2019-05-30 05:39:00', '2019-05-30 05:39:00'),
+(15, 3, 29, 5, '2019-05-30 05:43:24', '2019-05-30 05:43:24'),
+(16, 1, 29, 5, '2019-05-30 05:46:50', '2019-05-30 05:46:50');
 
 -- --------------------------------------------------------
 
@@ -309,12 +320,23 @@ CREATE TABLE `reviews` (
 --
 
 INSERT INTO `reviews` (`id`, `body`, `hostelId`, `userId`, `createdAt`, `updatedAt`) VALUES
-(2, 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.', 5, 29, '2019-05-29 01:18:15', '2019-05-29 01:18:15'),
+(2, 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 5, 29, '2019-05-29 01:18:15', '2019-05-29 01:18:15'),
 (3, 'Good Serivces', 7, 29, '2019-05-29 01:19:11', '2019-05-29 01:19:11'),
 (4, 'Not a good hostel at all', 7, 28, '2019-05-29 01:19:40', '2019-05-29 01:19:40'),
 (5, 'Great hostel to live', 8, 29, '2019-05-29 01:23:03', '2019-05-29 01:23:03'),
 (6, 'Bad Services', 8, 28, '2019-05-29 04:16:00', '2019-05-29 04:16:00'),
-(7, 'Bad Services', 5, 28, '2019-05-29 04:21:51', '2019-05-29 04:21:51');
+(7, 'Bad Services', 5, 28, '2019-05-29 04:21:51', '2019-05-29 04:21:51'),
+(10, 'Good thing about this hostel is cleanliness', 9, 28, '2019-05-30 03:20:51', '2019-05-30 03:20:51'),
+(11, 'Nice', 7, 29, '2019-05-30 05:20:15', '2019-05-30 05:20:15'),
+(12, 'Nice hostel', 8, 29, '2019-05-30 05:28:38', '2019-05-30 05:28:38'),
+(13, 'So', 9, 29, '2019-05-30 05:31:22', '2019-05-30 05:31:22'),
+(14, 'So nice', 9, 29, '2019-05-30 05:32:32', '2019-05-30 05:32:32'),
+(15, 'Good', 8, 29, '2019-05-30 05:34:54', '2019-05-30 05:34:54'),
+(16, 'Good one', 9, 29, '2019-05-30 05:38:19', '2019-05-30 05:38:19'),
+(17, 'Just', 9, 29, '2019-05-30 05:38:59', '2019-05-30 05:38:59'),
+(18, 'Good', 5, 29, '2019-05-30 05:42:18', '2019-05-30 05:42:18'),
+(19, 'Good', 5, 29, '2019-05-30 05:43:24', '2019-05-30 05:43:24'),
+(20, 'Ok', 5, 29, '2019-05-30 05:46:50', '2019-05-30 05:46:50');
 
 -- --------------------------------------------------------
 
@@ -347,7 +369,7 @@ INSERT INTO `roles` (`id`, `description`, `label`, `createdAt`, `updatedAt`) VAL
 
 CREATE TABLE `threads` (
   `id` int(10) NOT NULL,
-  `userId` int(10) NOT NULL,
+  `studentId` int(10) NOT NULL,
   `adminId` int(10) NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -357,12 +379,10 @@ CREATE TABLE `threads` (
 -- Dumping data for table `threads`
 --
 
-INSERT INTO `threads` (`id`, `userId`, `adminId`, `createdAt`, `updatedAt`) VALUES
-(1, 20, 1, '2019-05-22 01:35:48', '2019-05-22 01:35:48'),
-(2, 26, 1, '2019-05-28 00:56:37', '2019-05-28 00:56:37'),
-(3, 27, 1, '2019-05-28 00:58:06', '2019-05-28 00:58:06'),
-(4, 28, 1, '2019-05-28 01:35:15', '2019-05-28 01:35:15'),
-(5, 29, 1, '2019-05-28 02:40:45', '2019-05-28 02:40:45');
+INSERT INTO `threads` (`id`, `studentId`, `adminId`, `createdAt`, `updatedAt`) VALUES
+(4, 2, 1, '2019-05-28 01:35:15', '2019-05-28 01:35:15'),
+(5, 5, 1, '2019-05-28 02:40:45', '2019-05-28 02:40:45'),
+(6, 6, 1, '2019-05-30 04:19:52', '2019-05-30 04:19:52');
 
 -- --------------------------------------------------------
 
@@ -440,10 +460,11 @@ INSERT INTO `users` (`id`, `username`, `email`, `password`, `remember_token`, `r
 (1, 'super.admin@admin.com', 'super.admin@admin.com', '$2y$10$VwROsyn0bDr5gTh/rnCCG.5JN3kZTAWEEUZPJLHfiZf.84ZLdPtwq', NULL, 1, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, '', 0, '2019-05-07 01:14:38', '2019-05-06 20:14:38'),
 (25, 'anas.baig', 'anas@gmail.com', '$2y$10$.n3bSKf/f8msUAaXBnb14uSWyKc/bfA.SZ8n/bRdtSRXS3mypehde', NULL, 2, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', NULL, '2019-05-28 05:45:53', '2019-05-28 00:45:53'),
 (28, 'hassan', 'umar123@gmail.com', '$2y$10$UMC20mDosFo/.aKbbTt0kOYy0GKn21JML4lKEvvB4wu3SrIs1N5.m', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', 4, '2019-05-29 04:42:50', '2019-05-28 23:42:50'),
-(29, 'umar', 'umar@gmail.com', '$2y$10$BPgJciN1dHN6OuRwj4HLLeJ2mLTZ.JGvFuLjnwBCG29awAolvBMFO', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', 5, '2019-05-28 08:23:02', '2019-05-28 03:23:02'),
+(29, 'rizwanmunir', 'rizwan@gmail.com', '$2y$10$BPgJciN1dHN6OuRwj4HLLeJ2mLTZ.JGvFuLjnwBCG29awAolvBMFO', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', 5, '2019-05-30 10:36:00', '2019-05-28 03:23:02'),
 (31, 'shehzad@gmail.com', 'shehzad@gmail.com', '$2y$10$oxnFVw1yq99KmNjg..B.ae0h0QTY2VTLIVcE7jTi/1SqvsD1oe7M2', NULL, 2, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', NULL, '2019-05-28 10:06:49', '2019-05-28 05:06:30'),
 (32, 'javed@gmail.com', 'javed@gmail.com', '$2y$10$uuQkqtxSrQFYf9zQ678mFuZiM6x54f8Y6qtCoRIwgV7MH3CpYRqH6', NULL, 2, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 'English', NULL, '2019-05-29 04:04:19', '2019-05-29 04:04:19'),
-(33, 'ahtisham210', 'ahtisham@gmail.com', '$2y$10$XLbnWilqqt.4hIBnSm9fUuQ9bfP9TDzhpqLBMX5rDuEk73FPMERyO', NULL, 2, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 'English', NULL, '2019-05-29 05:50:55', '2019-05-29 05:50:55');
+(33, 'ahtisham210', 'ahtisham@gmail.com', '$2y$10$XLbnWilqqt.4hIBnSm9fUuQ9bfP9TDzhpqLBMX5rDuEk73FPMERyO', NULL, 2, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', NULL, '2019-05-30 06:48:46', '2019-05-29 05:50:55'),
+(34, 'kami', 'kami@gmail.com', '$2y$10$56WgYDWeYb6ow3o.YET1kOpiYUmQmwamC.vMX9lBTjTRxr8PFTNeS', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', 6, '2019-05-30 09:19:52', '2019-05-30 04:19:52');
 
 -- --------------------------------------------------------
 
@@ -464,6 +485,7 @@ CREATE TABLE `user_profiles` (
   `gender` varchar(20) DEFAULT NULL,
   `CNIC` varchar(50) DEFAULT NULL,
   `isVerified` int(10) NOT NULL DEFAULT '0',
+  `threadId` int(10) DEFAULT NULL,
   `userId` int(10) NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -473,11 +495,12 @@ CREATE TABLE `user_profiles` (
 -- Dumping data for table `user_profiles`
 --
 
-INSERT INTO `user_profiles` (`id`, `fullName`, `phoneNumber`, `email`, `city`, `country`, `occupation`, `institute`, `dateOfBirth`, `gender`, `CNIC`, `isVerified`, `userId`, `createdAt`, `updatedAt`) VALUES
-(2, 'Anas Baig', '03341040794', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 26, '2019-05-28 00:56:37', '2019-05-28 00:56:37'),
-(3, 'Hassan Amir', '030000000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 27, '2019-05-28 00:58:06', '2019-05-28 00:58:06'),
-(4, 'Anas', '030000000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 28, '2019-05-28 01:35:15', '2019-05-28 01:35:15'),
-(5, 'Rizwan Munir', '03034969408', 'umar123@gmail.com', 'Lahore', 'Pakistan', 'Computer Engineer', 'UMT', '15-04-1996', 'Male', '3520161178493', 1, 29, '2019-05-28 02:40:45', '2019-05-28 23:42:50');
+INSERT INTO `user_profiles` (`id`, `fullName`, `phoneNumber`, `email`, `city`, `country`, `occupation`, `institute`, `dateOfBirth`, `gender`, `CNIC`, `isVerified`, `threadId`, `userId`, `createdAt`, `updatedAt`) VALUES
+(2, 'Anas Baig', '03341040794', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 26, '2019-05-28 00:56:37', '2019-05-28 00:56:37'),
+(3, 'Hassan Amir', '030000000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 27, '2019-05-28 00:58:06', '2019-05-28 00:58:06'),
+(4, 'Anas', '030000000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 28, '2019-05-28 01:35:15', '2019-05-28 01:35:15'),
+(5, 'Rizwan Munir', '03034969408', 'rizwanmunir@gmail.com', 'Lahore', 'Pakistan', 'Computer Engineer', 'UMT', '15-04-1996', 'Male', '3520161178493', 1, NULL, 29, '2019-05-28 02:40:45', '2019-05-28 23:42:50'),
+(6, 'Kamran Ali', '03231414124', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 6, 34, '2019-05-30 04:19:52', '2019-05-30 04:19:52');
 
 --
 -- Indexes for dumped tables
@@ -605,7 +628,7 @@ ALTER TABLE `hostels_registration-requests`
 -- AUTO_INCREMENT for table `hostel_images`
 --
 ALTER TABLE `hostel_images`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `hostel_profiles`
@@ -629,25 +652,25 @@ ALTER TABLE `mess_menu-meal`
 -- AUTO_INCREMENT for table `profile_pictures`
 --
 ALTER TABLE `profile_pictures`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `queries`
 --
 ALTER TABLE `queries`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `ratings`
 --
 ALTER TABLE `ratings`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -659,7 +682,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `threads`
 --
 ALTER TABLE `threads`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `update-hostels-requests`
@@ -671,13 +694,13 @@ ALTER TABLE `update-hostels-requests`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `user_profiles`
 --
 ALTER TABLE `user_profiles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
