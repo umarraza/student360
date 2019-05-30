@@ -16,6 +16,8 @@ class Queries extends Model
         'message',
         'type',
         'threadId',
+        'hostelId',
+
     ];
 
     /**
@@ -35,6 +37,7 @@ class Queries extends Model
                 'message'   =>  $this->message,
                 'type'      =>  $this->type,
                 'threadId'  =>  $this->threadId,
+                'hostelId'  =>  $this->hostelId,
         ];
     }
 }

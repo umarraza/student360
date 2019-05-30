@@ -106,18 +106,12 @@ class StudentController extends Controller
     
                             $threadId = $thread->id;
     
-                            $updateThread = User::where('id', '=', $userId)->update([
-    
-                                'threadId' => $threadId,
-    
-                            ]);
-    
-    
                         $student = Student::create([
     
                                 'fullName'     =>   $request->get('fullName'),
                                 'phoneNumber'  =>   $request->get('phoneNumber'),
                                 'userId'       =>   $user->id,
+                                'threadId'     =>   $threadId,
     
                             ]);
 
@@ -488,6 +482,84 @@ class StudentController extends Controller
             
             try {
 
+                $hostels = Hostel::all();
+
+                foreach ($hostels as $hostel) {
+
+                    $image = Image::where('hostelId', '=', $hostel->id)
+                        ->where('isThumbnail', '=', 1)
+                    ->first();
+
+                    $otherImages = Image::where('hostelId', '=', $hostel->id)
+                            ->select('id', 'imageName', 'isThumbnail', 'hostelId')
+                        ->where('isThumbnail', '=', 0)->get();
+
+                    $reviews = Review::where('hostelId', '=', $hostel->id)
+                        ->select('id', 'body')
+                    ->get();
+
+                    $avgRating = Rating::where('hostelId', '=', $hostel->id)
+
+                    ->avg('score');
+
+                    $hostel['avgRating'] = $avgRating;
+
+                    if (!empty($image)) {
+
+                        $thumbnailImageName = $image->imageName;
+                        $hostel['imageName'] = $thumbnailImageName;
+                        $hostel['otherImages'] = $otherImages;
+                    
+                    } else {
+
+                        $hostel['imageName'] = NULL;
+                    }
+
+                    $hostel['reviews'] = $reviews;
+
+                }
+
+                if (!empty($hostels)) {
+                    
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Request Successfull';
+                    $response['data']['result']     =  $hostels;
+                    $response['status']             =  true;
+
+                } else {
+
+                    $response['data']['code']       =  400;
+                    $response['data']['message']    =  'No Hostels Found';
+                    $response['status']             =  false;    
+                }
+
+            } catch (Exception $e) {
+
+            }
+        return $response;
+    }
+
+    public function allHostels2(Request $request)
+    {
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            try {
+
                 $hostels = DB::table('hostel_profiles AS hostel')
                 ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
                 // ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
@@ -541,7 +613,7 @@ class StudentController extends Controller
                     
                     $hostel->avgRating = $avgRating;
                     $hostel->images = $images;
-                    $hostel->rewies = $reviews;
+                    $hostel->reviews = $reviews;
 
                 }
 
@@ -564,4 +636,6 @@ class StudentController extends Controller
             }
         return $response;
     }
+
+
 }

@@ -58,7 +58,7 @@ class QueriesController extends Controller
                     'message'    =>   'required',
                     'type'       =>   'required',
                     'threadId'   =>   'required',
-
+                    'hostelId'   =>   'required',
                 ];
 
                 $validator = Validator::make($request->all(), $rules);
@@ -79,6 +79,7 @@ class QueriesController extends Controller
                             'message'   =>   $request->get('message'),
                             'type'      =>   $request->get('type'),
                             'threadId'  =>   $request->get('threadId'),
+                            'hostelId'  =>   $request->get('hostelId'),
 
                         ]);
 
@@ -98,52 +99,6 @@ class QueriesController extends Controller
                     }
                 }
             }
-        return $response;
-    }
-
-    public function delete(Request $request)
-    {
-
-        $user = JWTAuth::toUser($request->token);
-        $response = [
-                'data' => [
-                    'code'      => 400,
-                    'errors'    => '',
-                    'message'   => 'Invalid Token! User Not Found.',
-                ],
-                'status' => false
-            ];
-
-        if(!empty($user) && $user->isStudent())
-        {
-            $response = [
-                'data' => [
-                    'code' => 400,
-                    'message' => 'Something went wrong. Please try again later!',
-                ],
-               'status' => false
-            ];
-            
-            DB::beginTransaction();
-            try {
-
-                $query = Queries::find($request->id)->delete();
-
-                DB::commit();
-                
-                $response['data']['code']       =  200;
-                $response['data']['message']    =  'Query Deleted SuccessfullY';
-                $response['status']             =  true;
-
-            } catch (Exception $e) {
-
-                DB::rollBack();
-
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'Request Unsuccessfull';
-                $response['status']             =  false;
-            }
-        }
         return $response;
     }
 
@@ -201,7 +156,17 @@ class QueriesController extends Controller
                 DB::beginTransaction();
                 try {
 
-                    $queries = Queries::select('id', 'message', 'type', 'threadId')->where('threadId', '=', $threadId)->get();
+                    $queries = Queries::select('id', 'message', 'type', 'threadId', 'hostelId')->where('threadId', '=', $threadId)->get();
+                    
+                    foreach ($queries as $query) {
+
+                        $hostelId   = $query->hostelId;
+                        $hostelData = Hostel::find($hostelId);
+                        $hostelName = $hostelData->hostelName;
+
+                        $query['hostelName'] = $hostelName;
+
+                    }
 
                     if (!empty($queries)) {
 
@@ -225,4 +190,52 @@ class QueriesController extends Controller
         }
         return $response;
     }
+
+    public function delete(Request $request)
+    {
+
+        $user = JWTAuth::toUser($request->token);
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isStudent())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            DB::beginTransaction();
+            try {
+
+                $query = Queries::find($request->id)->delete();
+
+                DB::commit();
+                
+                $response['data']['code']       =  200;
+                $response['data']['message']    =  'Query Deleted SuccessfullY';
+                $response['status']             =  true;
+
+            } catch (Exception $e) {
+
+                DB::rollBack();
+
+                $response['data']['code']       =  400;
+                $response['data']['message']    =  'Request Unsuccessfull';
+                $response['status']             =  false;
+            }
+        }
+        return $response;
+    }
+
+
 }

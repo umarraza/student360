@@ -50,6 +50,8 @@ Route::post('/student-details', 'Api\StudentController@studentDetails');
 Route::post('/update-student', 'Api\StudentController@updateStudent');
 Route::get('/view-registered-students', 'Api\StudentController@listRegisteredStudents');
 Route::get('/all-hostels', 'Api\StudentController@allHostels');
+Route::get('/all-hostels2', 'Api\StudentController@allHostels2');
+
 
 
 /*
@@ -86,6 +88,8 @@ Route::post('/reject-hostel-update-request', 'Api\SuperAdminController@rejectUpd
 Route::post('/create-review','Api\ReviewsController@create');
 Route::get('/list-reviews','Api\ReviewsController@listReviews');
 Route::post('/list-hostel-reviews','Api\ReviewsController@listHostelReviews');
+// Route::post('/list-hostel-reviews2','Api\ReviewsController@listHostelReviews2');
+
 Route::post('/update-review','Api\ReviewsController@updateReview');
 Route::post('/delete-review','Api\ReviewsController@deleteReview');
 
@@ -120,7 +124,7 @@ Route::post('/search-by-features','Api\SearchesController@searchByFeatures');
 */
 
 Route::post('/list-images','Api\ImagesController@listImages');
-Route::post('/create-image','Api\ImagesController@createHostelImages');
+Route::post('/create-hostel-image','Api\ImagesController@createHostelImages');
 Route::post('/update-thumbnail-image','Api\ImagesController@updateThumbnailImage');
 
 /*

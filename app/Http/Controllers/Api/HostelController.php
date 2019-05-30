@@ -387,6 +387,153 @@ class HostelController extends Controller
             else
             {
 
+                DB::beginTransaction();
+
+                // try {
+
+          
+                    $hostel = Hostel::find($request->id);
+
+                    
+                    /**
+                     *  Getting avarage rating of a hostel
+                     *  @return Rating
+                     * 
+                     */
+
+                    $avgRating = Rating::where('hostelId', '=', $request->id)
+                    ->avg('score');
+
+                    $hostel['avgRating'] = $avgRating;
+
+                    /**
+                     *  Getting profile/thbumbnail image a hostel
+                     *  if profile image exists, show the name of 
+                     *  image with hostel info, else show null
+                     *
+                     *  @return Rating
+                     */
+
+                    $thumbnailImage = Image::where('hostelId', '=', $request->id)->first();
+
+                    if (!empty($thumbnailImage)) {
+
+                        $imageName = $thumbnailImage->imageName;
+                        $hostel['imageName'] = $imageName;
+
+                    } else {
+                        $hostel['imageName'] = NULL;
+                    }
+
+                    /**
+                     *  Getting all images other then profile/thbumbnail
+                     *  image of a hostel & appending with hostel info
+                     *
+                     *  @return Image
+                     */
+
+                    $otherImages = Image::where('hostelId', '=', $request->id)
+                        ->select('id', 'imageName', 'isThumbnail')
+                        ->where('isThumbnail', '=', 0)
+                    ->get();
+
+                    $hostel['otherImages'] = $otherImages;
+
+
+                    /**
+                     *  Getting all reviews against a hostel and students who 
+                     *  posted reviews to against that hostel and appending
+                     *  with hostel info
+                     * 
+                     *  @return Reviews
+                     */
+
+                    $reviews = Review::where('hostelId', '=', $request->id)
+                        ->select('id', 'body', 'userId')
+                    ->get();
+
+                        foreach ($reviews as $review) {
+
+                            $userId = $review->userId;
+                            $student = Student::where('userId', '=', $userId)->first();
+                            $studentName = $student->fullName;
+                            $review['studentName'] = $studentName;
+
+                        }
+
+                    $hostel['reviews'] = $reviews;
+
+                    /**
+                     *  Getting Mess Menu and Mess Menu Timming against hostel 
+                     *  and appending this to hostel info
+                     * 
+                     *  @return MessMenuTimming_MessMenuMeal
+                     */
+
+                    $messMenuMeal = MessMenuMeal::where('hostelId', '=', $request->id)->get();
+                    $messMenuTiming = MessMenuTiming::where('hostelId', '=', $request->id)->first();
+                    
+                    $hostel['messMenu'] = $messMenuMeal;
+                    $hostel['messMenuTimings'] = $messMenuTiming;
+
+                    if (!empty($hostel)) 
+                    {
+                        $response['data']['code']                     =  200;
+                        $response['status']                           =  true;
+                        $response['data']['result']['hostelDetails']  =  $hostel;
+                        $response['data']['message']                  =  'Request Successfull';
+
+                    } else {
+
+                        $response['data']['code']       =  400;
+                        $response['status']             =  false;
+                        $response['data']['message']    =  'Hostel Not Found!';
+                    
+                    }
+                // } catch (Exception $e) {
+
+                //     DB::rollBack();
+                // }
+            }
+        return $response;
+    }
+
+    public function hostelDetails2(Request $request)
+    {
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+
+            $rules = [
+
+            	'id'  =>  'required',
+
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors'] = $validator->messages();
+
+            }
+            else
+            {
+
                 // DB::beginTransaction();
 
                 // try {
@@ -471,129 +618,7 @@ class HostelController extends Controller
         return $response;
     }
 
-    public function hostelDetails2(Request $request)
-    {
-        $response = [
-                'data' => [
-                    'code'      => 400,
-                    'errors'    => '',
-                    'message'   => 'Invalid Token! User Not Found.',
-                ],
-                'status' => false
-            ];
 
-            $response = [
-                'data' => [
-                    'code' => 400,
-                    'message' => 'Something went wrong. Please try again later!',
-                ],
-               'status' => false
-            ];
-
-            $rules = [
-
-            	'id'  =>  'required',
-
-            ];
-
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                
-                $response['data']['message'] = 'Invalid input values.';
-                $response['data']['errors'] = $validator->messages();
-
-            }
-            else
-            {
-
-                DB::beginTransaction();
-
-                // try {
-
-                    $hostel = DB::table('hostel_profiles AS hostel')
-                    ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-    
-                    ->select(
-                        
-                        'hostel.id', 
-                        'hostel.hostelName',
-                        'hostel.hostelCategory', 
-                        'hostel.numberOfBedRooms', 
-                        'hostel.noOfBeds', 
-                        'hostel.priceRange', 
-                        'hostel.address', 
-                        'hostel.longitude', 
-                        'hostel.latitude', 
-                        'hostel.state', 
-                        'hostel.postCode',
-                        'hostel.city', 
-                        'hostel.country', 
-                        'hostel.description', 
-                        'hostel.contactName', 
-                        'hostel.contactEmail', 
-                        'hostel.website', 
-                        'hostel.phoneNumber', 
-                        'hostel.features', 
-                        'hostel.userId', 
-                        'image.imageName',
-    
-                        )
-
-                    ->where('image.isThumbnail','=', 1)
-                    ->where('hostel.id', '=', $request->id)
-
-                    ->first();
-
-
-                    $images = Image::where('hostelId', '=', $request->id)
-                        ->select('id', 'imageName')
-                        ->where('isThumbnail', '=', 0)
-                    ->get();
-                    
-                    
-                    $reviews = Review::where('hostelId', '=', $request->id)
-                        ->select('id', 'body', 'userId')
-                    ->get();
-
-                        foreach ($reviews as $review) {
-
-                            $userId = $review->userId;
-                            $student = Student::where('userId', '=', $userId)->first();
-                            $studentName = $student->fullName;
-                            $review['studentName'] = $studentName;
-                        }
-
-                    $avgRating = Rating::where('hostelId', '=', $request->id)
-                    ->avg('score');
-
-                    // return $avgRating;
-
-                    $hostel->avgRating = $avgRating;
-                    $hostel->otherImages = $images;
-                    $hostel->reviews = $reviews;
-
-                    if (!empty($hostel)) 
-                    {
-                        $response['data']['code']                     =  200;
-                        $response['status']                           =  true;
-                        $response['data']['result']['hostelDetails']  =  $hostel;
-                        $response['data']['message']                  =  'Request Successfull';
-
-                    } else {
-
-                        $response['data']['code']       =  400;
-                        $response['status']             =  false;
-                        $response['data']['message']    =  'Hostel Not Found!';
-                    
-                    }
-                // } catch (Exception $e) {
-
-                //     DB::rollBack();
-                // }
-            }
-        return $response;
-    }
 
     /**
      * DELETE HOSTEL

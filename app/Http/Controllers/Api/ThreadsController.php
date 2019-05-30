@@ -15,6 +15,8 @@ use App\Models\Api\ApiUser as User;
 use App\Models\Api\ApiHostel as Hostel;
 use App\Models\Api\ApiQueries as Queries;
 use App\Models\Api\ApiThreads as Threads;
+use App\Models\Api\ApiStudent as Student;
+
 use Exception;
 
 
@@ -51,8 +53,7 @@ class ThreadsController extends Controller
                'status' => false
             ];
             
-            $queries = Queries::select('threadId')->distinct()->get();
-            $threads = Threads::select('id')->get();
+
 
 
             /* 
@@ -67,18 +68,34 @@ class ThreadsController extends Controller
 
             DB::beginTransaction();
             
-            try {
+            // try {
+
+                $queries = Queries::select('threadId')->distinct()->get();
+                $threads = Threads::select('id')->get();
 
                 $data = [];
 
-                foreach ($threads as $value){
-    
+                foreach ($threads as $thread){
+
                     foreach ($queries as $query){
     
-                        if ($value->id == $query->threadId){
+                        if ($thread->id == $query->threadId){
     
-                            $data[] = $queriesResults = Queries::select('id', 'message', 'type', 'threadId')->where('threadId', '=', $query->threadId)->get();
-                            break;                        
+                            $queriesResults = Queries::where('threadId', '=', $query->threadId)->first();
+                            if (!empty($queriesResults)) {
+                                
+                                $threadData = Threads::where('id', '=', $query->threadId)
+                                    ->select('id', 'studentId', 'adminId')->first();
+
+                                    $studentId   = $threadData->studentId;
+                                    $studentData = Student::find($studentId);
+                                    $studentName = $studentData->fullName;
+                                    $studentId   = $studentData->id;
+
+                                    $threadData['studentName'] = $studentName;
+                                    $threadData['studentId'] = $studentId;
+                                    $data[] = $threadData;
+                            }   
                         }
                     }
                 }
@@ -92,15 +109,15 @@ class ThreadsController extends Controller
     
                 }
 
-            } catch (Exception $e) {
+            // } catch (Exception $e) {
 
-                DB::rollBack();
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'Request Unsuccessfull';
-                $response['status']             =  false;
+            //     DB::rollBack();
+            //     $response['data']['code']       =  400;
+            //     $response['data']['message']    =  'Request Unsuccessfull';
+            //     $response['status']             =  false;
                 
   
-            }
+            // }
         }
         return $response;
     }

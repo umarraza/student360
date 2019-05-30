@@ -15,6 +15,9 @@ use App\Models\Api\ApiUser as User;
 use App\Models\Api\ApiHostel as Hostel;
 use App\Models\Api\ApiStudent as Student;
 use App\Models\Api\ApiReviews as Review;
+use App\Models\Api\ApiRatings as Rating;
+use App\Models\Api\ApiProfileImages as ProfileImages;
+
 use Exception;
 
 
@@ -159,7 +162,7 @@ class ReviewsController extends Controller
 |--------------------------------------------------------------------------
 |
 */
-    public function listHostelReviews(Request $request)
+    public function listHostelReviews2(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
         $response = [
@@ -171,7 +174,7 @@ class ReviewsController extends Controller
                 'status' => false
             ];
 
-        if(!empty($user) && $user->isStudent())
+        if(!empty($user))
         {
             $response = [
                 'data' => [ 
@@ -202,10 +205,27 @@ class ReviewsController extends Controller
                 $response['data']['message']    =  'Request Unsuccessfull';
                 $response['status']             =  false;    
             }
-        } elseif (!empty($user) && $user->isHostelAdmin()) {
-            
-            $response = [
+        }
+        return $response;
+    }
+
+
+    public function listHostelReviews(Request $request)
+    {
+        $user = JWTAuth::toUser($request->token);
+        $response = [
                 'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user))
+        {
+            $response = [
+                'data' => [ 
                     'code' => 400,
                     'message' => 'Something went wrong. Please try again later!',
                 ],
@@ -213,9 +233,32 @@ class ReviewsController extends Controller
             ];
             
             DB::beginTransaction();
-            try {
+            // try {
 
-            $reviews = Review::where('hostelId', '=', $request->id)->get();
+            $reviews = Review::where('hostelId', '=', $request->id)
+                ->get();
+
+            foreach ($reviews as $review) {
+
+                $rating = Rating::where('userId', '=', $review->userId)
+
+                    ->where('hostelId', '=', $request->id)
+                    ->select('score', 'userId')
+                
+                ->get();
+    
+
+                $profileImage = ProfileImages::where('userId', '=', $review->userId)->first();
+                $studentProfileImage = $profileImage->imageName;
+                
+                $studentData = Student::where('userId', '=', $review->userId)->first();
+                $studentName = $studentData->fullName;
+
+                $review['studentName'] = $studentName;
+                $review['rating'] = $rating->score;
+                $review['profilePicture'] = $studentProfileImage;
+
+            }
 
             if (!empty($reviews)) {
 
@@ -226,18 +269,16 @@ class ReviewsController extends Controller
 
             }
 
-            } catch ( Exception $e) {
+            // } catch ( Exception $e) {
 
-                DB::rollBack();
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'Request Unsuccessfull';
-                $response['status']             =  false;    
-            }
-
+            //     DB::rollBack();
+            //     $response['data']['code']       =  400;
+            //     $response['data']['message']    =  'Request Unsuccessfull';
+            //     $response['status']             =  false;    
+            // }
         }
         return $response;
     }
-
 /*
 |--------------------------------------------------------------------------
 |  UPDATE REVIEW

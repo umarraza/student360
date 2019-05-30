@@ -23,12 +23,14 @@ class Student extends Model
         'dateOfBirth',
         'gender',
         'CNIC',
+        'threadId',
         'userId',
     ];
 
     /**
      * @return mixed
      */
+    
     public function user()
     {
         return $this->hasOne(User::class,'id','userId');
@@ -48,9 +50,9 @@ class Student extends Model
                 'institute'     =>  $this->institute,
                 'dateOfBirth'   =>  $this->dateOfBirth,
                 'gender'        =>  $this->gender, 
-                'CNIC'          =>  $this->CNIC,  
+                'CNIC'          =>  $this->CNIC, 
+                'threadId'      =>  $this->threadId,  
                 'userId'        =>  $this->userId, 
-
         ];
     }
 }
