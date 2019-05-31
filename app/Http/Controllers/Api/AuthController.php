@@ -27,6 +27,196 @@ use App\Models\Api\ApiUserDetail as UserDetail;
 class AuthController extends Controller
 {
 
+    public function login(Request $request)
+    {
+        $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Invalid credentials or missing parameters',
+                ],
+                'status' => false
+            ];
+        if(isset($request['username'],$request['password']))
+        {
+
+            $credentials = $request->only('username', 'password');
+            $token = null;
+            try {
+               if (!$token = JWTAuth::attempt($credentials)) 
+               {
+                    return [
+                        'data' => [
+                            'code' => 400,
+                            'message' => 'Email or password wrong.',
+                        ],
+                        'status' => false
+                    ];
+               }
+            } catch (JWTAuthException $e) {
+                
+                return [
+                        'data' => [
+                            'code' => 500,
+                            'message' => 'Fail to create token.',
+                    ],
+                    'status' => false
+                ];
+            }
+
+            $user = JWTAuth::toUser($token);
+
+            if ($user->isSuperAdmin())
+            {
+                $response['data']['code']               = 200;
+                $response['data']['message']            = "Request Successfull!!";
+                $response['data']['token']              = User::loginUser($user->id,$token);
+                $response['data']['result']['userData'] = $user->getArrayResponse();
+                $response['status']= true;   
+
+            }
+            elseif ($user->isHostelAdmin())
+            {
+                $hostel = Hostel::where('userId', '=', $user->id)->first();
+                $hostelId = $hostel->id;
+
+                if ($user->verified == 0 )
+                {
+                    $response['data']['code']     =  401;
+                    $response['data']['message']  =  "Sorry! Your request to register a new hostel is not approved yet by administrator!";
+                    $response['status'] = false;    
+                }
+                else
+                {
+                    $response['data']['message']              =   "Request Successfull!!";
+                    $response['data']['token']                =   User::loginUser($user->id,$token);
+                    $response['data']['result']['userData']   =   $user->getArrayResponse();
+                    $response['data']['result']['hostelId']   =   $hostelId;
+                    $response['status']= true;
+                }
+            }
+            elseif ($user->isStudent())
+            {
+
+                if ($user->verified == 0 )
+                {
+                    $response['data']['code']  = 401;
+                    $response['data']['message']  =  "user is not verified yet by administrator!";
+                    $response['status'] = false;
+                }
+                else
+                {
+                    $response['data']['code']                       = 200;
+                    $response['data']['message']                    = "Request Successfull!!";
+                    $response['data']['token']                      = User::loginUser($user->id,$token);
+                    $response['data']['result']['userData']         = $user->getArrayResponse();
+                    $response['status']= true;
+                }
+            }
+        }
+        return $response;
+    }
+
+    public function login2(Request $request)
+    {
+        $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Invalid credentials or missing parameters',
+                ],
+                'status' => false
+            ];
+        if(isset($request['username'],$request['password']))
+        {
+
+            $credentials = $request->only('username', 'password');
+            $token = null;
+            try {
+               if (!$token = JWTAuth::attempt($credentials)) 
+               {
+                    return [
+                        'data' => [
+                            'code' => 400,
+                            'message' => 'Email or password wrong.',
+                        ],
+                        'status' => false
+                    ];
+               }
+            } catch (JWTAuthException $e) {
+                return [
+                        'data' => [
+                            'code' => 500,
+                            'message' => 'Fail to create token.',
+                        ],
+                        'status' => false
+                    ];
+            }
+
+            $user = JWTAuth::toUser($token);
+
+            if($user->verified == 1)
+            {
+                if($user->isSuperAdmin())
+                {
+                    $response['data']['code']               = 300;
+                    $response['data']['message']            = "Request Successfull!!";
+                    $response['data']['token']              = User::loginUser($user->id,$token);
+                    $response['data']['result']['userData'] = $user->getArrayResponse();
+                    $response['status']= true;   
+
+                }
+                elseif($user->isHostelAdmin())
+                {
+                    $hostel = Hostel::where('userId', '=', $user->id)->first();
+                    $hostelId = $hostel->id;
+
+                    if($user->verified==0)
+                    {
+                        $response['data']['code']     =  400;
+                        $response['data']['message']  =  "Request Unsuccessfull!!";
+                        $response['status']= true;    
+                    }
+                    else
+                    {
+                        $response['data']['code']                   = 200;
+                    }
+
+                    $response['data']['message']              =   "Request Successfull!!";
+                    $response['data']['token']                =   User::loginUser($user->id,$token);
+                    $response['data']['result']['userData']   =   $user->getArrayResponse();
+                    $response['data']['result']['hostelId']   =   $hostelId;
+                    $response['status']= true;    
+                }
+                elseif($user->isStudent())
+                {
+                    if($user->verified==0)
+                    {
+                        $response['data']['code']                   = 220;
+                    }
+                    else
+                    {
+                        $response['data']['code']                   = 200;
+                    }
+
+                    $response['data']['code']                       = 200;
+                    $response['data']['message']                    = "Request Successfull!!";
+                    $response['data']['token']                      = User::loginUser($user->id,$token);
+                    $response['data']['result']['userData']         = $user->getArrayResponse();
+                    $response['status']= true;
+                }
+            }
+            else
+            {   
+                if ($user->isHostelAdmin()) {
+
+                    $response['data']['code'] = 400;
+                    $response['data']['message'] = 'Sorry! Your request to register a new hostel is not approved yet by administrator!';
+                    $response['status']= false;
+                }
+            }
+        }
+        return $response;
+    }
+
     public function signUp(Request $request)
     {
 
@@ -132,179 +322,10 @@ class AuthController extends Controller
 
 
 
-    public function login(Request $request)
-    {
-        $response = [
-                'data' => [
-                    'code' => 400,
-                    'message' => 'Invalid credentials or missing parameters',
-                ],
-                'status' => false
-            ];
-        if(isset($request['username'],$request['password']))
-        {
-
-            $credentials = $request->only('username', 'password');
-            $token = null;
-            try {
-               if (!$token = JWTAuth::attempt($credentials)) 
-               {
-                    return [
-                        'data' => [
-                            'code' => 400,
-                            'message' => 'Email or password wrong.',
-                        ],
-                        'status' => false
-                    ];
-               }
-            } catch (JWTAuthException $e) {
-                return [
-                        'data' => [
-                            'code' => 500,
-                            'message' => 'Fail to create token.',
-                        ],
-                        'status' => false
-                    ];
-            }
-
-            $user = JWTAuth::toUser($token);
-
-            if($user->verified == 1)
-            {
-                if($user->isSuperAdmin())
-                {
-                    $response['data']['code']               = 300;
-                    $response['data']['message']            = "Request Successfull!!";
-                    $response['data']['token']              = User::loginUser($user->id,$token);
-                    $response['data']['result']['userData'] = $user->getArrayResponse();
-                    $response['status']= true;   
-
-                }
-                elseif($user->isHostelAdmin())
-                {
-                    $hostel = Hostel::where('userId', '=', $user->id)->first();
-                    $hostelId = $hostel->id;
-
-                    if($user->verified==0)
-                    {
-                        $response['data']['code']     =  400;
-                        $response['data']['message']  =  "Request Unsuccessfull!!";
-                        $response['status']= true;    
-                    }
-                    else
-                    {
-                        $response['data']['code']                   = 200;
-                    }
-
-                    $response['data']['message']              =   "Request Successfull!!";
-                    $response['data']['token']                =   User::loginUser($user->id,$token);
-                    $response['data']['result']['userData']   =   $user->getArrayResponse();
-                    $response['data']['result']['hostelId']   =   $hostelId;
-                    $response['status']= true;    
-                }
-                elseif($user->isStudent())
-                {
-                    if($user->verified==0)
-                    {
-                        $response['data']['code']                   = 220;
-                    }
-                    else
-                    {
-                        $response['data']['code']                   = 200;
-                    }
-
-                    $response['data']['code']                       = 200;
-                    $response['data']['message']                    = "Request Successfull!!";
-                    $response['data']['token']                      = User::loginUser($user->id,$token);
-                    $response['data']['result']['userData']         = $user->getArrayResponse();
-                    $response['status']= true;
-                }
-            }
-            else
-            {   
-                $response['data']['code'] = 400;
-                $response['data']['message'] = 'Sorry! Your request to register a new hostel is not approved yet by administrator!';
-                $response['status']= false;
-            }
-        }
-        return $response;
-    }
-
 
   // ---------- New Login ---------- //
 
-    public function login2(Request $request)
-    {
-        $response = [
-                'data' => [
-                    'code' => 400,
-                    'message' => 'Invalid credentials or missing parameters',
-                ],
-                'status' => false
-            ];
 
-        if(isset($request['username'],$request['password'])){
-
-            $credentials = $request->only('username', 'password');
-
-            $token = null;
-            try {
-               if (!$token = JWTAuth::attempt($credentials)) {
-                    return [
-                        'data' => [
-                            'code' => 400,
-                            'message' => 'Email or password wrong.',
-                        ],
-                        'status' => false
-                    ];
-               }
-            } catch (JWTAuthException $e) {
-                return [
-                        'data' => [
-                            'code' => 500,
-                            'message' => 'Fail to create token.',
-                        ],
-                        'status' => false
-                    ];
-            }
-
-            // Finding User from token.
-            $user = JWTAuth::toUser($token);
-            // Checking if user is valid or not.
-            if($user->isValidUser())
-            {
-                if($user->isSuperAdmin())
-                {
-                    $response['data']['code']                 =  200;
-                    $response['data']['message']              =  "Request Successfull!!";
-                    $response['data']['token']                =  User::loginUser($user->id,$token);
-                    $response['data']['result']['userData']   =  $user->getArrayResponse();
-                    $response['status']= true;    
-                }
-                elseif($user->isHostelAdmin())
-                {
-                    $response['data']['code']                 =  200;
-                    $response['data']['message']              =  "Request Successfull!!";
-                    $response['data']['token']                =  User::loginUser($user->id,$token);
-                    $response['data']['result']['userData']   =  $user->getArrayResponse();
-                    $response['status']= true;    
-                }
-                elseif($user->isStudent())
-                {
-                    $response['data']['code']                 =  200;
-                    $response['data']['message']              =  "Request Successfull!!";
-                    $response['data']['token']                =  User::loginUser($user->id,$token);
-                    $response['data']['result']['userData']   =  $user->getArrayResponse();
-                    $response['status']= true;    
-                }
-            }
-            else
-            {   
-                $response['data']['message'] = 'Not a valid user';
-            }
-        }
-        return $response;
-    }
 
     public function forgotPass(Request $request)
     {

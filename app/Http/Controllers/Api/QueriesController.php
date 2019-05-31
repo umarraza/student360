@@ -12,8 +12,15 @@ use JWTAuthException;
 use JWTAuth;
 
 use App\Models\Api\ApiUser as User;
+use App\Models\Api\ApiImages as Image;
 use App\Models\Api\ApiHostel as Hostel;
+use App\Models\Api\ApiReviews as Review;
+use App\Models\Api\ApiRatings as Rating;
+use App\Models\Api\ApiThreads as Threads;
+use App\Models\Api\ApiStudent as Student;
 use App\Models\Api\ApiQueries as Queries;
+
+
 use Exception;
 
 
@@ -99,6 +106,89 @@ class QueriesController extends Controller
                     }
                 }
             }
+        return $response;
+    }
+
+
+    public function listStudentQueries(Request $request)
+    {
+
+        $user = JWTAuth::toUser($request->token);
+        
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isStudent())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            $rules = [
+
+                'userId' => 'required',
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors'] = $validator->messages();
+
+            } else {
+
+                DB::beginTransaction();
+                // try {
+
+                    $threads = Threads::where('userId', '=', $request->userId)->get();
+                    
+                    foreach ($threads as $thread) {
+
+                        $hostel = Hostel::where('id', '=', $thread->hostelId)->first();
+                        $hostelName = $hostel->hostelName;
+
+                        $hostelImage = Image::where('hostelId', '=', $thread->hostelId)
+                            ->where('isThumbnail', '=', 1)
+                            ->first();
+
+                        $imageName = $hostelImage->imageName;
+
+                        $thread['hostelName'] = $hostelName;
+                        $thread['ImageName'] = $imageName;
+
+                        $queries = Queries::select('id', 'message', 'type', 'threadId', 'hostelId')->where('threadId', '=', $thread->id)
+                            ->where('hostelId', '=', $thread->hostelId)
+                        ->get();
+
+                        $thread['queries'] = $queries;
+                    }
+
+                    if (!empty($threads)) {
+
+                        $response['data']['code']       =  200;
+                        $response['data']['message']    =  'Request Successfull';
+                        $response['data']['result']     =  $threads;
+                        $response['status']             =  true;
+
+                    }
+
+                // } catch (Exception $e) {
+
+                //     DB::rollBack();
+                // }
+            }
+        }
         return $response;
     }
 

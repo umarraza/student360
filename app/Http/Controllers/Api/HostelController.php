@@ -211,11 +211,6 @@ class HostelController extends Controller
                 } catch (Exception $e) {
 
                     DB::rollBack();
-
-                    $response['data']['code']          =  400;
-                    $response['status']                =  false;
-                    $response['data']['message']       = 'Request Unsuccessfull';
-
                 }
             }
         return $response;

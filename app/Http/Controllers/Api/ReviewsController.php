@@ -156,13 +156,15 @@ class ReviewsController extends Controller
         }
         return $response;
     }
-/*
-|--------------------------------------------------------------------------
-|  LIST  ALL REVIEWS AGAINST A HOSTEL
-|--------------------------------------------------------------------------
-|
-*/
-    public function listHostelReviews2(Request $request)
+
+    /*
+    |--------------------------------------------------------------------------
+    |  LIST  ALL REVIEWS AGAINST A HOSTEL
+    |--------------------------------------------------------------------------
+    |
+    */
+
+    public function listHostelReviews(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
         $response = [
@@ -181,13 +183,35 @@ class ReviewsController extends Controller
                     'code' => 400,
                     'message' => 'Something went wrong. Please try again later!',
                 ],
-               'status' => false
+            'status' => false
             ];
             
             DB::beginTransaction();
             try {
 
-            $reviews = Review::where('hostelId', '=', $request->id)->get();
+            $reviews = Review::where('hostelId', '=', $request->id)
+                ->get();
+
+            foreach ($reviews as $review) {
+
+                $rating = Rating::where('userId', '=', $review->userId)
+
+                    ->where('hostelId', '=', $request->id)
+                    ->select('score', 'userId')
+                
+                ->first();
+
+                $profileImage = ProfileImages::where('userId', '=', $review->userId)->first();
+                $studentProfileImage = $profileImage->imageName;
+                
+                $studentData = Student::where('userId', '=', $review->userId)->first();
+                $studentName = $studentData->fullName;
+
+                $review['studentName'] = $studentName;
+                $review['rating'] = $rating->score;
+                $review['profilePicture'] = $studentProfileImage;
+
+            }
 
             if (!empty($reviews)) {
 
@@ -201,16 +225,12 @@ class ReviewsController extends Controller
             } catch ( Exception $e) {
 
                 DB::rollBack();
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'Request Unsuccessfull';
-                $response['status']             =  false;    
             }
         }
         return $response;
     }
 
-
-    public function listHostelReviews(Request $request)
+    public function listHostelReviews2(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
         $response = [
@@ -235,30 +255,32 @@ class ReviewsController extends Controller
             DB::beginTransaction();
             // try {
 
-            $reviews = Review::where('hostelId', '=', $request->id)
+                $reviews = Review::where('hostelId', '=', $request->id)
                 ->get();
 
-            foreach ($reviews as $review) {
+                foreach ($reviews as $review) {
 
-                $rating = Rating::where('userId', '=', $review->userId)
-
-                    ->where('hostelId', '=', $request->id)
-                    ->select('score', 'userId')
-                
-                ->get();
+                    $rating = Rating::where('userId', '=', $review->userId)
     
+                        ->where('hostelId', '=', $request->id)
+                        ->select('score', 'userId')
+                    
+                    ->first();
+    
+                    $profileImage = ProfileImages::where('userId', '=', $review->userId)->first();
+                    $studentProfileImage = $profileImage->imageName;
+    
+                    $studentData = Student::where('userId', '=', $review->userId)->first();
+                    $studentName = $studentData->fullName;
 
-                $profileImage = ProfileImages::where('userId', '=', $review->userId)->first();
-                $studentProfileImage = $profileImage->imageName;
-                
-                $studentData = Student::where('userId', '=', $review->userId)->first();
-                $studentName = $studentData->fullName;
+                    $review['studentName'] = $studentName;
+                    $review['rating'] = $rating->score;
+                    $review['profilePicture'] = $studentProfileImage;
+    
+                }
 
-                $review['studentName'] = $studentName;
-                $review['rating'] = $rating->score;
-                $review['profilePicture'] = $studentProfileImage;
+                return $reviews;
 
-            }
 
             if (!empty($reviews)) {
 
@@ -279,6 +301,7 @@ class ReviewsController extends Controller
         }
         return $response;
     }
+
 /*
 |--------------------------------------------------------------------------
 |  UPDATE REVIEW
@@ -310,8 +333,8 @@ class ReviewsController extends Controller
             
             $rules = [
 
-            	'id' => 'required',
-
+                'id' => 'required',
+            	'body' => 'required',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -361,7 +384,6 @@ class ReviewsController extends Controller
 |--------------------------------------------------------------------------
 |
 */
-
 
     public function deleteReview(Request $request)
     {

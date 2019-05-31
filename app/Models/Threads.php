@@ -14,7 +14,7 @@ class Threads extends Model
      protected $fillable = [
 
         'id',
-        'studentId',
+        'userId',
         'adminId',
     ];
 
@@ -23,7 +23,7 @@ class Threads extends Model
      */
     public function user()
     {
-        return $this->hasOne(User::class,'id','studentId');
+        return $this->hasOne(User::class,'id','userId');
     }
 
     public function getArrayResponse() {
@@ -31,7 +31,7 @@ class Threads extends Model
         return [
 
                 'id'       =>  $this->id,
-                'studentId'   =>  $this->studentId,
+                'userId'   =>  $this->userId,
                 'adminId'  =>  $this->adminId,
         ];
     }

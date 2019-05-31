@@ -21,11 +21,10 @@ class ImagesController extends Controller
 
     /**
      * CREATE IMAGES
-     *
      * Hostel Admin can upload imgaes of his hostel. One thumbnail
      * image and others are simple images.
      * 
-     * @function
+     * @return image
      */
 
 
@@ -121,16 +120,14 @@ class ImagesController extends Controller
 
     /**
      * UPDATE IMAGES
-     *
      * Hostel Admin can upload thumbnail imgae of his hostel. 
      * 
-     * @function
+     * @return image
      */
 
 
-    public function updateThumbnailImage(Request $request)
+    public function updateHostelImage(Request $request)
     {
-        // return $request;
         $user = JWTAuth::toUser($request->token);
             $response = [
                 'data' => [
@@ -153,7 +150,6 @@ class ImagesController extends Controller
 
                 'id'                =>  'required',
                 'base64ImageData'   =>  'required',
-                'hostelId'          =>  'required',
                 'isThumbnail'       =>  'required',
 
             ];
@@ -187,9 +183,6 @@ class ImagesController extends Controller
                         $image = Images::find($request->id)->update([
 
                             'imageName'  => $file_name,
-                            'isThumbnail'=> $request->get('isThumbnail'),
-                            'hostelId'   => $request->get('hostelId'),
-    
                         ]);
 
                         DB::commit();
@@ -241,26 +234,12 @@ class ImagesController extends Controller
                'status' => false
             ];
             
-            /** 
-             *  SELECT * FROM Images WHERE hostel_id = '1' OR hostel_id = '2' OR hostel_id = '3'
-             *  SELECT * FROM Images WHERE hostel_id IN ('1', '1', '3') -> whereIn() for Laravel
-             *  SELECT * FROM Images WHERE hostel_id NOT IN ('1', '1', '3') -> whereNotIn() for Laravel
-             * 
-             */
-
-
             DB::beginTransaction();
             try {
 
                 $images = Images::select('imageName', 'hostelId')
                 ->where('hostelId', '=', $request->hostelId)
                 ->get();
-
-                // $images = Images::select('imageName', 'hostelId')
-                // ->whereBetween('hostelId', [1,4])
-                // ->orderBy('hostelId', 'asc')
-                // ->limit(4)
-                // ->get();
 
                 if (!empty($images)) {
 
