@@ -35,9 +35,9 @@ class QueriesController extends Controller
      * 
      */
 
-    public function create(Request $request)
+
+    public function createQuery(Request $request)
     {
-        
         $user = JWTAuth::toUser($request->token);
         
         $response = [
@@ -49,7 +49,7 @@ class QueriesController extends Controller
                 'status' => false
             ];
 
-            if(!empty($user) && $user->isStudent()){
+            if(!empty($user)){
 
                 $response = [
                     'data' => [
@@ -64,7 +64,6 @@ class QueriesController extends Controller
             
                     'message'    =>   'required',
                     'type'       =>   'required',
-                    'threadId'   =>   'required',
                     'hostelId'   =>   'required',
                 ];
 
@@ -81,14 +80,52 @@ class QueriesController extends Controller
                     DB::beginTransaction();
                     try {
 
-                        $query = Queries::create([
 
-                            'message'   =>   $request->get('message'),
-                            'type'      =>   $request->get('type'),
-                            'threadId'  =>   $request->get('threadId'),
-                            'hostelId'  =>   $request->get('hostelId'),
+                        /**  
+                         *  check if thread against a user exists or not. If exists, 
+                         *  then create just queries else create thread and then queries
+                         * 
+                        */
+                        
+                        $checkThread = Threads::where('userId', '=', $request->userId)
+                            ->where('hostelId', '=', $request->hostelId)->first();
 
-                        ]);
+                        if (!empty($checkThread)) {
+
+                            $threadId = $checkThread->id;
+
+                            $query = Queries::create([
+    
+                                'message'   =>   $request->get('message'),
+                                'type'      =>   $request->get('type'),
+                                'hostelId'  =>   $request->get('hostelId'),
+                                'threadId'  =>   $threadId,
+    
+                            ]);
+
+                        } else {
+
+                            $thread = Threads::create([
+
+                                'hostelId' =>  $request->get('hostelId'), 
+                                'userId' =>  $request->get('userId'),
+    
+                            ]);
+    
+                            $thread->save();
+    
+                            $threadId = $thread->id;
+    
+                            $query = Queries::create([
+    
+                                'message'   =>   $request->get('message'),
+                                'type'      =>   $request->get('type'),
+                                'hostelId'  =>   $request->get('hostelId'),
+                                'threadId'  =>   $threadId,
+    
+                            ]);
+
+                        }
 
                         DB::commit();
 
@@ -99,99 +136,11 @@ class QueriesController extends Controller
 
                     } catch (Exception $e) {
 
-                        DB::rollBack();
-                        $response['data']['code']       = 400;
-                        $response['status']             = false;
-                        $response['data']['message']    = 'Request Unsuccessfull';
                     }
                 }
             }
         return $response;
     }
-
-
-    public function listStudentQueries(Request $request)
-    {
-
-        $user = JWTAuth::toUser($request->token);
-        
-        $response = [
-                'data' => [
-                    'code'      => 400,
-                    'errors'    => '',
-                    'message'   => 'Invalid Token! User Not Found.',
-                ],
-                'status' => false
-            ];
-
-        if(!empty($user) && $user->isStudent())
-        {
-            $response = [
-                'data' => [
-                    'code' => 400,
-                    'message' => 'Something went wrong. Please try again later!',
-                ],
-               'status' => false
-            ];
-            
-            $rules = [
-
-                'userId' => 'required',
-            ];
-
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                
-                $response['data']['message'] = 'Invalid input values.';
-                $response['data']['errors'] = $validator->messages();
-
-            } else {
-
-                DB::beginTransaction();
-                // try {
-
-                    $threads = Threads::where('userId', '=', $request->userId)->get();
-                    
-                    foreach ($threads as $thread) {
-
-                        $hostel = Hostel::where('id', '=', $thread->hostelId)->first();
-                        $hostelName = $hostel->hostelName;
-
-                        $hostelImage = Image::where('hostelId', '=', $thread->hostelId)
-                            ->where('isThumbnail', '=', 1)
-                            ->first();
-
-                        $imageName = $hostelImage->imageName;
-
-                        $thread['hostelName'] = $hostelName;
-                        $thread['ImageName'] = $imageName;
-
-                        $queries = Queries::select('id', 'message', 'type', 'threadId', 'hostelId')->where('threadId', '=', $thread->id)
-                            ->where('hostelId', '=', $thread->hostelId)
-                        ->get();
-
-                        $thread['queries'] = $queries;
-                    }
-
-                    if (!empty($threads)) {
-
-                        $response['data']['code']       =  200;
-                        $response['data']['message']    =  'Request Successfull';
-                        $response['data']['result']     =  $threads;
-                        $response['status']             =  true;
-
-                    }
-
-                // } catch (Exception $e) {
-
-                //     DB::rollBack();
-                // }
-            }
-        }
-        return $response;
-    }
-
 
     /**
      * ALL QUERIES LIST

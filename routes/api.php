@@ -33,6 +33,8 @@ Route::post('/delete-hostel', 'Api\HostelController@delete');
 Route::get('/list-hostels', 'Api\HostelController@listHostels');
 Route::post('/view-hostel', 'Api\HostelController@hostelDetails');
 Route::post('/hostel-details', 'Api\HostelController@hostelDetails2');
+Route::get('/all-hostels', 'Api\HostelController@allHostels'); // for registered / non-registered users
+Route::get('/all-hostels2', 'Api\HostelController@allHostels2'); // for registered / non-registered users
 
 Route::post('/hostel-available', 'Api\HostelController@updateAvailbility');
 Route::get('/view-registered-hostels', 'Api\HostelController@listRegisteredHostels');
@@ -52,10 +54,6 @@ Route::post('/update-student', 'Api\StudentController@updateStudent');
 Route::post('/update-student2', 'Api\StudentController@updateStudent2');
 
 Route::get('/view-registered-students', 'Api\StudentController@listRegisteredStudents');
-Route::get('/all-hostels', 'Api\StudentController@allHostels');
-Route::get('/all-hostels2', 'Api\StudentController@allHostels2');
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -150,10 +148,10 @@ Route::post('/update-profile-image','Api\ProfileImagesController@updateProfileIm
 |
 */
 
-Route::post('/create-query', 'Api\QueriesController@create');
+// Route::post('/create-query', 'Api\QueriesController@create');
+Route::post('/create-query', 'Api\QueriesController@createQuery');
 Route::post('/delete-query', 'Api\QueriesController@delete');
 Route::post('/list-queries','Api\QueriesController@listQueries');
-Route::post('/list-student-queries','Api\QueriesController@listStudentQueries');
 
 
 /*
@@ -163,8 +161,9 @@ Route::post('/list-student-queries','Api\QueriesController@listStudentQueries');
 | All Threads routes have been defined here.
 |
 */
-
+Route::post('/create-thread','Api\ThreadsController@createThread');
 Route::get('/list-threads','Api\ThreadsController@listThreads');
+Route::post('/list-student-threads','Api\ThreadsController@listStudentThreads');
 
 /*
 |--------------------------------------------------------------------------

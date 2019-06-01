@@ -18,6 +18,7 @@ use App\Models\Api\ApiReviews as Review;
 use App\Models\Api\ApiRatings as Rating;
 use App\Models\Api\ApiThreads as Threads;
 use App\Models\Api\ApiStudent as Student;
+use App\Models\Api\ApiProfileImages as ProfileImages;
 use App\Models\Api\ApiMessMenuMeal as MessMenuMeal;
 use App\Models\Api\ApiMessMenuTiming as MessMenuTiming;
 use App\Models\Api\ApiUpdateHostelRequest as UpdateHostelRequest;
@@ -78,7 +79,7 @@ class HostelController extends Controller
                 'phoneNumber'        =>   'required',
                 'features'           =>   'required',
                 'username'           =>   'required|unique:users',
-                'password'           =>   'required',
+                'password'           =>   'required|min:6',
                 'roleId'             =>   'required',
 
             ];
@@ -384,7 +385,7 @@ class HostelController extends Controller
 
                 DB::beginTransaction();
 
-                // try {
+                try {
 
           
                     $hostel = Hostel::find($request->id);
@@ -402,38 +403,31 @@ class HostelController extends Controller
                     $hostel['avgRating'] = $avgRating;
 
                     /**
-                     *  Getting profile/thbumbnail image a hostel
-                     *  if profile image exists, show the name of 
-                     *  image with hostel info, else show null
-                     *
-                     *  @return Rating
-                     */
-
-                    $thumbnailImage = Image::where('hostelId', '=', $request->id)->first();
-
-                    if (!empty($thumbnailImage)) {
-
-                        $imageName = $thumbnailImage->imageName;
-                        $hostel['imageName'] = $imageName;
-
-                    } else {
-                        $hostel['imageName'] = NULL;
-                    }
-
-                    /**
-                     *  Getting all images other then profile/thbumbnail
-                     *  image of a hostel & appending with hostel info
+                     *  Getting all images of a hostel & appending with hostel info
                      *
                      *  @return Image
                      */
 
+                    $thumbnailImage = Image::where('hostelId', '=', $request->id)->first();
+
                     $otherImages = Image::where('hostelId', '=', $request->id)
                         ->select('id', 'imageName', 'isThumbnail')
                         ->where('isThumbnail', '=', 0)
-                    ->get();
+                            ->get();
 
-                    $hostel['otherImages'] = $otherImages;
+                    if (!empty($thumbnailImage && $otherImages)) {
 
+                        $imageName = $thumbnailImage->imageName;
+                        $hostel['imageName'] = $imageName;
+                        $hostel['otherImages'] = $otherImages;
+
+
+                    } else {
+
+                        $hostel['imageName'] = NULL;
+                        $hostel['otherImages'] = NULL;
+
+                    }
 
                     /**
                      *  Getting all reviews against a hostel and students who 
@@ -451,8 +445,30 @@ class HostelController extends Controller
 
                             $userId = $review->userId;
                             $student = Student::where('userId', '=', $userId)->first();
+
+                            $rating = Rating::where('userId', '=', $review->userId)
+
+                            ->where('hostelId', '=', $request->id)
+                            ->select('score', 'userId', 'hostelId')
+                        
+                                ->first();  
+
+                            $studentImage = ProfileImages::where('userId', '=', $student->userId)->first();
+
+                            if (!empty($studentImage)) {
+
+                                $imageName = $studentImage->imageName;
+                                $review['studentImage'] = $imageName;
+
+                            } else {
+
+                                $review['studentImage'] = NULL;
+
+                            }
+
                             $studentName = $student->fullName;
                             $review['studentName'] = $studentName;
+                            $review['rating'] = $rating->score;
 
                         }
 
@@ -485,10 +501,10 @@ class HostelController extends Controller
                         $response['data']['message']    =  'Hostel Not Found!';
                     
                     }
-                // } catch (Exception $e) {
+                } catch (Exception $e) {
 
-                //     DB::rollBack();
-                // }
+                    DB::rollBack();
+                }
             }
         return $response;
     }
@@ -613,6 +629,153 @@ class HostelController extends Controller
         return $response;
     }
 
+    public function allHostels(Request $request)  // to show student name against a review,
+    {
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            try {
+
+                $hostels = Hostel::all();
+
+                foreach ($hostels as $hostel) {
+
+                    $image         =  Image::where('hostelId', '=', $hostel->id)->where('isThumbnail', '=', 1)->first();
+                    $otherImages   =  Image::where('hostelId', '=', $hostel->id)->select('id', 'imageName', 'isThumbnail', 'hostelId')
+                        ->where('isThumbnail', '=', 0)->get();
+                    $reviews       =  Review::where('hostelId', '=', $hostel->id)->select('id', 'body')->get();
+                    $avgRating     =  Rating::where('hostelId', '=', $hostel->id)->avg('score');
+
+                    $hostel['avgRating'] = $avgRating;
+
+                    if (!empty($image)) {
+
+                        $thumbnailImageName     =  $image->imageName;
+                        $hostel['imageName']    =  $thumbnailImageName;
+                        $hostel['otherImages']  =  $otherImages;
+                    
+                    } else {
+
+                        $hostel['imageName'] = NULL;
+                    }
+
+                    $hostel['reviews'] = $reviews;
+
+                }
+
+                if (!empty($hostels)) {
+                    
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Request Successfull';
+                    $response['data']['result']     =  $hostels;
+                    $response['status']             =  true;
+
+                } else {
+
+                    $response['data']['code']       =  400;
+                    $response['data']['message']    =  'No Hostels Found';
+                    $response['status']             =  false;    
+                }
+
+            } catch (Exception $e) {
+
+            }
+        return $response;
+    }
+
+
+    public function allHostels2(Request $request)  // for user either registered or non-registered
+    {
+
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+            
+            try {
+
+                $hostels = Hostel::all();
+
+                foreach ($hostels as $hostel) {
+
+                    $image = Image::where('hostelId', '=', $hostel->id)
+                        ->where('isThumbnail', '=', 1)
+                    ->first();
+
+                    $otherImages = Image::where('hostelId', '=', $hostel->id)
+                            ->select('id', 'imageName', 'isThumbnail', 'hostelId')
+                        ->where('isThumbnail', '=', 0)->get();
+
+                    $reviews = Review::where('hostelId', '=', $hostel->id)
+                        ->select('id', 'body')
+                    ->get();
+
+                    $avgRating = Rating::where('hostelId', '=', $hostel->id)
+
+                    ->avg('score');
+
+                    $hostel['avgRating'] = $avgRating;
+
+                    if (!empty($image)) {
+
+                        $thumbnailImageName = $image->imageName;
+                        $hostel['imageName'] = $thumbnailImageName;
+                        $hostel['otherImages'] = $otherImages;
+                    
+                    } else {
+
+                        $hostel['imageName'] = NULL;
+                    }
+
+                    $hostel['reviews'] = $reviews;
+
+                }
+
+                if (!empty($hostels)) {
+                    
+                    $response['data']['code']       =  200;
+                    $response['data']['message']    =  'Request Successfull';
+                    $response['data']['result']     =  $hostels;
+                    $response['status']             =  true;
+
+                } else {
+
+                    $response['data']['code']       =  400;
+                    $response['data']['message']    =  'No Hostels Found';
+                    $response['status']             =  false;    
+                }
+
+            } catch (Exception $e) {
+
+            }
+        return $response;
+    }
 
 
     /**

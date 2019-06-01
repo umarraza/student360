@@ -14,8 +14,8 @@ class Threads extends Model
      protected $fillable = [
 
         'id',
-        'userId',
-        'adminId',
+        'hostelId',
+        'userId'
     ];
 
     /**
@@ -31,8 +31,9 @@ class Threads extends Model
         return [
 
                 'id'       =>  $this->id,
-                'userId'   =>  $this->userId,
-                'adminId'  =>  $this->adminId,
+                'hostelId' =>  $this->hostelId,
+                'userId'   =>  $this->userId
+
         ];
     }
 }

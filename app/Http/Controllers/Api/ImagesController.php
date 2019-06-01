@@ -211,6 +211,7 @@ class ImagesController extends Controller
         }    
         return $response;
     }
+
     public function listImages(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
@@ -234,7 +235,6 @@ class ImagesController extends Controller
                'status' => false
             ];
             
-            DB::beginTransaction();
             try {
 
                 $images = Images::select('imageName', 'hostelId')
@@ -251,11 +251,6 @@ class ImagesController extends Controller
                 }
 
             } catch (Exception $e) {
-
-                DB::rollBack();
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'No Hostels Found';
-                $response['status']             =  false;
 
             }
         }

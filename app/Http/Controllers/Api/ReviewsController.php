@@ -197,20 +197,27 @@ class ReviewsController extends Controller
                 $rating = Rating::where('userId', '=', $review->userId)
 
                     ->where('hostelId', '=', $request->id)
-                    ->select('score', 'userId')
+                    ->select('score', 'userId', 'hostelId')
                 
                 ->first();
 
                 $profileImage = ProfileImages::where('userId', '=', $review->userId)->first();
-                $studentProfileImage = $profileImage->imageName;
-                
+
                 $studentData = Student::where('userId', '=', $review->userId)->first();
                 $studentName = $studentData->fullName;
-
                 $review['studentName'] = $studentName;
                 $review['rating'] = $rating->score;
-                $review['profilePicture'] = $studentProfileImage;
 
+                if (empty($profileImage)) {
+
+                    $review['profilePicture'] = NULL;
+
+                } else {
+
+                    $studentProfileImage = $profileImage->imageName;
+                    $review['profilePicture'] = $studentProfileImage;
+
+                }
             }
 
             if (!empty($reviews)) {

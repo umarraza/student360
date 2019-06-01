@@ -87,7 +87,7 @@ class MessMenuController extends Controller
                     $hostelId = $request->hostelId;
                     $messMenu =  MessMenuMeal::where('hostelId', '=', $hostelId)->get();
 
-                    $updateMessMenu =  MessMenuMeal::where('hostelId', '=', $hostelId)->update([
+                    $updateMessMenu =  MessMenuMeal::where('id', '=', $request->id)->update([
                             
                         'breakFastMeal' =>  $breakFastMeal,
                         'LunchMeal'     =>  $LunchMeal,
@@ -124,7 +124,7 @@ class MessMenuController extends Controller
                         DB::commit();
 
                         $response['data']['code']       =  200;
-                        $response['data']['message']    =  'Request Successfull';
+                        $response['data']['message']    =  'Mess Menu Updated Successfully!';
                         $response['status']             =  true;
     
                     }
@@ -132,9 +132,6 @@ class MessMenuController extends Controller
                 } catch (Exception $e) {
 
                     DB::rollBaack();
-                    $response['data']['code']       =  400;
-                    $response['data']['message']    =  'Requst Unsuccessfull';
-                    $response['status']             =  false;
                 }
             }
         }
@@ -189,7 +186,7 @@ class MessMenuController extends Controller
                 $hostelId = $request->get('hostelId');
 
                 DB::beginTransaction();
-                try {
+                // try {
 
                     $messMenu = MessMenuMeal::select(
                     
@@ -206,8 +203,8 @@ class MessMenuController extends Controller
                     $messMenuTiming = MessMenuTiming::select(
                         
                         'id', 
-                        'bkfastStartTime', 
-                        'bkfastEndTime', 
+                        'brkfastStartTime', 
+                        'brkfastEndTime', 
                         'lunchStartTime', 
                         'lunchEndTime', 
                         'dinnerStartTime', 
@@ -230,14 +227,10 @@ class MessMenuController extends Controller
         
                         }
 
-                }catch (Exception $e) {
+                // }catch (Exception $e) {
                     
-                    DB::rollBack();
-                    $response['data']['code']       =  400;
-                    $response['data']['message']    =  'No Hostels Found';
-                    $response['status']             =  false;   
-
-                }
+                //     DB::rollBack();
+                // }
             }
         }
         return $response;

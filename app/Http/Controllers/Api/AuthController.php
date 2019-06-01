@@ -21,6 +21,8 @@ use JWTAuth;
 use App\Models\Roles;
 use App\Models\Api\ApiUser as User;
 use App\Models\Api\ApiHostel as Hostel;
+use App\Models\Api\ApiStudent as Student;
+
 
 use App\Models\Api\ApiUserDetail as UserDetail;
 
@@ -77,25 +79,26 @@ class AuthController extends Controller
             elseif ($user->isHostelAdmin())
             {
                 $hostel = Hostel::where('userId', '=', $user->id)->first();
-                $hostelId = $hostel->id;
 
                 if ($user->verified == 0 )
                 {
                     $response['data']['code']     =  401;
                     $response['data']['message']  =  "Sorry! Your request to register a new hostel is not approved yet by administrator!";
                     $response['status'] = false;    
-                }
+                }   
                 else
                 {
+                    $response['data']['code']                 =   200;
                     $response['data']['message']              =   "Request Successfull!!";
                     $response['data']['token']                =   User::loginUser($user->id,$token);
                     $response['data']['result']['userData']   =   $user->getArrayResponse();
-                    $response['data']['result']['hostelId']   =   $hostelId;
+                    $response['data']['result']['hostel']     =   $hostel;
                     $response['status']= true;
                 }
             }
             elseif ($user->isStudent())
             {
+                $student = Student::where('userId', '=', $user->id)->first();
 
                 if ($user->verified == 0 )
                 {
@@ -105,10 +108,12 @@ class AuthController extends Controller
                 }
                 else
                 {
-                    $response['data']['code']                       = 200;
-                    $response['data']['message']                    = "Request Successfull!!";
-                    $response['data']['token']                      = User::loginUser($user->id,$token);
-                    $response['data']['result']['userData']         = $user->getArrayResponse();
+                    $response['data']['code']                 =   200;
+                    $response['data']['message']              =   "Request Successfull!!";
+                    $response['data']['token']                =   User::loginUser($user->id,$token);
+                    $response['data']['result']['userData']   =   $user->getArrayResponse();
+                    $response['data']['result']['student']    =   $student;
+
                     $response['status']= true;
                 }
             }
