@@ -76,7 +76,7 @@ class ProfileImagesController extends Controller
                         $image = ProfileImages::create([
 
                             'imageName' => $file_name,
-                            'userId' => $userId,
+                            'userId' => $request->userId,
     
                             ]);
 

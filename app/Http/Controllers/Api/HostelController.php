@@ -99,8 +99,8 @@ class HostelController extends Controller
                 $roleId   = $request->get('roleId');
                 $email    = $request->get('contactEmail');
 
-                DB::beginTransaction();
-                try {
+                // DB::beginTransaction();
+                // try {
 
                     $user =  User::create([
                         
@@ -209,10 +209,10 @@ class HostelController extends Controller
                     $response['data']['message']       = 'Hostel created Successfully';
 
 
-                } catch (Exception $e) {
+                // } catch (Exception $e) {
 
-                    DB::rollBack();
-                }
+                //     DB::rollBack();
+                // }
             }
         return $response;
     }
@@ -574,7 +574,7 @@ class HostelController extends Controller
                         'hostel.phoneNumber', 
                         'hostel.features', 
                         'hostel.userId', 
-                        'image.imageName',
+                        'image.imageName'
     
                         )
 

@@ -79,7 +79,7 @@ class ReviewsController extends Controller
 
                             'body'   =>  $request->get('body'),
                             'hostelId'  =>  $request->get('hostelId'),
-                            'userId'    =>  $user->id,
+                            'userId'    =>  $request->userId,
 
                         ]);
                         

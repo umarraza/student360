@@ -72,7 +72,7 @@ class RatingsController extends Controller
 
                             'score'    =>  $request->get('score'),
                             'hostelId' =>  $request->get('hostelId'),
-                            'userId'   =>  $user->id,
+                            'userId'   =>  $request->userId,
 
                         ]);
 

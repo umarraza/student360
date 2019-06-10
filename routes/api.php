@@ -148,7 +148,6 @@ Route::post('/update-profile-image','Api\ProfileImagesController@updateProfileIm
 |
 */
 
-// Route::post('/create-query', 'Api\QueriesController@create');
 Route::post('/create-query', 'Api\QueriesController@createQuery');
 Route::post('/delete-query', 'Api\QueriesController@delete');
 Route::post('/list-queries','Api\QueriesController@listQueries');
