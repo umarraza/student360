@@ -218,6 +218,8 @@ class QueriesController extends Controller
 
                 } catch (Exception $e) {
 
+                    throw $e;
+
                     DB::rollBack();
 
                     $response['data']['code']       =  400;

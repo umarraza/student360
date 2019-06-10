@@ -26,6 +26,11 @@ class Threads extends Model
         return $this->hasOne(User::class,'id','userId');
     }
 
+    public function queries()
+    {
+        return $this->hasMany(Queries::class);
+    }
+
     public function getArrayResponse() {
         
         return [

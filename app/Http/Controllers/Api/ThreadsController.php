@@ -130,11 +130,10 @@ class ThreadsController extends Controller
             } else {
 
                 try {
-
+                    
                     $threads = Threads::where('userId', '=', $request->userId)->get();
                     
                     foreach ($threads as $thread) {
-
 
                         $hostel          =  Hostel::where('id', '=', $thread->hostelId)->first();
                         $thumbnailImage  =  Images::where('hostelId', '=', $thread->hostelId)->where('isThumbnail', '=', 1)->first();
@@ -142,14 +141,10 @@ class ThreadsController extends Controller
                         $queries         =  Queries::select('id', 'message', 'type', 'threadId', 'hostelId')->where('threadId', '=', $thread->id)
                             ->where('hostelId', '=', $thread->hostelId)->get();
 
-
-
                         $hostelName             =  $hostel->hostelName;
                         $address                =  $hostel->address;
                         $thread['hostelName']   =  $hostelName;
                         $thread['address']      =  $address;
-
-
 
                         if (!empty($thumbnailImage && $hostelImages)) {
 
@@ -177,6 +172,8 @@ class ThreadsController extends Controller
                     }
 
                 } catch (Exception $e) {
+
+                    throw $e;
 
                 }
             }

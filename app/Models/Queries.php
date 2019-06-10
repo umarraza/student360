@@ -29,6 +29,11 @@ class Queries extends Model
         return $this->hasOne(User::class,'id','userId');
     }
 
+    public function thread()
+    {
+        return $this->belongsTo('App\Models\Threads');
+    }
+    
     public function getArrayResponse() {
         
         return [
