@@ -29,6 +29,13 @@ use Exception;
 
 class FeaturesController extends Controller
 {
+
+    /**
+     *   Features are dynamic, means that super admin can add hostel features.
+     *   Hostel admin will select appropriate features from this list.
+     * 
+     */
+
     public function createFeature(Request $request)
     {
 
@@ -54,7 +61,7 @@ class FeaturesController extends Controller
 
                 $rules = [
 
-                    'featureName'   =>  'required',
+                    'featureName'   =>  'required|unique:features',
 
                 ];
 
@@ -89,6 +96,7 @@ class FeaturesController extends Controller
                     } catch (Exception $e) {
 
                         DB::rollBack();
+                        throw $e;
                     }
                 }
             }
@@ -109,8 +117,6 @@ class FeaturesController extends Controller
 
                 $features = Features::all();
                 
-                DB::commit();
-
                 $response['data']['code']       = 200;
                 $response['status']             = true;
                 $response['result']             = $features;
@@ -118,6 +124,7 @@ class FeaturesController extends Controller
 
             } catch (Exception $e) {
 
+                throw $e;
             }
 
         return $response;
@@ -169,7 +176,6 @@ class FeaturesController extends Controller
 
                         $feature = Features::find($request->id)->delete();
                         
-
                         $response['data']['code']       = 200;
                         $response['status']             = true;
                         $response['data']['message']    = 'Feature deleted Successfully';
@@ -179,6 +185,7 @@ class FeaturesController extends Controller
                     } catch (Exception $e) {
 
                         DB::rollBack();
+                        throw $e;
                     }
                 }
             }

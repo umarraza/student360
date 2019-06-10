@@ -23,6 +23,7 @@ class MessMenuTiming extends Model
         'isSetLunch',
         'isSetDinner',
         'hostelId',
+        'price'
 
     ];
 
@@ -49,6 +50,7 @@ class MessMenuTiming extends Model
                 'isSetLunch'       =>  $this->isSetLunch,
                 'isSetDinner'      =>  $this->isSetDinner,
                 'hostelId'         =>  $this->hostelId,
+                'price'            =>  $this->price,
 
         ];
     }

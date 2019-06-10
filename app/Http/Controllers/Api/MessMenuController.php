@@ -25,7 +25,7 @@ class MessMenuController extends Controller
      *
      * Hostel admin can update mess menu of his hotel
      *
-     * @function
+     * @return function
      */
 
     public function updateMessMenu(Request $request)
@@ -53,7 +53,7 @@ class MessMenuController extends Controller
             $rules = [
 
             	'breakFastMeal'     =>  'required',
-            	'LunchMeal'         =>  'required',
+            	'lunchMeal'         =>  'required',
             	'dinnerMeal'        =>  'required',
             	'brkfastStartTime'  =>  'required',
             	'brkfastEndTime'    =>  'required',
@@ -64,7 +64,7 @@ class MessMenuController extends Controller
             	'isSetBreakFast'    =>  'required',
             	'isSetLunch'        =>  'required',
             	'isSetDinner'       =>  'required',
-            	'hostelId'          =>  'required',
+                'hostelId'          =>  'required',
 
             ];
 
@@ -80,17 +80,17 @@ class MessMenuController extends Controller
                 DB::beginTransaction();
                 try {
 
-                    $LunchMeal  =  $request->get('LunchMeal');
+                    $lunchMeal  =  $request->get('lunchMeal');
                     $dinnerMeal   =  $request->get('dinnerMeal');
                     $breakFastMeal  =  $request->get('breakFastMeal');
-    
+
                     $hostelId = $request->hostelId;
                     $messMenu =  MessMenuMeal::where('hostelId', '=', $hostelId)->get();
 
                     $updateMessMenu =  MessMenuMeal::where('id', '=', $request->id)->update([
                             
                         'breakFastMeal' =>  $breakFastMeal,
-                        'LunchMeal'     =>  $LunchMeal,
+                        'lunchMeal'     =>  $lunchMeal,
                         'dinnerMeal'    =>  $dinnerMeal,
     
                     ]);
@@ -104,6 +104,7 @@ class MessMenuController extends Controller
                     $isSetBreakFast    =   $request->get('isSetBreakFast');
                     $lunchStartTime    =   $request->get('lunchStartTime');
                     $dinnerStartTime   =   $request->get('dinnerStartTime');
+                    $price             =   $request->get('price');
     
                     $updateMenuTiming = MessMenuTiming::where('hostelId', '=', $hostelId)->update([
     
@@ -116,6 +117,7 @@ class MessMenuController extends Controller
                         'isSetBreakFast'   =>  $isSetBreakFast,
                         'isSetLunch'       =>  $isSetLunch,
                         'isSetDinner'      =>  $isSetDinner,
+                        'price'            =>  $price,
     
                     ]);
 
@@ -132,6 +134,8 @@ class MessMenuController extends Controller
                 } catch (Exception $e) {
 
                     DB::rollBaack();
+                    throw $e;
+
                 }
             }
         }
@@ -185,15 +189,14 @@ class MessMenuController extends Controller
 
                 $hostelId = $request->get('hostelId');
 
-                DB::beginTransaction();
-                // try {
+                try {
 
                     $messMenu = MessMenuMeal::select(
                     
                         'id', 
                         'day', 
                         'breakFastMeal', 
-                        'LunchMeal', 
+                        'lunchMeal', 
                         'dinnerMeal', 
                         'hostelId')
                         
@@ -212,7 +215,10 @@ class MessMenuController extends Controller
                         'isSetBreakFast' , 
                         'isSetLunch', 
                         'isSetDinner', 
-                        'hostelId')
+                        'hostelId',
+                        'price'
+                        
+                        )
                         
                         ->where('hostelId', '=', $hostelId)
                         ->first();
@@ -227,10 +233,10 @@ class MessMenuController extends Controller
         
                         }
 
-                // }catch (Exception $e) {
+                }catch (Exception $e) {
                     
-                //     DB::rollBack();
-                // }
+                    throw $e;   
+                }
             }
         }
         return $response;

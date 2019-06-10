@@ -84,6 +84,7 @@ class ThreadsController extends Controller
                     } catch (Exception $e) {
 
                         DB::rollBack();
+                        throw $e;
                     }
                 }
             }

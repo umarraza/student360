@@ -15,7 +15,7 @@ class MessMenuMeal extends Model
 
         'day',
         'breakFastMeal',
-        'LunchMeal',
+        'lunchMeal',
         'dinnerMeal',
         'hostelId',
 
@@ -36,7 +36,7 @@ class MessMenuMeal extends Model
                 'id' => $this->id,
                 'day' => $this->day,
                 'breakFastMeal' => $this->breakFastMeal,
-                'LunchMeal'=> $this->LunchMeal,
+                'lunchMeal'=> $this->lunchMeal,
                 'dinnerMeal'=> $this->dinnerMeal,
                 'hostelId'=> $this->hostelId,
 

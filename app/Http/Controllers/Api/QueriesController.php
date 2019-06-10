@@ -136,6 +136,7 @@ class QueriesController extends Controller
 
                     } catch (Exception $e) {
 
+                        throw $e;
                     }
                 }
             }
@@ -192,7 +193,6 @@ class QueriesController extends Controller
 
                 $threadId = $request->get('threadId');
 
-                DB::beginTransaction();
                 try {
 
                     $queries = Queries::select('id', 'message', 'type', 'threadId', 'hostelId')->where('threadId', '=', $threadId)->get();
@@ -219,13 +219,6 @@ class QueriesController extends Controller
                 } catch (Exception $e) {
 
                     throw $e;
-
-                    DB::rollBack();
-
-                    $response['data']['code']       =  400;
-                    $response['data']['message']    =  'Request Unsuccessfull';
-                    $response['status']             =  false;
-
                 }
             }
         }
@@ -269,14 +262,9 @@ class QueriesController extends Controller
             } catch (Exception $e) {
 
                 DB::rollBack();
-
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'Request Unsuccessfull';
-                $response['status']             =  false;
+                throw $e;
             }
         }
         return $response;
     }
-
-
 }

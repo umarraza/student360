@@ -93,10 +93,7 @@ class ReviewsController extends Controller
                     } catch (Exception $e) {
 
                         DB::rollBack();
-                        
-                        $response['data']['code']       = 400;
-                        $response['status']             = false;
-                        $response['data']['message']    = 'Request Unsuccessfull';
+                        throw $e;                        
                     }
                 }
             }
@@ -132,7 +129,6 @@ class ReviewsController extends Controller
                'status' => false
             ];
             
-            DB::beginTransaction();
             try {
 
                 $reviews = Review::all();
@@ -149,9 +145,7 @@ class ReviewsController extends Controller
             } catch (Exception $e) {
 
                 DB::rollBack();
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'Request Unsuccessfull';
-                $response['status']             =  false;    
+                throw $e;
             }
         }
         return $response;
@@ -186,7 +180,6 @@ class ReviewsController extends Controller
             'status' => false
             ];
             
-            DB::beginTransaction();
             try {
 
             $reviews = Review::where('hostelId', '=', $request->id)
@@ -231,7 +224,7 @@ class ReviewsController extends Controller
 
             } catch ( Exception $e) {
 
-                DB::rollBack();
+                throw $e;
             }
         }
         return $response;
@@ -376,9 +369,7 @@ class ReviewsController extends Controller
                 } catch (Exception $e) {
 
                     DB::rollBack();
-                    $response['data']['code']       =  400;
-                    $response['data']['message']    =  'Request Unsuccessfull';
-                    $response['status']             =  false;
+                    throw $e;
                 }
             }
         }
@@ -444,9 +435,8 @@ class ReviewsController extends Controller
                 } catch (Exception $e) {
 
                     DB::rollBack();
-                    $response['data']['code']       =  400;
-                    $response['data']['message']    =  'Request Unsuccessfull';
-                    $response['status']             =  false;    
+                    
+                    throw $e;
                 }
             }
         }

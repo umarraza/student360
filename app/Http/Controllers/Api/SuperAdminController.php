@@ -194,9 +194,8 @@ class SuperAdminController extends Controller
                 } catch (Exception $e) {
 
                     DB::rollBack();
-                    $response['data']['code']       =  400;
-                    $response['data']['message']    =  'Request Unsuccessfull';
-                    $response['status']             =  false;
+                    throw $e;
+                    
                 } 
             }
         }
@@ -387,9 +386,7 @@ class SuperAdminController extends Controller
                 } catch (Exception $e) {
 
                     DB::rollBack();
-                    $response['data']['code']       =  400;
-                    $response['data']['message']    =  'Request Unsuccessfull';
-                    $response['status']             =  false;
+                    throw $e;
                 }
             }
         }

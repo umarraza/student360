@@ -91,10 +91,7 @@ class ProfileImagesController extends Controller
 
                         DB::rollBack();
                         
-                        $response['data']['message'] = 'Request Unsuccessfull';
-                        $response['data']['code'] = 400;
-                        $response['status'] = true;
-
+                        throw $e;
                     }
                 }
                 else
@@ -185,9 +182,8 @@ class ProfileImagesController extends Controller
                     } catch (Exception $e) {
 
                         DB::rollBack();
-                        $response['data']['message'] = 'Request to create image falied!';
-                        $response['data']['code'] = 400;
-                        $response['status'] = false;
+                        
+                        throw $e;
                     }
                 }
                 else

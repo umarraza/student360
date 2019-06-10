@@ -36,7 +36,7 @@ class HostelController extends Controller
      * @return function
      */
 
-    public function create(Request $request)
+    public function createHostel(Request $request)
     {
         // return $request;
         $response = [
@@ -164,7 +164,7 @@ class HostelController extends Controller
 
                             'day'            =>  $days[$i],
                             'breakFastMeal'  =>  'Set Break Fast Meal',
-                            'LunchMeal'      =>  'Set lunch Meal',
+                            'lunchMeal'      =>  'Set lunch Meal',
                             'dinnerMeal'     =>  'Set Dinner Meal',
                             'hostelId'       =>  $hostelId,
         
@@ -195,6 +195,7 @@ class HostelController extends Controller
                         'isSetLunch'        =>  0,
                         'isSetDinner'       =>  0,
                         'hostelId'          =>  $hostelId,
+                        'price'             =>  'PKR: 9000/month Only',
 
                     ]);
 
@@ -251,8 +252,6 @@ class HostelController extends Controller
                'status' => false
             ];
             
-            DB::beginTransaction();
-
             try {
 
                 $allHostels = Hostel::select('id','hostelName',  'address', 'hostelCategory', 'isVerified', 'isApproved')->get();
@@ -273,8 +272,7 @@ class HostelController extends Controller
 
             } catch (Exception $e) {
 
-                DB::rollBack();
-
+                throw $e;
             }
         }
         return $response;
@@ -313,8 +311,6 @@ class HostelController extends Controller
                'status' => false
             ];
             
-            DB::beginTransaction();
-
             try{
 
                 $registeredHostels = Hostel::where('isVerified', 1)->get();
@@ -335,7 +331,7 @@ class HostelController extends Controller
 
             } catch (Exception $e) {
 
-                DB::rollBack();
+                throw $e;
             }       
         }
         return $response;
@@ -384,14 +380,9 @@ class HostelController extends Controller
             }
             else
             {
-
-                DB::beginTransaction();
-
                 try {
 
-          
                     $hostel = Hostel::find($request->id);
-
                     
                     /**
                      *  Getting avarage rating of a hostel
@@ -505,7 +496,7 @@ class HostelController extends Controller
                     }
                 } catch (Exception $e) {
 
-                    DB::rollBack();
+                    throw $e;
                 }
             }
         return $response;
@@ -694,7 +685,8 @@ class HostelController extends Controller
                 }
 
             } catch (Exception $e) {
-
+                
+                throw $e;
             }
         return $response;
     }
@@ -787,7 +779,7 @@ class HostelController extends Controller
      * @return function
      */
 
-    public function delete(Request $request)
+    public function deleteHostel(Request $request)
     {
         $user = JWTAuth::toUser($request->token);
         $response = [
@@ -847,7 +839,9 @@ class HostelController extends Controller
                     $response['data']['message']    = 'Hostel Deleted Successfully';
 
                 } catch (Exception $e) {
+                    
                     DB::rollBack();
+                    throw $e;
                 }
             }
         }

@@ -28,8 +28,8 @@ Route::post('/reset-password', 'Api\AuthController@changePassword');
 |
 */
 
-Route::post('/create-hostel', 'Api\HostelController@create');
-Route::post('/delete-hostel', 'Api\HostelController@delete');
+Route::post('/create-hostel', 'Api\HostelController@createHostel');
+Route::post('/delete-hostel', 'Api\HostelController@deleteHostel');
 Route::get('/list-hostels', 'Api\HostelController@listHostels');
 Route::post('/view-hostel', 'Api\HostelController@hostelDetails');
 Route::post('/hostel-details', 'Api\HostelController@hostelDetails2');

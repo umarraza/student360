@@ -99,10 +99,7 @@ class ImagesController extends Controller
                     } catch (Exception $e) {
 
                         DB::rollBack();
-                        $response['data']['message'] = 'Request to create image falied!';
-                        $response['data']['code'] = 400;
-                        $response['status'] = false;
-
+                        throw $e;
                     }
                 }
                 else
@@ -196,9 +193,7 @@ class ImagesController extends Controller
                     } catch (Exception $e) {
 
                         DB::rollBack();
-                        $response['data']['message'] = 'Request to create image falied!';
-                        $response['data']['code'] = 400;
-                        $response['status'] = false;
+                        throw $e;
                     }
                 }
                 else
@@ -251,7 +246,8 @@ class ImagesController extends Controller
                 }
 
             } catch (Exception $e) {
-
+                
+                throw $e;
             }
         }
         return $response;

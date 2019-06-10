@@ -104,7 +104,7 @@ class StudentController extends Controller
                     } catch (Exception $e) {
 
                         DB::rollBack();
-
+                        throw $e;
                     }
                 }
         return $response;
@@ -138,7 +138,6 @@ class StudentController extends Controller
                'status' => false
             ];
             
-            DB::beginTransaction();
             try {
 
                 $allStudents = Student::select('id', 'fullName', 'phoneNumber', 'email', 'isVerified')->get();
@@ -154,10 +153,7 @@ class StudentController extends Controller
 
             } catch (Exception $e) {
 
-                DB::rollBack();
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'No Hostels Found';
-                $response['status']             =  false;
+                throw $e;
             } 
         }
         return $response;
@@ -191,7 +187,6 @@ class StudentController extends Controller
                'status' => false
             ];
             
-            DB::beginTransaction();
             try {
 
                 $allStudents = Student::select('id', 'fullName', 'phoneNumber', 'email')
@@ -205,10 +200,7 @@ class StudentController extends Controller
 
             } catch (Exception $e) {
 
-                DB::rollBack();
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'Request Unsuccessfull';
-                $response['status']             =  false;
+                throw $e;
             }
         }
         return $response;
@@ -363,6 +355,7 @@ class StudentController extends Controller
                 } catch (Exception $e) {
 
                     DB::rollBack();
+                    throw $e;
                 }
             }
         }
@@ -433,7 +426,8 @@ class StudentController extends Controller
                     }
 
                 } catch (Exception $e) {
- 
+                    
+                    throw $e;
                 }
             }
         return $response;
