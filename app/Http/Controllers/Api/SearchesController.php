@@ -13,6 +13,8 @@ use JWTAuth;
 
 use App\Models\Api\ApiUser as User;
 use App\Models\Api\ApiHostel as Hostel;
+use App\Models\Api\ApiRatings as Rating;
+
 use App\Models\Search;
 use Exception;
 
@@ -71,7 +73,6 @@ class SearchesController extends Controller
              * location of a user who is performing search.
              */
 
-
             $latitude         =   $request->get('latitude');
             $longitude        =   $request->get('longitude');
             $location         =   $request->get('location');
@@ -82,7 +83,7 @@ class SearchesController extends Controller
 
                     $hostelsResults = DB::table('hostel_profiles AS hostel')
                         ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                        ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
+                        // ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
 
                         ->select(
                             DB::raw(
@@ -94,7 +95,7 @@ class SearchesController extends Controller
                             'hostel.hostelName', 
                             'hostel.address', 
                             'hostel.hostelCategory', 
-                            'rating.score', 
+                            // 'rating.score', 
                             'image.imageName', 
                             'image.isThumbnail' )
 
@@ -102,12 +103,14 @@ class SearchesController extends Controller
                         ->where('hostel.hostelCategory','REGEXP', $hostelCategory)
                         ->where('image.isThumbnail','=', 1)
                         
-                        ->orderBy('rating.score', 'desc')
+                        // ->orderBy('rating.score', 'desc')
 
                     ->get();
 
                     $arr = [];
                     
+                    return $hostelsResults;
+
                     foreach ($hostelsResults as $value) 
                     {
                         if($value->distance < $areaRadius)
@@ -196,7 +199,7 @@ class SearchesController extends Controller
             ];
 
             
-            $hostelsResults = [];
+            // $hostelsResults = [];
 
             $length = count($array);
             
@@ -204,10 +207,10 @@ class SearchesController extends Controller
 
                 if (isset($array[$i])) {
 
-                    $hostelsResults[] = DB::table('hostel_profiles AS hostel')
+                    $hostelsResults = DB::table('hostel_profiles AS hostel')
 
                     ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                    ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
+                    // ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
                     
                     ->select(
                         
@@ -216,17 +219,29 @@ class SearchesController extends Controller
                         'hostel.address', 
                         'hostel.hostelCategory',
                         'hostel.features', 
-                        'rating.score', 
+                        // 'rating.score', 
                         'image.imageName', 
                         'image.isThumbnail' )
 
                     ->where('hostel.features','REGEXP', $array[$i])
                     ->where('image.isThumbnail','=', 1)
-                    
-                    ->orderBy('rating.score', 'desc')
+
+                    // ->orderBy('rating.score', 'desc')
 
                 ->get();
             }
+        }
+
+        // return $hostelsResults;
+
+
+
+        foreach($hostelsResults as $hostel) {
+
+            $avgRating = Rating::where('hostelId', '=', $hostel->id)
+            ->avg('score');
+
+            $hostel->avgRating = $avgRating;
         }
 
         if(count($hostelsResults) > 0)
