@@ -55,16 +55,8 @@ class MessMenuController extends Controller
             	'breakFastMeal'     =>  'required',
             	'lunchMeal'         =>  'required',
             	'dinnerMeal'        =>  'required',
-            	'brkfastStartTime'  =>  'required',
-            	'brkfastEndTime'    =>  'required',
-            	'lunchStartTime'    =>  'required',
-            	'lunchEndTime'      =>  'required',
-            	'dinnerStartTime'   =>  'required',
-            	'dinnerEndTime'     =>  'required',
-            	'isSetBreakFast'    =>  'required',
-            	'isSetLunch'        =>  'required',
-            	'isSetDinner'       =>  'required',
                 'hostelId'          =>  'required',
+                'id'                =>  'required'
 
             ];
 
@@ -95,33 +87,7 @@ class MessMenuController extends Controller
     
                     ]);
     
-                    $isSetLunch        =   $request->get('isSetLunch');
-                    $isSetDinner       =   $request->get('isSetDinner');
-                    $lunchEndTime      =   $request->get('lunchEndTime');
-                    $brkfastEndTime    =   $request->get('brkfastEndTime');
-                    $brkfastStartTime  =   $request->get('brkfastStartTime');
-                    $dinnerEndTime     =   $request->get('dinnerEndTime');
-                    $isSetBreakFast    =   $request->get('isSetBreakFast');
-                    $lunchStartTime    =   $request->get('lunchStartTime');
-                    $dinnerStartTime   =   $request->get('dinnerStartTime');
-                    $price             =   $request->get('price');
-    
-                    $updateMenuTiming = MessMenuTiming::where('hostelId', '=', $hostelId)->update([
-    
-                        'brkfastStartTime' =>  $brkfastStartTime,
-                        'brkfastEndTime'   =>  $brkfastEndTime,
-                        'lunchStartTime'   =>  $lunchStartTime,
-                        'lunchEndTime'     =>  $lunchEndTime,
-                        'dinnerStartTime'  =>  $dinnerStartTime,
-                        'dinnerEndTime'    =>  $dinnerEndTime,
-                        'isSetBreakFast'   =>  $isSetBreakFast,
-                        'isSetLunch'       =>  $isSetLunch,
-                        'isSetDinner'      =>  $isSetDinner,
-                        'price'            =>  $price,
-    
-                    ]);
-
-                    if ($updateMessMenu && $updateMenuTiming) {
+                    if ($updateMessMenu) {
 
                         DB::commit();
 
@@ -134,6 +100,105 @@ class MessMenuController extends Controller
                 } catch (Exception $e) {
 
                     DB::rollBaack();
+                    throw $e;
+
+                }
+            }
+        }
+        return $response;
+    }
+
+
+    public function updateMessMenuTimePrice(Request $request)
+    {
+        $user = JWTAuth::toUser($request->token);
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isHostelAdmin())
+        {
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+
+            $rules = [
+
+            	'brkfastStartTime'  =>  'required',
+            	'brkfastEndTime'    =>  'required',
+            	'lunchStartTime'    =>  'required',
+            	'lunchEndTime'      =>  'required',
+            	'dinnerStartTime'   =>  'required',
+            	'dinnerEndTime'     =>  'required',
+            	// 'isSetBreakFast'    =>  'required',
+            	// 'isSetLunch'        =>  'required',
+            	// 'isSetDinner'       =>  'required',
+                'hostelId'          =>  'required',
+                // 'id'                =>  'required'
+
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                
+                $response['data']['message'] = 'Invalid input values.';
+                $response['data']['errors'] = $validator->messages();
+
+            } else {
+
+                DB::beginTransaction();
+                try {
+
+                    // $isSetLunch        =   $request->get('isSetLunch');
+                    // $isSetDinner       =   $request->get('isSetDinner');
+                    $lunchEndTime      =   $request->get('lunchEndTime');
+                    $brkfastEndTime    =   $request->get('brkfastEndTime');
+                    $brkfastStartTime  =   $request->get('brkfastStartTime');
+                    $dinnerEndTime     =   $request->get('dinnerEndTime');
+                    // $isSetBreakFast    =   $request->get('isSetBreakFast');
+                    $lunchStartTime    =   $request->get('lunchStartTime');
+                    $dinnerStartTime   =   $request->get('dinnerStartTime');
+                    $price             =   $request->get('price');
+                    $hostelId          =   $request->get('hostelId');
+
+                    $updateMenuTiming = MessMenuTiming::where('hostelId', '=', $hostelId)->update([
+    
+                        'brkfastStartTime' =>  $brkfastStartTime,
+                        'brkfastEndTime'   =>  $brkfastEndTime,
+                        'lunchStartTime'   =>  $lunchStartTime,
+                        'lunchEndTime'     =>  $lunchEndTime,
+                        'dinnerStartTime'  =>  $dinnerStartTime,
+                        'dinnerEndTime'    =>  $dinnerEndTime,
+                        // 'isSetBreakFast'   =>  $isSetBreakFast,
+                        // 'isSetLunch'       =>  $isSetLunch,
+                        // 'isSetDinner'      =>  $isSetDinner,
+                        'price'            =>  $price,
+    
+                    ]);
+
+                    if ($updateMenuTiming) {
+
+                        DB::commit();
+
+                        $response['data']['code']       =  200;
+                        $response['data']['message']    =  'Mess Menu Updated Successfully!';
+                        $response['status']             =  true;
+    
+                    }
+
+                } catch (Exception $e) {
+
+                    DB::rollBack();
                     throw $e;
 
                 }
@@ -212,9 +277,9 @@ class MessMenuController extends Controller
                         'lunchEndTime', 
                         'dinnerStartTime', 
                         'dinnerEndTime' , 
-                        'isSetBreakFast' , 
-                        'isSetLunch', 
-                        'isSetDinner', 
+                        // 'isSetBreakFast' , 
+                        // 'isSetLunch', 
+                        // 'isSetDinner', 
                         'hostelId',
                         'price'
                         

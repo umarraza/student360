@@ -103,6 +103,7 @@ Route::post('/delete-review','Api\ReviewsController@deleteReview');
 */
 
 Route::post('/update-mess-menu', 'Api\MessMenuController@updateMessMenu');
+Route::post('/update-mess-menu-time', 'Api\MessMenuController@updateMessMenuTimePrice');
 Route::post('/show-mess-menu', 'Api\MessMenuController@showMessMenu');
 
 /*
@@ -175,7 +176,7 @@ Route::post('/list-student-threads','Api\ThreadsController@listStudentThreads');
 Route::post('/update-hostel', 'Api\RequestsController@updateHostelRequest');
 Route::post('/send-approve-hostel-request', 'Api\RequestsController@approveHostelRequest');
 
-Route::post('/create-rating', 'Api\RatingsController@create');
+Route::post('/create-rating', 'Apibbb\RatingsController@create');
 
 
 /*

@@ -90,6 +90,7 @@ class StudentController extends Controller
     
                                 'fullName'     =>   $request->get('fullName'),
                                 'phoneNumber'  =>   $request->get('phoneNumber'),
+                                'email'        =>   $request->get('email'),
                                 'userId'       =>   $user->id,
                             ]);
 
@@ -189,7 +190,20 @@ class StudentController extends Controller
             
             try {
 
-                $allStudents = Student::select('id', 'fullName', 'phoneNumber', 'email')
+                $allStudents = Student::select(
+                    'id', 
+                    'fullName', 
+                    'phoneNumber',
+                     'email',
+                     'city',
+                     'country',
+                     'occupation',
+                     'institute',
+                     'dateOfBirth',
+                     'gender',
+                     'CNIC',
+
+                    )
                 ->where('isVerified', '=', 1)
                 ->get();
 
@@ -238,7 +252,7 @@ class StudentController extends Controller
             
             $rules = [
 
-            	'id'         =>   'required',
+            	'id'  => 'required',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -249,6 +263,7 @@ class StudentController extends Controller
             }
             else
             {
+
                 if($user->username != $request->username)
                 {
                     $checkUserName = User::where('username',$request->username)->first();
@@ -268,11 +283,11 @@ class StudentController extends Controller
 
                         $userUpdate = User::where('id',$user->id)->update([
 
-                            'username'      => $request->get('username'),
+                            'username' => $request->get('username'),
                         ]);
                     }
                 }
-
+                        
                 if($user->email != $request->email)
                 {
                     $checkEmail = User::where('email',$request->email)->first();
@@ -292,7 +307,7 @@ class StudentController extends Controller
 
                         $userUpdate = User::where('id',$user->id)->update([
 
-                            'email'      => $request->get('email'),
+                            'email'  => $request->get('email'),
                         
                         ]);
                     }

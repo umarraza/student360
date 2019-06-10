@@ -519,7 +519,6 @@ class SuperAdminController extends Controller
                'status' => false
             ];
             
-            DB::beginTransaction();
             
             try{
 
@@ -533,11 +532,9 @@ class SuperAdminController extends Controller
                 $response['status']             =  true;
 
             } catch (Exception $e) {
-                
-                DB::rollBack();
-                $response['data']['code']       =  400;
-                $response['data']['message']    =  'Request Unsuccessfull';
-                $response['status']             =  false;
+
+                throw $e;
+
             }
         }
         return $response;

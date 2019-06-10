@@ -14,6 +14,8 @@ use JWTAuth;
 use App\Models\Api\ApiUser as User;
 use App\Models\Api\ApiHostel as Hostel;
 use App\Models\Api\ApiRatings as Rating;
+use App\Models\Api\ApiFeatures as Features;
+
 
 use App\Models\Search;
 use Exception;
@@ -199,7 +201,8 @@ class SearchesController extends Controller
             ];
 
             
-            // $hostelsResults = [];
+            $features = Features::all();
+            // $hostelsResults = NULL;
 
             $length = count($array);
             
@@ -229,12 +232,11 @@ class SearchesController extends Controller
                     // ->orderBy('rating.score', 'desc')
 
                 ->get();
+
             }
         }
 
-        // return $hostelsResults;
-
-
+        return $hostelsResults;
 
         foreach($hostelsResults as $hostel) {
 

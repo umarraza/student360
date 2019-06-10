@@ -175,7 +175,7 @@ class FeaturesController extends Controller
                     try {
 
                         $feature = Features::find($request->id)->delete();
-                        
+
                         $response['data']['code']       = 200;
                         $response['status']             = true;
                         $response['data']['message']    = 'Feature deleted Successfully';

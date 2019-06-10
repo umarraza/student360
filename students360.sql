@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 10, 2019 at 04:39 AM
+-- Generation Time: Jun 10, 2019 at 02:57 PM
 -- Server version: 10.1.38-MariaDB
--- PHP Version: 7.1.27
+-- PHP Version: 7.3.2
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -19,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `student360`
+-- Database: `students360`
 --
 
 -- --------------------------------------------------------
@@ -35,6 +35,13 @@ CREATE TABLE `approve_hostel_requests` (
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `approve_hostel_requests`
+--
+
+INSERT INTO `approve_hostel_requests` (`id`, `approveStatus`, `hostelId`, `createdAt`, `updatedAt`) VALUES
+(1, 2, 1, '2019-06-10 06:44:18', '2019-06-10 06:46:41');
 
 -- --------------------------------------------------------
 
@@ -90,11 +97,7 @@ INSERT INTO `features` (`id`, `featureName`, `createdAt`, `updatedAt`) VALUES
 (19, 'Furnished', '2019-05-31 03:07:29', '2019-05-31 03:07:29'),
 (20, 'First aid', '2019-05-31 03:07:36', '2019-05-31 03:07:36'),
 (21, 'Water filter', '2019-05-31 03:07:51', '2019-05-31 03:07:51'),
-(22, 'Guests allowed', '2019-05-31 03:07:58', '2019-05-31 03:07:58'),
-(23, 'Outdoor Terrace', '2019-05-31 03:08:16', '2019-05-31 03:08:16'),
-(24, 'Outdoor Swimming Pool', '2019-05-31 03:08:27', '2019-05-31 03:08:27'),
-(25, 'Microwave', '2019-05-31 03:08:34', '2019-05-31 03:08:34'),
-(26, 'Luggage Storage', '2019-05-31 03:08:46', '2019-05-31 03:08:46');
+(22, 'Guests allowed', '2019-05-31 03:07:58', '2019-05-31 03:07:58');
 
 -- --------------------------------------------------------
 
@@ -157,8 +160,8 @@ CREATE TABLE `hostel_profiles` (
   `noOfBeds` int(10) NOT NULL,
   `priceRange` varchar(50) NOT NULL,
   `address` varchar(100) NOT NULL,
-  `longitude` varchar(20) NOT NULL,
-  `latitude` varchar(20) NOT NULL,
+  `longitude` decimal(11,8) DEFAULT NULL,
+  `latitude` decimal(10,8) DEFAULT NULL,
   `state` varchar(50) DEFAULT NULL,
   `postCode` int(20) DEFAULT NULL,
   `city` varchar(50) NOT NULL,
@@ -181,9 +184,10 @@ CREATE TABLE `hostel_profiles` (
 --
 
 INSERT INTO `hostel_profiles` (`id`, `hostelName`, `hostelCategory`, `numberOfBedRooms`, `noOfBeds`, `priceRange`, `address`, `longitude`, `latitude`, `state`, `postCode`, `city`, `country`, `description`, `contactName`, `contactEmail`, `website`, `phoneNumber`, `isApproved`, `isVerified`, `features`, `userId`, `createdAt`, `updatedAt`) VALUES
-(1, 'Continental Girls Hostel GCP Society', 'Girls', 30, 60, '15000-20000', 'Lahore, Pakistan', '74.2662099', '31.4486204', 'Punjab', 1214, 'Lahore', 'Pakistan', 'Paradise Group Of Hostels For Boys In Firdaus Market Gulberg 3 Lahore (All included in monthly rent) Gulberg 3, model colony.\r\n', 'Mujahid Alvi', 'mujahid@gmail.com', 'www.continentalgirlshostel.com', '03034969407', 0, 0, '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\",\"Parking area\",\"Board Games\"\r\n,\"TV\",\"Ceiling Fan\",\"Childrens play area\",\"Common Room\"]', 2, '2019-06-09 09:57:37', '2019-06-09 09:57:37'),
-(2, 'Shelton\'s Rezidor Lahore', 'Gust House', 20, 60, '150000', 'House no 3, Street no 30, F-7/1, F-7 Sector, 44000 Lahore, Pakistan', '74.309168', '31.4811591', 'Punjab', 1214, 'Lahore', 'Pakistan', 'Shelton\'s Rezid In Lahore Is Located In 7-A Salik Street, Green Avenue، 7-A Salik Street, Muslim Town, Lahore, Punjab 54600, Pakistan. It\'s Condition is Semi Furnished. We Include Bills In Only 5000 Rs. We give the internet accessibility through WIFI and many other Facilites.', 'Qasim Mughal', 'qasim@gmail.com', 'www.shelton.com', '03034545201', 0, 0, '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\",\"Parking area\",\"Board Games\",\"Mess\",\"TV\",\"Ceiling Fan\",\"Childrens play area\",\"Common Room\"]', 13, '2019-06-09 11:55:49', '2019-06-09 11:55:49'),
-(3, 'Royal Residencia Centaurus', 'Girls', 20, 60, '150000', 'House no 3, Street no 30, F-7/1, F-7 Sector, 44000 Lahore, Pakistan', '74.3094792', '31.4812231', 'Punjab', 1214, 'Lahore', 'Pakistan', 'Shelton\'s Rezid In Lahore Is Located In 7-A Salik Street, Green Avenue، 7-A Salik Street, Muslim Town, Lahore, Punjab 54600, Pakistan. It\'s Condition is Semi Furnished. We Include Bills In Only 5000 Rs. We give the internet accessibility through WIFI and many other Facilites.', 'Imran Maqbool', 'imran@gmail.com', 'www.shelton.com', '03034545201', 0, 0, '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\",\"Parking area\",\"Board Games\",\"Mess\",\"TV\",\"Ceiling Fan\",\"Childrens play area\",\"Common Room\"]', 14, '2019-06-09 12:27:04', '2019-06-09 12:27:04');
+(1, 'Continental Girls Hostel GCP Society', 'Girls', 50, 100, '25000-50000', 'Lahore, Pakistan', '31.52037000', '74.35874700', 'Punjab', 1214, 'Lahore', 'Pakistan', 'Paradise Group Of Hostels For Boys In Firdaus Market Gulberg 3 Lahore (All included in monthly rent) Gulberg 3, model colony.', 'Mujahid Alvi', NULL, 'www.continentalgirlshostel.com', '03034969407', 2, 1, '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\"]', 2, '2019-06-09 09:57:37', '2019-06-10 06:58:54'),
+(2, 'Shelton\'s Rezidor Lahore', 'Gust House', 20, 60, '150000', 'House no 3, Street no 30, F-7/1, F-7 Sector, 44000 Lahore, Pakistan', '74.33002760', '31.47490110', 'Punjab', 1214, 'Lahore', 'Pakistan', 'Shelton\'s Rezid In Lahore Is Located In 7-A Salik Street, Green Avenue، 7-A Salik Street, Muslim Town, Lahore, Punjab 54600, Pakistan. It\'s Condition is Semi Furnished. We Include Bills In Only 5000 Rs. We give the internet accessibility through WIFI and many other Facilites.', 'Qasim Mughal', 'qasim@gmail.com', 'www.shelton.com', '03034545201', 0, 1, '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\",\"Parking area\",\"Board Games\",\"Mess\",\"TV\",\"Ceiling Fan\",\"Childrens play area\",\"Common Room\"]', 10, '2019-06-09 11:55:49', '2019-06-10 06:32:01'),
+(3, 'Royal Residencia Centaurus', 'Girls', 20, 60, '150000', 'House no 3, Street no 30, F-7/1, F-7 Sector, 44000 Lahore, Pakistan', '74.32588190', '31.49288970', 'Punjab', 1214, 'Lahore', 'Pakistan', 'Shelton\'s Rezid In Lahore Is Located In 7-A Salik Street, Green Avenue، 7-A Salik Street, Muslim Town, Lahore, Punjab 54600, Pakistan. It\'s Condition is Semi Furnished. We Include Bills In Only 5000 Rs. We give the internet accessibility through WIFI and many other Facilites.', 'Imran Maqbool', 'imran@gmail.com', 'www.shelton.com', '03034545201', 0, 1, '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\",\"Parking area\",\"Board Games\",\"Mess\",\"TV\",\"Ceiling Fan\",\"Childrens play area\",\"Common Room\"]', 14, '2019-06-09 12:27:04', '2019-06-10 06:32:56'),
+(4, 'Al Banat Girls Hostels Opens in new window', 'Girls', 20, 60, '150000', 'Johar Town Lahore', '74.31708780', '31.49048030', 'Punjab', 1214, 'Lahore', 'Pakistan', 'Attractively located in the Johar Town district of Lahore, Al Banat Girls Hostels is situated 15 km from Chauburji, 14 km from Lahore Gymkhana and 11 km from Vogue Towers. The property is around 38 km from Wagah Border, 10 km from Gaddafi Stadium and 15 km from Lahore Polo Club. The accommodation features a shared kitchen and free WiFi.', 'Kamran Khan', 'kamran@gmail.com', 'www.albanat.com', '03214545741', 0, 2, '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\",\"Parking area\",\"Board Games\",\"Mess\",\"TV\",\"Ceiling Fan\",\"Childrens play area\",\"Common Room\"]', 15, '2019-06-10 01:46:08', '2019-06-10 06:33:20');
 
 -- --------------------------------------------------------
 
@@ -203,6 +207,7 @@ CREATE TABLE `mess-menu-timinigs` (
   `isSetLunch` tinyint(3) NOT NULL DEFAULT '0',
   `isSetDinner` tinyint(3) NOT NULL DEFAULT '0',
   `hostelId` int(10) NOT NULL,
+  `price` int(10) NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -211,10 +216,11 @@ CREATE TABLE `mess-menu-timinigs` (
 -- Dumping data for table `mess-menu-timinigs`
 --
 
-INSERT INTO `mess-menu-timinigs` (`id`, `brkfastStartTime`, `brkfastEndTime`, `lunchStartTime`, `lunchEndTime`, `dinnerStartTime`, `dinnerEndTime`, `isSetBreakFast`, `isSetLunch`, `isSetDinner`, `hostelId`, `createdAt`, `updatedAt`) VALUES
-(1, '07:00 AM', '10:00 AM', '01:00 PM', '03:00 PM', '07:00 PM', '10:00 PM', 0, 0, 0, 1, '2019-06-09 09:57:38', '2019-06-09 09:57:38'),
-(2, '07:00 AM', '10:00 AM', '01:00 PM', '03:00 PM', '07:00 PM', '10:00 PM', 0, 0, 0, 2, '2019-06-09 11:55:49', '2019-06-09 11:55:49'),
-(3, '07:00 AM', '10:00 AM', '01:00 PM', '03:00 PM', '07:00 PM', '10:00 PM', 0, 0, 0, 3, '2019-06-09 12:27:04', '2019-06-09 12:27:04');
+INSERT INTO `mess-menu-timinigs` (`id`, `brkfastStartTime`, `brkfastEndTime`, `lunchStartTime`, `lunchEndTime`, `dinnerStartTime`, `dinnerEndTime`, `isSetBreakFast`, `isSetLunch`, `isSetDinner`, `hostelId`, `price`, `createdAt`, `updatedAt`) VALUES
+(1, '09:00 A.M', '11:00 A.M', '02:00 P.M', '04:00 P.M', '08:00 P.M', '10:00 P.M', 1, 1, 1, 1, 9000, '2019-06-09 09:57:38', '2019-06-10 06:54:47'),
+(2, '06:00 AM', '09:00 AM', '12:00 PM', '03:00 PM', '06:00 PM', '09:00 PM', 1, 1, 1, 2, 5000, '2019-06-09 11:55:49', '2019-06-10 01:50:24'),
+(3, '06:00 AM', '09:00 AM', '12:00 PM', '03:00 PM', '06:00 PM', '09:00 PM', 1, 1, 1, 3, 6000, '2019-06-09 12:27:04', '2019-06-10 01:50:39'),
+(4, '07:00 AM', '10:00 AM', '01:00 PM', '03:00 PM', '07:00 PM', '10:00 PM', 0, 0, 0, 4, 7000, '2019-06-10 01:46:08', '2019-06-10 01:46:08');
 
 -- --------------------------------------------------------
 
@@ -226,7 +232,7 @@ CREATE TABLE `mess_menu-meal` (
   `id` int(10) NOT NULL,
   `day` varchar(100) NOT NULL,
   `breakFastMeal` varchar(100) NOT NULL,
-  `LunchMeal` varchar(100) NOT NULL,
+  `lunchMeal` varchar(100) NOT NULL,
   `dinnerMeal` varchar(100) NOT NULL,
   `hostelId` int(10) NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -237,13 +243,13 @@ CREATE TABLE `mess_menu-meal` (
 -- Dumping data for table `mess_menu-meal`
 --
 
-INSERT INTO `mess_menu-meal` (`id`, `day`, `breakFastMeal`, `LunchMeal`, `dinnerMeal`, `hostelId`, `createdAt`, `updatedAt`) VALUES
-(1, 'Mon', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 1, '2019-06-09 09:57:38', '2019-06-09 09:57:38'),
+INSERT INTO `mess_menu-meal` (`id`, `day`, `breakFastMeal`, `lunchMeal`, `dinnerMeal`, `hostelId`, `createdAt`, `updatedAt`) VALUES
+(1, 'Mon', 'Anda Channa', 'Aloo wala Pratha', 'Beaf', 1, '2019-06-09 09:57:38', '2019-06-10 04:45:18'),
 (2, 'Tue', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 1, '2019-06-09 09:57:38', '2019-06-09 09:57:38'),
 (3, 'Wed', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 1, '2019-06-09 09:57:38', '2019-06-09 09:57:38'),
-(4, 'Thu', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 1, '2019-06-09 09:57:38', '2019-06-09 09:57:38'),
-(5, 'Fri', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 1, '2019-06-09 09:57:38', '2019-06-09 09:57:38'),
-(6, 'Sat', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 1, '2019-06-09 09:57:38', '2019-06-09 09:57:38'),
+(4, 'Thu', 'asd', 'bc', 'ccd', 1, '2019-06-09 09:57:38', '2019-06-10 06:54:36'),
+(5, 'Fri', 'ALU', 'EGG', 'CHICKEN', 1, '2019-06-09 09:57:38', '2019-06-10 04:53:05'),
+(6, 'Sat', 'Beaf', 'Paratha', 'Rice', 1, '2019-06-09 09:57:38', '2019-06-10 01:50:39'),
 (7, 'Mon', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 2, '2019-06-09 11:55:49', '2019-06-09 11:55:49'),
 (8, 'Tue', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 2, '2019-06-09 11:55:49', '2019-06-09 11:55:49'),
 (9, 'Wed', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 2, '2019-06-09 11:55:49', '2019-06-09 11:55:49'),
@@ -255,7 +261,13 @@ INSERT INTO `mess_menu-meal` (`id`, `day`, `breakFastMeal`, `LunchMeal`, `dinner
 (15, 'Wed', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 3, '2019-06-09 12:27:04', '2019-06-09 12:27:04'),
 (16, 'Thu', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 3, '2019-06-09 12:27:04', '2019-06-09 12:27:04'),
 (17, 'Fri', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 3, '2019-06-09 12:27:04', '2019-06-09 12:27:04'),
-(18, 'Sat', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 3, '2019-06-09 12:27:04', '2019-06-09 12:27:04');
+(18, 'Sat', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 3, '2019-06-09 12:27:04', '2019-06-09 12:27:04'),
+(19, 'Mon', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 4, '2019-06-10 01:46:08', '2019-06-10 01:46:08'),
+(20, 'Tue', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 4, '2019-06-10 01:46:08', '2019-06-10 01:46:08'),
+(21, 'Wed', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 4, '2019-06-10 01:46:08', '2019-06-10 01:46:08'),
+(22, 'Thu', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 4, '2019-06-10 01:46:08', '2019-06-10 01:46:08'),
+(23, 'Fri', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 4, '2019-06-10 01:46:08', '2019-06-10 01:46:08'),
+(24, 'Sat', 'Set Break Fast Meal', 'Set lunch Meal', 'Set Dinner Meal', 4, '2019-06-10 01:46:08', '2019-06-10 01:46:08');
 
 -- --------------------------------------------------------
 
@@ -461,6 +473,13 @@ CREATE TABLE `update-hostels-requests` (
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `update-hostels-requests`
+--
+
+INSERT INTO `update-hostels-requests` (`id`, `hostelName`, `hostelCategory`, `numberOfBedRooms`, `noOfBeds`, `priceRange`, `address`, `longitude`, `latitude`, `state`, `postCode`, `city`, `country`, `description`, `contactName`, `contactEmail`, `website`, `phoneNumber`, `features`, `status`, `hostelId`, `userId`, `createdAt`, `updatedAt`) VALUES
+(1, 'Continental Girls Hostel GCP Society', 'Girls', 50, 100, '25000-50000', 'Lahore, Pakistan', '31.520370', '74.358747', 'Punjab', '1214', 'Lahore', 'Pakistan', 'Paradise Group Of Hostels For Boys In Firdaus Market Gulberg 3 Lahore (All included in monthly rent) Gulberg 3, model colony.', 'Mujahid Alvi', NULL, 'www.continentalgirlshostel.com', '03034969407', '[\"24-hour reception\",\"24-hour security\",\"Air conditioning\",\"ATM\",\"BBQ area\"]', 1, 1, 2, '2019-06-10 06:57:47', '2019-06-10 06:58:54');
+
 -- --------------------------------------------------------
 
 --
@@ -494,15 +513,16 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `remember_token`, `roleId`, `resetPasswordToken`, `createdResetPToken`, `avatarFilePath`, `deviceToken`, `onlineStatus`, `verified`, `googleLogin`, `facebookLogin`, `language`, `createdAt`, `updatedAt`) VALUES
 (1, 'super.admin@admin.com', 'super.admin@admin.com', '$2y$10$VwROsyn0bDr5gTh/rnCCG.5JN3kZTAWEEUZPJLHfiZf.84ZLdPtwq', 'J4Wo5S1I3oG53IGMe2ttEW2YFKojus9tizVBsMCr59YPTrbQqUd00YudN4Og', 1, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, '', '2019-06-09 02:46:11', '0000-00-00 00:00:00'),
 (2, 'mujahid', 'mujahid@gmail.com', '$2y$10$iUblXwbYHalkAUNhbfcILOfUnWyrPtfRh21tjQSu0JPwi4bLgEbhi', NULL, 2, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', '2019-06-09 04:02:55', '2019-06-09 09:57:37'),
-(3, 'umarraza', 'umarraza@gmail.com', '$2y$10$mbirzJlPwGY.eHWHF0VrdOQMaS3BwY.R.8H17H4Dq71r/nS9zworG', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', '2019-06-09 11:10:53', '2019-06-09 11:10:53'),
-(4, 'aliraza', 'aliraza@gmail.com', '$2y$10$HlpGfd9Jw8NeqPtLg5P3tOzUOkcCk7n2QMZ2J.5YlqlZvsrSrGcoe', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', '2019-06-09 11:11:32', '2019-06-09 11:11:32'),
+(3, 'umarraza', 'umarraza@gmail.com', '$2y$10$mbirzJlPwGY.eHWHF0VrdOQMaS3BwY.R.8H17H4Dq71r/nS9zworG', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', '2019-06-10 12:38:58', '2019-06-10 07:38:34'),
+(4, 'aliraza2200', 'aliraza@gmail.com', '$2y$10$HlpGfd9Jw8NeqPtLg5P3tOzUOkcCk7n2QMZ2J.5YlqlZvsrSrGcoe', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', '2019-06-10 12:41:25', '2019-06-10 07:41:25'),
 (5, 'fahadali', 'fahadali@gmail.com', '$2y$10$P/2DMYUYDVdSFMLTg4hEYOM5vsWlHDiPJiB8g7yM9M4.pd3SlYND.', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', '2019-06-09 11:11:54', '2019-06-09 11:11:54'),
 (6, 'saadali', 'saadali@gmail.com', '$2y$10$rV26bg/AfkGdhy3rcSM4aeX/6tzpXmYrlQ8KtLqln44Q8WPe9p5l6', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', '2019-06-09 11:12:15', '2019-06-09 11:12:15'),
 (7, 'haroonali', 'harron@gmail.com', '$2y$10$mIJJFk08E/TL49Ipyj6PCeV4wm6timvdD11Cf1zRr/9Fkc1skJk1u', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', '2019-06-09 11:12:36', '2019-06-09 11:12:36'),
 (8, 'asimmajid', 'asimmajid@gmail.com', '$2y$10$BBmC.OEEdVumJgKL2utcz.ry207akzFO0.Ni6zxpLjia5EiCEisQa', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', '2019-06-09 11:12:59', '2019-06-09 11:12:59'),
 (9, 'sohaibnaveed', 'sohaib@gmail.com', '$2y$10$LUNKkG5i9YDLu7aQXVSFKu6fy/FihnuLvcgE/x6HxO7tgNjYiboQq', NULL, 3, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', '2019-06-09 11:13:24', '2019-06-09 11:13:24'),
-(10, 'qasim', 'qasim@gmail.com', '$2y$10$acOwq1oiwFFGEidNkaCW2.0os8cWYwuCe2wJ6EPtVvKOIfcZGE0Ii', NULL, 2, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', '2019-06-09 04:58:44', '2019-06-09 11:55:49'),
-(14, 'imran', 'imran@gmail.com', '$2y$10$M1CU8ZtMwZsRhIg1a8a5x.Re6YNj0uht6RRXgn.CKjn9laA7PkDNq', NULL, 2, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 'English', '2019-06-09 12:27:04', '2019-06-09 12:27:04');
+(10, 'qasim', 'qasim@gmail.com', '$2y$10$acOwq1oiwFFGEidNkaCW2.0os8cWYwuCe2wJ6EPtVvKOIfcZGE0Ii', NULL, 2, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', '2019-06-10 11:32:01', '2019-06-10 06:32:01'),
+(14, 'imran', 'imran@gmail.com', '$2y$10$M1CU8ZtMwZsRhIg1a8a5x.Re6YNj0uht6RRXgn.CKjn9laA7PkDNq', NULL, 2, NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, 'English', '2019-06-10 11:32:56', '2019-06-10 06:32:56'),
+(15, 'kami', 'kamran@gmail.com', '$2y$10$cMmIUj/KIILaJOv2qbglLuTMlj2YCox8p8IzSHJXvIWDzYdokwVXW', NULL, 2, NULL, NULL, NULL, NULL, 0, 2, NULL, NULL, 'English', '2019-06-10 11:33:20', '2019-06-10 06:33:20');
 
 -- --------------------------------------------------------
 
@@ -534,8 +554,8 @@ CREATE TABLE `user_profiles` (
 --
 
 INSERT INTO `user_profiles` (`id`, `fullName`, `phoneNumber`, `email`, `city`, `country`, `occupation`, `institute`, `dateOfBirth`, `gender`, `CNIC`, `isVerified`, `threadId`, `userId`, `createdAt`, `updatedAt`) VALUES
-(1, 'Umar Raza', '03231414124', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 3, '2019-06-09 11:10:53', '2019-06-09 11:10:53'),
-(2, 'Ali Raza', '03231414124', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 4, '2019-06-09 11:11:32', '2019-06-09 11:11:32'),
+(1, 'Umar Raza', '03231414124', 'umarraza@gmaik.com', 'Lahore', 'Pakistan', 'Web Developer', 'VU', '15-03-1995', 'Male', '35201-1414124-3', 1, NULL, 3, '2019-06-09 11:10:53', '2019-06-09 11:10:53'),
+(2, 'Ali Raza', '03231414124', 'aliraza2200@gmail.com', 'Lahore', 'Pakistan', 'Electrician', 'VU', '15-03-1989', 'Male', '35201-4545451-1', 1, NULL, 4, '2019-06-09 11:11:32', '2019-06-10 07:41:25'),
 (3, 'Fahad Ali', '03231414124', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 5, '2019-06-09 11:11:54', '2019-06-09 11:11:54'),
 (4, 'Saad Ali', '03231414124', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 6, '2019-06-09 11:12:15', '2019-06-09 11:12:15'),
 (5, 'Haroon Ali', '03231414124', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 7, '2019-06-09 11:12:36', '2019-06-09 11:12:36'),
@@ -656,7 +676,7 @@ ALTER TABLE `user_profiles`
 -- AUTO_INCREMENT for table `approve_hostel_requests`
 --
 ALTER TABLE `approve_hostel_requests`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `device_tokens`
@@ -668,7 +688,7 @@ ALTER TABLE `device_tokens`
 -- AUTO_INCREMENT for table `features`
 --
 ALTER TABLE `features`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `hostels_registration-requests`
@@ -686,19 +706,19 @@ ALTER TABLE `hostel_images`
 -- AUTO_INCREMENT for table `hostel_profiles`
 --
 ALTER TABLE `hostel_profiles`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `mess-menu-timinigs`
 --
 ALTER TABLE `mess-menu-timinigs`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `mess_menu-meal`
 --
 ALTER TABLE `mess_menu-meal`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `profile_pictures`
@@ -740,13 +760,13 @@ ALTER TABLE `threads`
 -- AUTO_INCREMENT for table `update-hostels-requests`
 --
 ALTER TABLE `update-hostels-requests`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `user_profiles`

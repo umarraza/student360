@@ -38,7 +38,6 @@ class HostelController extends Controller
 
     public function createHostel(Request $request)
     {
-        // return $request;
         $response = [
                 'data' => [
                     'code'      => 400,
@@ -149,7 +148,7 @@ class HostelController extends Controller
                 /**
                  *  MESS MENU MEAL
                  * 
-                 *  Hostel admin cannot create mess menu, so, by default a mess menu will be created 
+                 *  Hostel admin cannot create mess menu, so, by default, a mess menu will be created 
                  *  when a new hostel will apply for registration. Set default Meals for hostels 
                  *  for Breakfast, Lunch & Dinner against new created hostel.
                  * 
@@ -195,7 +194,7 @@ class HostelController extends Controller
                         'isSetLunch'        =>  0,
                         'isSetDinner'       =>  0,
                         'hostelId'          =>  $hostelId,
-                        'price'             =>  'PKR: 9000/month Only',
+                        'price'             =>  'PKR: 10,000/month Only', // Default price
 
                     ]);
 
@@ -213,7 +212,6 @@ class HostelController extends Controller
                 } catch (Exception $e) {
 
                     DB::rollBack();
-
                     throw $e;
                 }
             }
