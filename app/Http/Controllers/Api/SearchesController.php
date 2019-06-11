@@ -15,6 +15,8 @@ use App\Models\Api\ApiUser as User;
 use App\Models\Api\ApiHostel as Hostel;
 use App\Models\Api\ApiRatings as Rating;
 use App\Models\Api\ApiFeatures as Features;
+use App\Models\Api\ApiImages as Images;
+
 
 
 use App\Models\Search;
@@ -50,7 +52,7 @@ class SearchesController extends Controller
 
         $rules = [
 
-            'location' => 'required', //
+            // 'location' => 'required',
             'areaRadius' => 'required',
             'hostelCategory' => 'required',
 
@@ -81,11 +83,10 @@ class SearchesController extends Controller
             $areaRadius       =   $request->get('areaRadius');
             $hostelCategory   =   $request->get('hostelCategory');
 
-                if (isset($location, $hostelCategory, $areaRadius)) {
+                if (isset($hostelCategory, $areaRadius)) {
 
                     $hostelsResults = DB::table('hostel_profiles AS hostel')
                         ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                        // ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
 
                         ->select(
                             DB::raw(
@@ -97,21 +98,22 @@ class SearchesController extends Controller
                             'hostel.hostelName', 
                             'hostel.address', 
                             'hostel.hostelCategory', 
-                            // 'rating.score', 
                             'image.imageName', 
-                            'image.isThumbnail' )
+                            'image.isThumbnail', 
+                            'hostel.avgRating', 
 
-                        ->where('hostel.address','REGEXP', $location)
+                            )
+
+                        // ->where('hostel.address','REGEXP', $location)
                         ->where('hostel.hostelCategory','REGEXP', $hostelCategory)
                         ->where('image.isThumbnail','=', 1)
                         
-                        // ->orderBy('rating.score', 'desc')
+                        ->orderBy('hostel.avgRating', 'desc')
 
                     ->get();
 
+
                     $arr = [];
-                    
-                    return $hostelsResults;
 
                     foreach ($hostelsResults as $value) 
                     {
@@ -200,9 +202,7 @@ class SearchesController extends Controller
 
             ];
 
-            
-            $features = Features::all();
-            // $hostelsResults = NULL;
+            // $features = Features::all();
 
             $length = count($array);
             
@@ -210,10 +210,9 @@ class SearchesController extends Controller
 
                 if (isset($array[$i])) {
 
-                    $hostelsResults = DB::table('hostel_profiles AS hostel')
+                    $hostelResults = DB::table('hostel_profiles AS hostel')
 
-                    ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
-                    // ->join('ratings AS rating', 'rating.hostelId', '=', 'hostel.id')
+                    // ->join('hostel_images AS image', 'image.hostelId', '=', 'hostel.id')
                     
                     ->select(
                         
@@ -222,35 +221,41 @@ class SearchesController extends Controller
                         'hostel.address', 
                         'hostel.hostelCategory',
                         'hostel.features', 
-                        // 'rating.score', 
-                        'image.imageName', 
-                        'image.isThumbnail' )
+                        // 'image.imageName', 
+                        // 'image.isThumbnail',
+                        'hostel.avgRating', 
+                        
+                        )
 
                     ->where('hostel.features','REGEXP', $array[$i])
-                    ->where('image.isThumbnail','=', 1)
+                    // ->where('image.isThumbnail','=', 1)
 
-                    // ->orderBy('rating.score', 'desc')
+                    ->orderBy('hostel.avgRating', 'desc')
 
                 ->get();
-
             }
         }
 
-        return $hostelsResults;
 
-        foreach($hostelsResults as $hostel) {
+        foreach ($hostelResults as $hostel) {
 
-            $avgRating = Rating::where('hostelId', '=', $hostel->id)
-            ->avg('score');
+            $imageData = Images::where('hostelId', '=', $hostel->id)
+            ->where('isThumbnail', '=', 1)->first();
+            return $imageData;
+            $imageName = $imageData->imageName;
 
-            $hostel->avgRating = $avgRating;
+            $hostel->imageName = $imageData->imageName;
+
         }
 
-        if(count($hostelsResults) > 0)
+        return $hostelResults;
+
+
+        if(count($hostelResults) > 0)
         {
             $response['data']['code']       = 200;
             $response['status']             = true;
-            $response['data']['result']     = $hostelsResults;
+            $response['data']['result']     = $hostelResults;
             $response['data']['message']    = 'Request Successfull';
     
         }

@@ -38,6 +38,7 @@ class HostelController extends Controller
 
     public function createHostel(Request $request)
     {
+
         $response = [
                 'data' => [
                     'code'      => 400,
@@ -194,7 +195,7 @@ class HostelController extends Controller
                         'isSetLunch'        =>  0,
                         'isSetDinner'       =>  0,
                         'hostelId'          =>  $hostelId,
-                        'price'             =>  'PKR: 10,000/month Only', // Default price
+                        'price'             =>  10000, // Default price
 
                     ]);
 

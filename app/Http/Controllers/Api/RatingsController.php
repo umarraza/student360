@@ -20,7 +20,81 @@ use Exception;
 
 class RatingsController extends Controller
 {
-    public function create(Request $request)
+    public function createRating(Request $request)
+    {
+
+
+        $user = JWTAuth::toUser($request->token);
+
+        $response = [
+                'data' => [
+                    'code'      => 400,
+                    'errors'    => '',
+                    'message'   => 'Invalid Token! User Not Found.',
+                ],
+                'status' => false
+            ];
+
+        if(!empty($user) && $user->isStudent()) { 
+
+            $response = [
+                'data' => [
+                    'code' => 400,
+                    'message' => 'Something went wrong. Please try again later!',
+                ],
+               'status' => false
+            ];
+
+                $rules = [
+
+                    'score'    =>  'required',
+                    'userId'   =>  'required',
+                    'hostelId' =>  'required',
+
+                ];
+
+                $validator = Validator::make($request->all(), $rules);
+
+                if ($validator->fails()) {
+                    
+                    $response['data']['message'] = 'Invalid input values.';
+                    $response['data']['errors'] = $validator->messages();
+                
+                }
+                else
+                {
+
+                    DB::beginTransaction();
+                    try {
+
+                        // $checkStatus = Rating::where('userId', '=', $request->userId)->exists();
+
+                        $rating = Rating::create([
+
+                            'score'    =>  $request->get('score'),
+                            'hostelId' =>  $request->get('hostelId'),
+                            'userId'   =>  $request->userId,
+
+                        ]);
+
+                            DB::commit();
+                            
+                            $response['data']['code']       = 200;
+                            $response['status']             = true;
+                            $response['result']             = $rating;
+                            $response['data']['message']    = 'Rating created Successfully';
+
+                    } catch (Exception $e) {
+                        
+                        DB::rollBack();
+                        throw $e;
+                    }
+                }
+            }
+        return $response;
+    }
+
+    public function createRating2(Request $request)
     {
 
         $user = JWTAuth::toUser($request->token);
@@ -74,6 +148,12 @@ class RatingsController extends Controller
                             'hostelId' =>  $request->get('hostelId'),
                             'userId'   =>  $request->userId,
 
+                        ]);
+
+                        $avgRating = Rating::where('hostelId', '=', $request->hostelId)->avg('score');
+
+                        $approveUpdateRequest = Hostel::find($request->hostelId)->update([
+                            'avgRating' => $avgRating, 
                         ]);
 
                             DB::commit();

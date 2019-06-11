@@ -47,7 +47,7 @@ Route::get('/view-registered-hostels', 'Api\HostelController@listRegisteredHoste
 |
 */
 
-Route::post('/create-student', 'Api\StudentController@create');
+Route::post('/create-student', 'Api\StudentController@createStudent');
 Route::get('/list-students', 'Api\StudentController@listStudents');
 Route::post('/student-details', 'Api\StudentController@studentDetails');
 Route::post('/update-student', 'Api\StudentController@updateStudent');
@@ -176,7 +176,9 @@ Route::post('/list-student-threads','Api\ThreadsController@listStudentThreads');
 Route::post('/update-hostel', 'Api\RequestsController@updateHostelRequest');
 Route::post('/send-approve-hostel-request', 'Api\RequestsController@approveHostelRequest');
 
-Route::post('/create-rating', 'Apibbb\RatingsController@create');
+Route::post('/create-rating', 'Api\RatingsController@createRating');
+Route::post('/create-rating2', 'Api\RatingsController@createRating2');
+
 
 
 /*
